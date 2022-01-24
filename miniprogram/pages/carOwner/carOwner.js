@@ -43,7 +43,7 @@ Page({
       })
     };
 
-    _this.onGetOpenid();
+    // _this.onGetOpenid();
   },
 
   /**

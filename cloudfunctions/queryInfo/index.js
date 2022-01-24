@@ -8,10 +8,10 @@ const _ = db.command
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.error(event,'event.filter');                    
   let dbName = event.dbName;//集合名称
-  let filter = event.filter ? event.filter : null;//刷选条件，默认为空 格式{_id:'asdhabsd'}
-  filter.exactDate= _.gt(event.startTime).and(_.lt(event.endTime));
+  let filter = event.filter ? event.filter : {};//刷选条件，默认为空 格式{_id:'asdhabsd'}
+  // filter.exactDate= _.gt(event.startTime).and(_.lt(event.endTime));
+  filter.exactDate= _.gt(event.startTime);
 
   let pageIndex = event.pageIndex ? event.pageIndex : 1;//当前第几页，默认第一页
   let pageSize = event.pageSize ? event.pageSize : 10;//每页去多少条记录，默认10条

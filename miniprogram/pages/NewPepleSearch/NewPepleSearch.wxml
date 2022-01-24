@@ -16,7 +16,8 @@ title="添加车找人信息"
           <view class='picker'>
             <picker 
               mode="region"
-              bindchange="startRegionChange" 
+              data-name="startRegion"
+              bindchange="regionChange" 
               value="{{startRegion}}" 
               custom-item="{{customItem}}">
               {{startRegion[2]}}
@@ -31,7 +32,8 @@ title="添加车找人信息"
             <picker 
               class="end"
               mode="region"
-              bindchange="endRegionChange" 
+              data-name="endRegion"
+              bindchange="regionChange" 
               value="{{endRegion}}">
               {{endRegion[2]}}
             </picker>
@@ -49,14 +51,15 @@ title="添加车找人信息"
       <view class='cont time-picker'>
         <!-- 日期选择器 -->
         <view class='picker'>
-          <picker bindchange="bindPickerChange" value="{{dateIndex}}" range="{{dateArray}}">
-              {{dateArray[dateIndex]}}
+          <picker mode="date" bindchange="bindPickerChange" value="{{dateIndex}}" start="{{dateIndex}}" end="2035-12-31">
+            <!-- {{dateArray[dateIndex]}} -->
+            {{dateIndex}}
           </picker>
         </view>
         <!-- 时间选择器 -->
         <view class='picker'>
-          <picker mode="time" value="{{exactTime}}" start="05:01" end="23:01" bindchange="bindTimeChange">
-              {{exactTime}}
+          <picker mode="time" value="{{exactTime}}" start="{{exactTime}}" end="23:59" bindchange="bindTimeChange">
+            {{exactTime}}
           </picker>
         </view>
       </view>
@@ -64,7 +67,7 @@ title="添加车找人信息"
     <!-- 上车地点 -->
     <view class='item'>
       <text class='label'>起点</text>
-      <view class='cont link' bindtap="chooseStartMapTap">
+      <view class='cont link' data-name="startLocation" bindtap="getLocation">
         <text wx:if="{{!startLocation.name}}"  class='text placeholder'>请选择出发地点</text>
         <text wx:else class='text'>{{startLocation.name}}</text>
       </view>
@@ -72,16 +75,15 @@ title="添加车找人信息"
     <!-- 下车地点 -->
     <view class='item'>
       <text class='label'>终点</text>
-      <view class='cont link' bindtap="chooseEndtMapTap">
+      <view class='cont link' data-name="endLocation" bindtap="getLocation">
         <text wx:if="{{!endLocation.name}}" class='text placeholder'>请选择到达地点</text>
         <text wx:else class='text'>{{endLocation.name}}</text>
       </view>
     </view>
     <!-- 中途停车 -->
-    <view class='item'>
+    <!-- <view class='item'>
       <text class='label'>中途停车</text>
       <view class='cont trips'>
-        <!-- 停车地点 -->
         <view class='trips-item' wx:for="{{tripsArray}}" wx:key = "index">
           <view class='name'>
             <text>{{item.name}}</text>
@@ -95,13 +97,12 @@ title="添加车找人信息"
             </view>
           </view>
         </view>
-        <!-- 添加按钮 -->
         <view class='add-btn' bindtap="addTripsItem">
           <image class='icon' src='../../images/icon/add.png'></image>
           <text>添加</text>
         </view>
       </view>
-    </view>
+    </view> -->
     <!-- 是否高速 -->
     <view class='item'>
       <text class='label'>是否高速</text>

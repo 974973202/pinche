@@ -21,6 +21,11 @@
     "pages/AboutUs/AboutUs",
     "pages/LookTransit/LookTransit"
   ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "请点击确认"
+    }
+  },
   "window": {
     "backgroundColor": "#0091ff",
     "navigationBarBackgroundColor": "#F6F6F6",
@@ -40,12 +45,6 @@
         "pagePath": "pages/index/index",
         "iconPath": "images/tab/tab01.png",
         "selectedIconPath": "images/tab/tab0101.png"
-      },
-      {
-        "text": "快报",
-        "pagePath": "pages/ExpressNews/ExpressNews",
-        "iconPath": "images/tab/tab02.png",
-        "selectedIconPath": "images/tab/tab0201.png"
       },
       {
         "text": "我的",

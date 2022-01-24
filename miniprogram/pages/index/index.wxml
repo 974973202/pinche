@@ -1,6 +1,6 @@
 
 <!--index.wxml-->
-<wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs>
+<!-- <wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs> -->
 
 <!-- 导航栏 -->
 <view class='topNavBar' style="height:{{titleBarHeight+44}}px;padding-top:{{statusBarHeight}}px">
@@ -10,7 +10,7 @@
       <text class='searchinput'>选择出行方向、地点...</text>
     </view>
   </view>
-  <scroll-view scrpll-x="true" class='nav' scroll-left="{{navScrollLeft}}" scroll-with-animation="{{true}}">
+  <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">
     <block wx:for="{{navData}}" wx:for-index="idx" wx:for-item="navItem">
       <view class='nav-item {{currentNavTab == idx ? "active" :""}}' data-current="{{idx}}" bindtap='switchNav'>{{navItem}}</view>
     </block>
@@ -19,16 +19,16 @@
 
 <view class="layout" style="padding-top:{{navBarHeight+44}}px">
   <!-- 轮播图 -->
-  <swiper class='banner' indicator-dots="{{indicatorDots}}"
+  <!-- <swiper class='banner' indicator-dots="{{indicatorDots}}"
     autoplay="{{autoplay}}" circular='{{true}}' interval="{{interval}}" duration="{{duration}}" current="{{swiperCurrent}}"  bindchange="swiperChange">
     <block wx:for="{{imgUrls}}">
       <swiper-item>
         <image src="{{item}}" class="slide-image" bindtap="swipclick"/>
       </swiper-item>
     </block>
-  </swiper>
+  </swiper> -->
   <!-- 最新头条路况 -->
-  <view class='hot-info-view'>
+  <!-- <view class='hot-info-view'>
     <view class='icon'>
       <image src='../../images/icon/hot-icon.png'></image>
     </view>
@@ -37,7 +37,7 @@
         <swiper-item class='item' wx:for='{{hotList}}' bindtap="hotNewsClick">{{item.title}}</swiper-item>
       </swiper>
     </view>
-  </view>
+  </view> -->
   <!-- 内容 -->
   <view class='data-list' wx:if="{{list.length != 0 || isLodding }}">
       <view wx:for="{{list}}" wx:key="{{index}}" data-id="{{item._id}}" data-idx="{{index}}" class='list-table' bindtap='lookTripDetails'>
@@ -58,7 +58,7 @@
       <view class='trip'>
         <view class='set-out'>
           <text class='label'>时间：</text>
-          <text class='setOut-time'>{{dateUtil.dateFormat(item.exactDate)}}</text>
+          <text class='setOut-time'>{{item.createdTime}} {{item.exactTime}}</text>
         </view>
         <view class='route-line'>
           <text class='label'>起点：</text>
@@ -115,21 +115,23 @@
     <!-- 人找车 -->
     <view class='rc blod-view {{status}}'>
       <navigator class='navigator' url='/pages/peopleLookCars/peopleLookCars'>
-        <image class='img' src='../../images/icon/rc.png'></image>
+        找车
+        <!-- <image class='img' src='../../images/icon/rc.png'></image> -->
       </navigator>
     </view>
     <!-- 车找人 -->
     <view class='cr blod-view {{status}}'>
       <navigator class='navigator' url='/pages/carsLookPeople/carLoolPeople'>
-        <image class='img' src='../../images/icon/cr.png'></image>
+        找人
+        <!-- <image class='img' src='../../images/icon/cr.png'></image> -->
       </navigator>
     </view>
     <!-- 爆料路况 -->
-    <view class='bl blod-view {{status}}'>
+    <!-- <view class='bl blod-view {{status}}'>
       <navigator class='navigator' url='/pages/publishRoadInfo/publishRoadInfo'>
         <image class='img' src='../../images/icon/pl.png'></image>
       </navigator>
-    </view>
+    </view> -->
   </view>
 
 </view>

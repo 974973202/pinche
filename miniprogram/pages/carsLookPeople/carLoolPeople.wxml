@@ -21,7 +21,7 @@ title="车找人"
           </view>
           <view class='text-view'>
             <text class='label'>时间</text>
-            <text class='text'>{{item.exactDateTag}}—{{item.exactTime}}</text>
+            <text class='text'>{{item.createdTime}} {{item.exactTime}}</text>
           </view>
         </view>
         <view class='item'>
@@ -46,9 +46,9 @@ title="车找人"
         </view>
         <view class='item'>
           <view class='text-view'>
-            <text class='label'>停车点</text>
+            <text class='label'>预算</text>
             <view class='cont'>
-              <text class='text'wx:for="{{item.tripsArray}}">{{item.name}}</text>
+              <text class='text'>{{item.budget}}元/人</text>
             </view>
           </view>
         </view>

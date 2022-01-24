@@ -1,10 +1,5 @@
-<!--miniprogram/pages/peopleLookCars/peopleLookCars.wxml-->
-<navigation
-id='Navigation'
-show-icon='{{showIcon}}'
-title="添加人找车信息"
->
-</navigation>
+<!-- miniprogram/pages/peopleLookCars/peopleLookCars.wxml -->
+<navigation id='Navigation' show-icon='{{showIcon}}' title="添加人找车信息"></navigation>
 <view class='container'>
   <!-- 方向 -->
   <view class='list-view'>
@@ -14,24 +9,17 @@ title="添加人找车信息"
         <view class='address-view'>
           <!-- 出发城市 -->
           <view class='picker'>
-            <picker
-              mode="region"
-              bindchange="startRegionChange" 
-              value="{{startRegion}}" 
-              custom-item="{{customItem}}">
+            <picker mode="region" data-name="startRegion" bindchange="regionChange" value="{{startRegion}}">
               {{startRegion[2]}}
             </picker>
           </view>
           <!-- 出行方向 -->
           <view class='dric-img'>
-            <image  src='../../images/icon/cars.png'></image>
+            <image src='../../images/icon/cars.png'></image>
           </view>
           <!-- 目的地城市 -->
           <view class="picker">
-            <picker 
-              mode="region"
-              bindchange="endRegionChange" 
-              value="{{endRegion}}">
+            <picker mode="region" data-name="endRegion" bindchange="regionChange" value="{{endRegion}}">
               {{endRegion[2]}}
             </picker>
           </view>
@@ -40,7 +28,6 @@ title="添加人找车信息"
       </view>
     </view>
   </view>
-
   <view class='list-view'>
     <!-- 时间 -->
     <view class='item'>
@@ -48,14 +35,15 @@ title="添加人找车信息"
       <view class='cont time-picker'>
         <!-- 日期选择器 -->
         <view class='picker'>
-          <picker bindchange="bindPickerChange" value="{{dateIndex}}" range="{{dateArray}}">
-              {{dateArray[dateIndex]}}
+          <picker mode="date" bindchange="bindPickerChange" value="{{dateIndex}}" start="{{dateIndex}}" end="2035-12-31">
+            <!-- {{dateArray[dateIndex]}} -->
+            {{dateIndex}}
           </picker>
         </view>
         <!-- 时间选择器 -->
         <view class='picker'>
-          <picker mode="time" value="{{exactTime}}" start="05:01" end="23:01" bindchange="bindTimeChange">
-              {{exactTime}}
+          <picker mode="time" value="{{exactTime}}" start="{{exactTime}}" end="23:59" bindchange="bindTimeChange">
+            {{exactTime}}
           </picker>
         </view>
       </view>
@@ -63,15 +51,15 @@ title="添加人找车信息"
     <!-- 上车地点 -->
     <view class='item'>
       <text class='label'>上车地点</text>
-      <view class='cont link' bindtap="chooseStartMapTap">
-        <text wx:if="{{!startLocation.name}}"  class='text placeholder'>请选择出发地点</text>
+      <view class='cont link' data-name="startLocation" bindtap="getLocation">
+        <text wx:if="{{!startLocation.name}}" class='text placeholder'>请选择出发地点</text>
         <text wx:else class='text'>{{startLocation.name}}</text>
       </view>
     </view>
     <!-- 下车地点 -->
     <view class='item'>
       <text class='label'>下车地点</text>
-      <view class='cont link' bindtap="chooseEndtMapTap">
+      <view class='cont link' data-name="endLocation" bindtap="getLocation">
         <text wx:if="{{!endLocation.name}}" class='text placeholder'>请选择到达地点</text>
         <text wx:else class='text'>{{endLocation.name}}</text>
       </view>
@@ -81,7 +69,7 @@ title="添加人找车信息"
       <text class='label'>人数</text>
       <view class='cont'>
         <view class='input-view'>
-          <input type="number" bindinput="inputedit" data-name="peopleNumber" placeholder='输入拼车人数' value='{{peopleNumber}}'/>
+          <input type="number" bindinput="inputedit" data-name="peopleNumber" placeholder='输入拼车人数' value='{{peopleNumber}}' />
           <text class='text'>人</text>
         </view>
       </view>
@@ -91,7 +79,7 @@ title="添加人找车信息"
       <text class='label'>联系电话</text>
       <view class='cont'>
         <view class='input-view'>
-          <input type="number" bindinput="inputedit" data-name="phoneNumber" placeholder='输入手机号' value='{{phoneNumber}}'/>
+          <input type="number" bindinput="inputedit" data-name="phoneNumber" placeholder='输入手机号' value='{{phoneNumber}}' />
           <text class='text'>人</text>
         </view>
       </view>
@@ -101,7 +89,7 @@ title="添加人找车信息"
       <text class='label'>预算</text>
       <view class='cont price'>
         <view class='input-view'>
-          <input type="number" bindinput="inputedit" data-name="budget" placeholder='输入预算金额' value='{{budget}}'/>
+          <input type="number" bindinput="inputedit" data-name="budget" placeholder='输入预算金额' value='{{budget}}' />
           <text class='text'>元/人</text>
         </view>
         <text class='tips'>*预算 ≠ 实际结算金额，请与乘客协商*</text>
@@ -111,11 +99,10 @@ title="添加人找车信息"
     <view class='item'>
       <text class='label'>备注</text>
       <view class='cont price'>
-        <textarea class='remark' placeholder="请输入..." value='{{remarks}}'/>
+        <textarea class='remark' placeholder="请输入..." value='{{remarks}}' />
       </view>
     </view>
   </view>
-
   <!-- 发起拼车 -->
   <view class='submit-btn' bindtap='submitTap'>添加</view>
 </view>

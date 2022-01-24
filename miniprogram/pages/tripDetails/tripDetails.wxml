@@ -43,10 +43,10 @@
             <text class='text'>{{endLocation.name}}</text>
           </view>
         </view>
-        <view class='item'>
+        <!-- 停车地点 -->
+        <!-- <view class='item'>
           <text class='label'>停车地点</text>
           <view class='cont trips'>
-            <!-- 停车地点 -->
             <view class='trips-item' wx:for="{{tripsArray}}" wx:key = "index">
               <view class='name'>
                 <text>{{item.name}}</text>
@@ -56,7 +56,7 @@
               </view>
             </view>
           </view>
-        </view>
+        </view> -->
         <view class='item'>
           <text class='label'>剩余座位</text>
           <text class='text'>{{peopleNumber}} 个</text>

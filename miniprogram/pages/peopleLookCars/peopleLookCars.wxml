@@ -14,7 +14,7 @@ title="人找车"
           <view class='text-item'>
             <text class='label'>出发时间</text>
             <view class='time cont'>
-              <text class='text'>{{item.exactDateTag}} -- {{item.exactTime}}</text>
+              <text class='text'>{{item.createdTime}} -- {{item.exactTime}}</text>
             </view>
           </view>
           <view class='text-item'>
@@ -58,7 +58,8 @@ title="人找车"
   <!-- 发起拼车 -->
   <view class='submit-btn'>
     <navigator class='navigator' url='/pages/NewCarSearch/NewCarSearch'>
-        新增出行信息
+        <!-- 新增出行信息 -->
+        发起拼车
     </navigator>
   </view>
 </view>

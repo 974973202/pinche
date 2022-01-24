@@ -39,7 +39,7 @@ Page({
     //终点***
     endLocation:{},
     //路线图***
-    tripsArray: [],
+    // tripsArray: [],
     //人数***
     peopleNumber: '',
     //联系电话
@@ -60,7 +60,7 @@ Page({
       title: '加载中...',
     });
     wx.getLocation({
-      type:'wgs84',
+      type:'gcj02',
       success: function(res) {
         if(res && res.longitude){
           console.log(res);
@@ -114,7 +114,7 @@ Page({
           //终点***
           endLocation: data.endLocation,
           //路线图***
-          tripsArray: data.tripsArray,
+          // tripsArray: data.tripsArray,
           //人数***
           peopleNumber: data.peopleNumber,
           //联系电话
@@ -131,7 +131,7 @@ Page({
 
         wx.hideLoading();
       },
-      fail: console.error
+      fail: wx.hideLoading()
     });
   },
   
@@ -143,7 +143,7 @@ Page({
     //将起点+停车点+终点 拼接在一个数组
     let markerArray = [];
     markerArray.push(_this.data.startLocation);
-    markerArray = markerArray.concat(_this.data.tripsArray);
+    // markerArray = markerArray.concat(_this.data.tripsArray);
     markerArray.push(_this.data.endLocation);
 
 
@@ -220,30 +220,28 @@ Page({
   /**
    * 查看地图坐标
    */
-  openLocationTap:function(e){
-    let _this = this;
-    let idx = e.currentTarget.dataset.idx;
-    let item = _this.data.tripsArray[idx];
-    console.log('idx:'+idx);
-    //获取位置授权
-    wx.getLocation({
-      type: 'wgs84',
-      success: function (res) {
-        if (res && res.longitude) {
-          console.log(res);
-          //获取当前经纬度
-          wx.getLocation({
-            success: function (res) {
-              console.log(res);
-              //打开微信内置地图
-              wx.openLocation(item)
-            },
-            fail: console.error
-          })
-        }
-      },
-    });
-  },
+  // openLocationTap:function(e){
+  //   let _this = this;
+  //   let idx = e.currentTarget.dataset.idx;
+  //   let item = _this.data.tripsArray[idx];
+  //   console.log('idx:'+idx);
+  //   //获取位置授权
+  //   wx.getSetting({
+  //     // type: 'gcj02',
+  //     success: function (res) {
+  //       console.log(res);
+  //       //获取当前经纬度
+  //       wx.getLocation({
+  //         success: function (res) {
+  //           console.log(res);
+  //           //打开微信内置地图
+  //           wx.openLocation(item)
+  //         },
+  //         fail: console.error
+  //       })
+  //     },
+  //   });
+  // },
   /**
    * 拨打电话
    */
@@ -274,17 +272,17 @@ Page({
    */
   onShareAppMessage: function (ops) {
     let _this = this;
-    let desc = '';
-    _this.data.tripsArray.map(n => {
-      desc += '-'+n.name;
-    }); 
+    // let desc = '';
+    // _this.data.tripsArray.map(n => {
+    //   desc += '-'+n.name;
+    // }); 
     if (ops.from === 'button') {
       // 来自页面内转发按钮
       console.log(ops.target)
     }
     return {
       title: '车找人:' + _this.data.startLocation.name + '—>' + this.data.endLocation.name,
-      desc: '途径:' + desc,
+      // desc: '途径:' + desc,
       path: '/pages/tripDetails/tripDetails?id=' + _this.data.id,
       success: function (res) {
         // 需要在页面onLoad()事件中实现接口

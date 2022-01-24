@@ -1,12 +1,12 @@
 <!--miniprogram/pages/ExpressNews/ExpressNews.wxml-->
 <view  style="height:{{titleBarHeight}}px;padding-top:{{statusBarHeight}}px">
   <view class="header" style="height:{{titleBarHeight}}px;padding-top:{{statusBarHeight}}px">
-    <navigator class='navigator' url='/pages/publishRoadInfo/publishRoadInfo'>
+    <!-- <navigator class='navigator' url='/pages/publishRoadInfo/publishRoadInfo'>
       <view class='title'>
         <image src='../../images/icon/note.png'></image>
         <text>写点什么...</text>
       </view>
-    </navigator>
+    </navigator> -->
   </view>
 </view>
 

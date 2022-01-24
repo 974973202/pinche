@@ -10,7 +10,7 @@ Page({
     statusBarHeight: 0,//状态栏高度
     titleBarHeight: 0,//标题栏高度
     navBarHeight: 0,//导航栏高度
-    navData: ['人找车', '车找人', '查公交','货找车', '车找货'],
+    navData: ['车找人', '人找车'],
     currentNavTab: 0,//当前状态
 
     dnName:'CarOwnerRecord',//查询集合列表，默认人找车
@@ -43,8 +43,9 @@ Page({
   /**
    * 
    */
-  onLoad: function() {
-    let _this = this;
+  onLoad() {
+    console.error('index onLoad')
+
     //是否连接数据库
     if (!wx.cloud) {
       wx.redirectTo({
@@ -59,29 +60,39 @@ Page({
         url: '/pages/authorize/authorize',
       })
     };
-    _this.onGetSystemInfo();
-    _this.onGetOpenid();
+    this.onGetSystemInfo();
+    // this.onGetOpenid();
     wx.showLoading({
       title: '加载中...',
     });
-    _this.onGetHotNews(10);//获取热点新闻
-    _this.addData(1, _this.data.currentNavTab);//第一个参数页数，第二个参数分类
+    // this.onGetHotNews(10);//获取热点新闻
   },
-
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-    
+  onShow () {
+    this.addData(1, this.data.currentNavTab);//第一个参数页数，第二个参数分类
+    console.error('index onShow')
+    this.setData({
+      status: ''
+    });
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide () {
+    this.setData({
+      status: ''
+    });
   },
   /**
    * 获取设备信息
    */
   onGetSystemInfo:function(){
-    let _this = this
     // 因为很多地方都需要用到，所有保存到全局对象中
     if (app.globalData.statusBarHeight && app.globalData.titleBarHeight)    {
-      _this.setData({
+      this.setData({
         statusBarHeight: app.globalData.statusBarHeight,
         titleBarHeight: app.globalData.titleBarHeight,
         navBarHeight: app.globalData.navBarHeight,
@@ -89,9 +100,8 @@ Page({
         windowWidth: app.globalData.windowWidth
       });
     } else {
-      console.log(11111);
       wx.getSystemInfo({
-        success: function (res) {
+        success: (res) => {
           console.log(res);
           if (!app.globalData) {
             app.globalData = {}
@@ -102,7 +112,7 @@ Page({
           app.globalData.windowHeight = res.windowHeight;
           app.globalData.windowWidth = res.windowWidth;
           app.globalData.navBarHeight = res.statusBarHeight+44;
-          _this.setData({
+          this.setData({
             statusBarHeight: app.globalData.statusBarHeight,
             titleBarHeight: app.globalData.titleBarHeight,
             navBarHeight: app.globalData.navBarHeight,
@@ -110,8 +120,8 @@ Page({
             windowWidth: app.globalData.windowWidth
           });
         },
-        failure() {
-          that.setData({
+        failure:() => {
+          this.setData({
             statusBarHeight: 0,
             titleBarHeight: 0
           });
@@ -123,103 +133,89 @@ Page({
   /**
    * 获取_openid
    */
-  onGetOpenid: function () {
+  onGetOpenid() {
     // 调用云函数
     wx.cloud.callFunction({
       name: 'login',
-      data: {},
-      success: res => {
-        console.log('xxxx', res)
-        app.globalData.openid = res.result.openid
-      },
-      fail: err => {
-      }
+      // data: {},
+      // success: res => {
+      //   console.error('xxxx', res)
+      //   app.globalData.openid = res.result.openid
+      // },
+      // fail: err => {
+      //   console.error('xxxx', err)
+
+      // }
+    }).then((res) => {
+      console.error('xxxx', res)
+      app.globalData.openid = res.result.openid
+    }).catch(err => {
+      // handle error
+      console.error('errerr', err)
     })
   },
   
   /**
    * 获取热点快报
    */
-  onGetHotNews:function(n){
-    let _this = this;
-    db.collection('RoadInfo').where({
-      status: _.neq(0)
-    })
-    .orderBy('sendTime','desc')
-    .limit(n)
-    .get({
-      success: function (res) {
-        console.log(res.data);
-        let list = res.data
-        _this.setData({
-          hotList: list
-        });
-      },
-      fail: console.error
-    })
-  },
+  // onGetHotNews(n){
+  //   db.collection('RoadInfo').where({
+  //     status: _.neq(0)
+  //   })
+  //   .orderBy('sendTime','desc')
+  //   .limit(n)
+  //   .get({
+  //     success (res) {
+  //       console.log(res.data);
+  //       let list = res.data
+  //       this.setData({
+  //         hotList: list
+  //       });
+  //     },
+  //     fail: console.error
+  //   })
+  // },
   
   /**
    * 导航列表点击
    */
   switchNav(event) {
-    let _this = this;
+    const { currentNavTab } = this.data;
     let cur = event.currentTarget.dataset.current;
+    console.log(cur, 'eventevent', currentNavTab)
     //每个tab选项宽度占1/5
-    let singleNavWidth = this.data.windowWidth / 5;
+    // let singleNavWidth = this.data.windowWidth / 5;
     //tab选项居中                            
-    _this.setData({
-      navScrollLeft: (cur - 2) * singleNavWidth
-    })
-    if (_this.data.currentNavTab == cur) {
+    // this.setData({
+    //   navScrollLeft: (cur - 2) * singleNavWidth
+    // })
+    if (currentNavTab == cur) {
       return false;
     } else {
-      if (cur==2){
-        wx.navigateTo({
-          url: '/pages/LookTransit/LookTransit',
-        });
-        return false;
-      };
-      if (cur == 3 || cur == 4)
-      {
-        wx.showModal({
-          title: '我与三人行',
-          content: '该功能暂未开放，敬请期待',
-        });
-        return false;
-      } 
-
       this.setData({
         currentNavTab: cur,
+        pageIndex: 1,
         list:[]
       });
       //加载数据
-      _this.addData(1,_this.data.currentNavTab);
+      this.addData(1, cur);
     }
   },
   
   /**
    * 获取有效的拼车信息
    */
-  addData: function (n,s) {//第一个参数页数，第二个参数分类
-    let _this = this;
-    let startTime = _this.startTime();
-    let endTime = _this.endTime();
+  addData(n,s) {//第一个参数页数，第二个参数分类
     switch (s){
       case 0:
-        _this.setData({
+        this.setData({
           dnName : "CarOwnerRecord"
         });
         break;
       case 1:
-        _this.setData({
+        this.setData({
           dnName : "PassengersRecord"
         })
-        break;
-      case 4:
-        // _this.setData({
-        //   dnName : ""
-        // })
         break;
     }
     wx.showLoading({
@@ -229,19 +225,19 @@ Page({
     wx.cloud.callFunction({
       name: 'queryInfo',
       data:{
-        dbName: _this.data.dnName,
+        dbName: this.data.dnName,
         pageIndex:n,
-        pageSize:15,
+        pageSize:5,
         filter:{},
-        startTime: _this.startTime(),
-        endTime: _this.endTime()
+        startTime: new Date().getTime(),
+        // endTime: this.endTime()
       }
     }).then(res => {
-      console.log(res);
-      _this.setData({
+      console.log(res, this.data.pageIndex);
+      this.setData({
         isLodding: false,
         list: res.result.data,
-        pageIndex: _this.data.pageIndex+1,
+        pageIndex: this.data.pageIndex+1,
         hasMore: res.result.hasMore
       });
       wx.hideLoading();
@@ -251,18 +247,16 @@ Page({
   /**
    * 下拉刷新
    */
-  onPullDownRefresh:function(){
-    let _this = this;
-    
+  onPullDownRefresh(){
     //显示刷新图标
     wx.showLoading({
       title: '加载中...',
     });
-    _this.setData({
+    this.setData({
       pageIndex:1
     });
-    _this.onGetHotNews(10);//获取热点新闻
-    _this.addData(1,_this.data.currentNavTab);
+    // this.onGetHotNews(10);//获取热点新闻
+    this.addData(1,this.data.currentNavTab);
     //停止刷新，页面回单
     wx.stopPullDownRefresh();
   },
@@ -270,28 +264,26 @@ Page({
   /**
    * 上拉加载更多
    */
-  onReachBottom:function(){
-    let _this = this;
-    if(!_this.data.hasMore) return;//没有下一页了
+  onReachBottom(){
+    console.log(this.data.pageIndex, 'this.data.pageIndex')
+    if(!this.data.hasMore) return;//没有下一页了
 
-    let startTime = _this.startTime();
-    let endTime = _this.endTime();
     //按照时间查询，规则开始当前时间60分钟前 到明天24：00；
     wx.cloud.callFunction({
       name: 'queryInfo',
       data: {
-        dbName: _this.data.dnName,
-        pageIndex: _this.data.pageIndex,
-        pageSize: 15,
+        dbName: this.data.dnName,
+        pageIndex: this.data.pageIndex,
+        pageSize: 5,
         filter:{},
-        startTime: _this.startTime(),
-        endTime: _this.endTime()
+        startTime: new Date().getTime(),
+        // endTime: this.endTime()
       }
     }).then(res => {
       console.log(res);
-      _this.setData({
-        list: _this.data.list.concat(res.result.data),
-        pageIndex: _this.data.pageIndex+1,
+      this.setData({
+        list: this.data.list.concat(res.result.data),
+        pageIndex: this.data.pageIndex+1,
         hasMore: res.result.hasMore
       });
     });
@@ -309,7 +301,7 @@ Page({
   /**
    * 轮播图的切换事件
    */
-  swiperChange: function (e) {
+  swiperChange (e) {
     this.setData({
       swiperCurrent: e.detail.current
     })
@@ -318,11 +310,10 @@ Page({
   /**
    * 轮播图点击事件
    */
-  swipclick: function (e) {
+  swipclick (e) {
     console.log(this.data.swiperCurrent);
-    let _this = this;
-    let _index = _this.data.swiperCurrent;
-    let str = _this.data.webUrl[_index];
+    let _index = this.data.swiperCurrent;
+    let str = this.data.webUrl[_index];
     wx.navigateTo({
       url: '../../pages/webViewPage/webViewPage?url=' + str+'&name=推荐',
     });
@@ -331,7 +322,7 @@ Page({
   /**
    * 热点新闻切换
    */
-  hotSwiperChange:function(e){
+  hotSwiperChange(e){
     this.setData({
       hotCurrent: e.detail.current
     });
@@ -340,10 +331,9 @@ Page({
   /**
    * 查看热点新闻
    */
-  hotNewsClick:function(e){
-    let _this = this;
-    let _index = _this.data.hotCurrent;
-    let id = _this.data.hotList[_index]._id;
+  hotNewsClick(e){
+    let _index = this.data.hotCurrent;
+    let id = this.data.hotList[_index]._id;
     wx.navigateTo({
       url: '../../pages/ArticleDetails/ArticleDetails?path=index&id=' + id,
     })
@@ -352,11 +342,10 @@ Page({
   /**
    * 查看行程详情
    */
-  lookTripDetails:function(e){
-    let _this = this;
+  lookTripDetails(e){
     let id = e.currentTarget.dataset.id;
     let idx = e.currentTarget.dataset.idx;
-    let item = _this.data.list[idx];
+    let item = this.data.list[idx];
     console.log(item.tripsArray)
     if (item.tripsArray){
       wx.navigateTo({
@@ -368,35 +357,12 @@ Page({
       });
     }
   },
-  
-  /**
-   * 获取60分钟前时间戳
-   */
-  startTime:function(){
-    let day = new Date()
-    let strTime = day.getTime() - 1 * 60 * 60 * 1000;
-    console.log(strTime)
-    return strTime;
-  },
-  
-  /**
-   * 获取次日凌晨时间戳
-   */
-  endTime:function(){
-    // 获取当天 0 点的时间戳
-    let oneTime = new Date(new Date().setHours(0, 0, 0, 0)) / 1000;
-    //次日凌晨时间戳
-    let threeTime = oneTime + 86400 *2;
-    console.log(threeTime*1000)
-    return threeTime*1000;
-  },
 
   /**
    * 发布信息按钮动画
    */
-  trigger:function(){
-    let _this = this;
-    let active = _this.data.status;
+  trigger(){
+    let active = this.data.status;
     if(active == 'on'){
       this.setData({
         status : ''
@@ -408,27 +374,11 @@ Page({
     }
   },
   // 隐藏遮罩层  
-  hideModal: function () {
+  hideModal () {
     this.setData({
       status: ''
     });
   },
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-    this.setData({
-      status: ''
-    });
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-    this.setData({
-      status: ''
-    });
-  },
+  
   
 })

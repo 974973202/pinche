@@ -1,0 +1,47 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "id": -1,
+          "name": "db guide",
+          "pathName": "pages/databaseGuide/databaseGuide",
+          "query": ""
+        },
+        {
+          "name": "pages/peopleLookCars/peopleLookCars",
+          "pathName": "pages/peopleLookCars/peopleLookCars",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/NewCarSearch/NewCarSearch",
+          "pathName": "pages/NewCarSearch/NewCarSearch",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/carsLookPeople/carLoolPeople",
+          "pathName": "pages/carsLookPeople/carLoolPeople",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/NewPepleSearch/NewPepleSearch",
+          "pathName": "pages/NewPepleSearch/NewPepleSearch",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

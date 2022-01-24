@@ -11,8 +11,8 @@ Page({
     titleBarHeight: 0,//标题栏高度
     navBarHeight: 0,//导航栏高度
 
-    startRegion: ['河北省', '廊坊市', '固安县'],
-    endRegion: ['北京市', '北京市', '大兴区'],
+    startRegion: ["福建省", "龙岩市", "上杭县"],
+    endRegion: ["福建省", "龙岩市", "上杭县"],
     //具体日期
     typeArray: ['人找车', '车找人'],
     objectTypeArray: [
@@ -49,7 +49,7 @@ Page({
 
     let _start = _this.data.startRegion;//出发城市
     let _end = _this.data.endRegion;//到大城市
-    _this.addData(1);//第一个参数页数
+    // _this.addData(1);//第一个参数页数
   },
 
   /**
@@ -105,19 +105,19 @@ Page({
   /**
    * 下拉刷新
    */
-  onPullDownRefresh: function () {
-    wx.showLoading({
-      title: '加载中...',
-    });
-    let _this = this;
-    _this.setData({
-      pageIndex: 1
-    });
-    _this.addData(1);
+  // onPullDownRefresh: function () {
+  //   wx.showLoading({
+  //     title: '加载中...',
+  //   });
+  //   let _this = this;
+  //   _this.setData({
+  //     pageIndex: 1
+  //   });
+  //   _this.addData(1);
 
-    //停止下拉动作
-    wx.stopPullDownRefresh();
-  },
+  //   //停止下拉动作
+  //   wx.stopPullDownRefresh();
+  // },
   
   /**
    * 上拉加载更多

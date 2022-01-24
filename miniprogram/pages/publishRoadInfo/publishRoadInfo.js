@@ -47,18 +47,18 @@ Page({
   onGetLocation:function(){
     let _this = this;
     wx.getLocation({
-      type: 'wgs84',
+      type: 'gcj02',
       success: function (res) {
         if (res && res.longitude) {
-          console.log(res);
+          console.warn(res, 'resressss');
           // 将坐标转换成位置
           qqmapsdk.reverseGeocoder({
             location: {
               latitude: res.latitude,
               longitude: res.longitude
             },
-            success: function (json) {
-              console.log(json);
+            success: (json) => {
+              console.warn(json, 'jsonsjjjss');
               _this.data.location.latitude = json.result.location.lat;
               _this.data.location.longitude = json.result.location.lng;
               _this.data.location.address = json.result.address;

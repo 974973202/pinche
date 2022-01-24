@@ -59,10 +59,10 @@ Page({
       title: '加载中...',
     });
     wx.getLocation({
-      type: 'wgs84',
+      type: 'gcj02',
       success: function (res) {
         if (res && res.longitude) {
-          console.log(res);
+          console.error(res);
           _this.setData({
             latitude: res.latitude,
             longitude: res.longitude,
@@ -130,20 +130,19 @@ Page({
 
         wx.hideLoading();
       },
-      fail: console.error
+      fail: wx.hideLoading()
     });
   },
   
   /**
    * 创建marker
    */
-  createdMarker: function (dataList) {
-    let _this = this;
+  createdMarker: (dataList) => {
     //将起点+停车点+终点 拼接在一个数组
     let markerArray = [];
-    markerArray.push(_this.data.startLocation);
-    markerArray = markerArray.concat(_this.data.tripsArray);
-    markerArray.push(_this.data.endLocation);
+    markerArray.push(this.data.startLocation);
+    markerArray = markerArray.concat(this.data.tripsArray);
+    markerArray.push(this.data.endLocation);
 
 
     let currentMarker = [];
@@ -223,6 +222,7 @@ Page({
    * 查看地图坐标
    */
   openLocationTap: function (e) {
+    console.log(e)
     let _this = this;
     let str = e.currentTarget.dataset.dic;
     let item = {};
@@ -232,11 +232,11 @@ Page({
       item = _this.data.endLocation;
     }
     //获取位置授权
-    wx.getLocation({
-      type: 'wgs84',
-      success: function (res) {
-        if (res && res.longitude) {
-          console.log(res);
+    wx.getSetting({
+      // type: 'gcj02',
+      success: (res) => {
+        console.log(res, 'res')
+        // if (res && res.longitude) {
           //获取当前经纬度
           wx.getLocation({
             success: function (res) {
@@ -246,8 +246,9 @@ Page({
             },
             fail: console.error
           })
-        }
+        // }
       },
+      fail: console.error
     });
   },
   /**
