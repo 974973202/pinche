@@ -2,9 +2,10 @@
 <wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs>
 
 <navigation
-id='Navigation'
-show-icon='{{showIcon}}'
-title="搜索"
+  id='Navigation'
+  show-icon='{{showIcon}}'
+  title="搜索"
+  open-type="navigateBack"
 >
 </navigation>
 <view class='content'>

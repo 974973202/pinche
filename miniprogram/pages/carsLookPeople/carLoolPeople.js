@@ -1,7 +1,7 @@
 // miniprogram/pages/peopleLookCars/peopleLookCars.js
 const app = getApp();
 const db = wx.cloud.database();
-const { tsFormatTime } = require("../../utils/utils");
+const { tsFormatTime, generateTimeReqestNumber } = require("../../utils/utils");
 
 Page({
   /**
@@ -44,13 +44,12 @@ Page({
         _openid: openid,
         status: _.neq(1),
       })
-      .orderBy("createdTime", "desc")
+      .orderBy("exactDate", "desc")
       .get({
         success: function (res) {
           console.log("车找人列表数据", res.data);
           res?.data?.forEach((ele) => {
-            console.log(ele);
-            ele.createdTime = tsFormatTime(ele.createdTime);
+            ele.exactDate = generateTimeReqestNumber(ele.exactDate);
           });
           wx.hideLoading();
           _this.setData({
@@ -72,56 +71,54 @@ Page({
     let params = this.data.list[idx];
     if (!this.isValid(params.exactDate)) return false;
     //修改出发时间
-    // console.log(params.exactDateTag)
     // params.exactDateTag == '今天' ? this.getTodyTime(params.exactTime) : this.getTomorrowTime(params.exactTime);
     //存放时间戳
     //添加数据库时 _id、_openid不能存在否则报错
     delete params._id;
     delete params._openid;
+    
+    //判断是否有效
+    // delete params.exactDateTag;
+    
+    //添加个人信息
+    params.userInfo = wx.getStorageSync('userInfo');
     console.log(params);
 
-    //判断是否有效
+    // wx.showModal({
+    //   title: "车找人",
+    //   content: "确定发布这条信息？",
+    //   success: (res) => {
+    //     if (res.confirm) {
+    //       console.log("ok");
+    //       // 操作数据库
+    //       db.collection("CarOwnerRecord").add({
+    //         data: params,
+    //         success: function (res) {
+    //           console.log(res);
+    //           //发布成功
+    //           wx.showToast({
+    //             title: "发布成功",
+    //             icon: "success",
+    //             duration: 2000,
+    //           });
+    //           const pages = getCurrentPages();
+    //           var prevPage = pages[pages.length - 2];
+    //           prevPage.setData({
+    //             currentNavTab: 0,
+    //             pageIndex: 1,
+    //           });
 
-    // delete params.exactDateTag;
-
-    //添加个人信息
-    params.userInfo = app.globalData.userInfo;
-
-    wx.showModal({
-      title: "车找人",
-      content: "确定发布这条信息？",
-      success: (res) => {
-        if (res.confirm) {
-          console.log("ok");
-          // 操作数据库
-          db.collection("CarOwnerRecord").add({
-            data: params,
-            success: function (res) {
-              console.log(res);
-              //发布成功
-              wx.showToast({
-                title: "发布成功",
-                icon: "success",
-                duration: 2000,
-              });
-              const pages = getCurrentPages();
-              var prevPage = pages[pages.length - 2];
-              prevPage.setData({
-                currentNavTab: 0,
-                pageIndex:1
-              });
-
-              wx.switchTab({
-                url: "/pages/index/index",
-              });
-            },
-            fail: console.error,
-          });
-        } else if (res.cancel) {
-          console.log("cancel");
-        }
-      },
-    });
+    //           wx.switchTab({
+    //             url: "/pages/index/index",
+    //           });
+    //         },
+    //         fail: console.error,
+    //       });
+    //     } else if (res.cancel) {
+    //       console.log("cancel");
+    //     }
+    //   },
+    // });
   },
 
   /**
@@ -180,17 +177,72 @@ Page({
    * 校验发布时是否有效
    */
   isValid(timeStr) {
-    let day = new Date();
-
-    if (timeStr >= day.getTime()) {
+    // console.log(new Date(timeStr).getTime(), new Date().getTime())
+    if (new Date(timeStr).getTime() >= new Date().getTime()) {
       return true;
     } else {
       wx.showToast({
-        title: "出发时间已超时,请重新设置",
+        title: "出行时间已超时,请重新设置",
         icon: "error",
         duration: 2000,
       });
       return false;
     }
   },
+
+  onWatchDemo() {
+    // if (!this.data.endPoint) {
+    //   wx.showToast({
+    //     title: "请选择终点位置",
+    //     icon: "none",
+    //     duration: 1500,
+    //     mask: false,
+    //   });
+    //   return;
+    // }
+    const key = this.data.customStyles[this.data.keyIndex].value;
+    const referer = REFERER;
+    const endPoint = JSON.stringify(this.data.endPoint);
+    const startPoint = this.data.startPoint
+      ? JSON.stringify(this.data.startPoint)
+      : "";
+    const mode = this.data.modes[this.data.modeIndex].value;
+    const navigation = this.data.isNavigate ? 1 : 0;
+    if (!key || !referer) {
+      console.error("请输入有效的key和referer");
+      return;
+    }
+    let url =
+      "plugin://routePlan/index?key=" +
+      key +
+      "&referer=" +
+      referer +
+      "&endPoint=" +
+      endPoint +
+      "&mode=" +
+      mode +
+      "&navigation=" +
+      navigation +
+      "&themeColor=" +
+      this.data.themeColor;
+    if (startPoint) {
+      url += "&startPoint=" + startPoint;
+    }
+    wx.navigateTo({
+      url,
+    });
+  },
+
+  async addPublic() {
+    const userInfo = wx.getStorageSync('userInfo')
+    console.log(userInfo, 'userInfo')
+    if(!userInfo) {
+      const res = await wx.getUserProfile({
+        desc: '用于完善个人信息'
+      });
+      wx.setStorageSync('userInfo', res.userInfo);
+    }
+    wx.navigateTo({ url: '/pages/NewPepleSearch/NewPepleSearch' })
+    // url='/pages/NewPepleSearch/NewPepleSearch'
+  }
 });

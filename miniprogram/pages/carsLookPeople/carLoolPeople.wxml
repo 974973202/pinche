@@ -20,8 +20,8 @@ title="车找人"
             <text class='text'>{{item.startRegion[2]}}—{{item.endRegion[2]}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>时间</text>
-            <text class='text'>{{item.createdTime}} {{item.exactTime}}</text>
+            <text class='label'>出行时间</text>
+            <text class='text'>{{item.exactDate}}</text>
           </view>
         </view>
         <view class='item'>
@@ -68,8 +68,8 @@ title="车找人"
 
   <!-- 发起拼车 -->
   <view class='submit-btn'>
-    <navigator class='navigator' url='/pages/NewPepleSearch/NewPepleSearch'>
+    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
         新增出行信息
-    </navigator>
+    </button>
   </view>
 </view>

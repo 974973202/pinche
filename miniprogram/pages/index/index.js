@@ -2,6 +2,8 @@
 const app = getApp()
 const db = wx.cloud.database();
 const _ = db.command;
+const { tsFormatTime, exactTime, generateTimeReqestNumber } = require("../../utils/utils");
+
 
 Page({
   data: {
@@ -44,7 +46,6 @@ Page({
    * 
    */
   onLoad() {
-    console.error('index onLoad')
 
     //是否连接数据库
     if (!wx.cloud) {
@@ -53,18 +54,7 @@ Page({
       })
       return
     }
-    console.log(app.globalData.userInfo);
-    //是否授权登录
-    if(!app.globalData.userInfo){
-      wx.redirectTo({
-        url: '/pages/authorize/authorize',
-      })
-    };
     this.onGetSystemInfo();
-    // this.onGetOpenid();
-    wx.showLoading({
-      title: '加载中...',
-    });
     // this.onGetHotNews(10);//获取热点新闻
   },
   /**
@@ -72,7 +62,6 @@ Page({
    */
   onShow () {
     this.addData(1, this.data.currentNavTab);//第一个参数页数，第二个参数分类
-    console.error('index onShow')
     this.setData({
       status: ''
     });
@@ -128,31 +117,6 @@ Page({
         }
       })
     }
-  },
-  
-  /**
-   * 获取_openid
-   */
-  onGetOpenid() {
-    // 调用云函数
-    wx.cloud.callFunction({
-      name: 'login',
-      // data: {},
-      // success: res => {
-      //   console.error('xxxx', res)
-      //   app.globalData.openid = res.result.openid
-      // },
-      // fail: err => {
-      //   console.error('xxxx', err)
-
-      // }
-    }).then((res) => {
-      console.error('xxxx', res)
-      app.globalData.openid = res.result.openid
-    }).catch(err => {
-      // handle error
-      console.error('errerr', err)
-    })
   },
   
   /**
@@ -221,7 +185,6 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    //按照时间查询，规则开始当前时间60分钟前 到明天24：00；
     wx.cloud.callFunction({
       name: 'queryInfo',
       data:{
@@ -233,7 +196,8 @@ Page({
         // endTime: this.endTime()
       }
     }).then(res => {
-      console.log(res, this.data.pageIndex);
+      res.result.data.forEach(ele => ele.exactDate = generateTimeReqestNumber(ele.exactDate))
+      console.log(res.result.data);
       this.setData({
         isLodding: false,
         list: res.result.data,
@@ -346,8 +310,8 @@ Page({
     let id = e.currentTarget.dataset.id;
     let idx = e.currentTarget.dataset.idx;
     let item = this.data.list[idx];
-    console.log(item.tripsArray)
-    if (item.tripsArray){
+    console.log(item)
+    if (item.isSpeed){
       wx.navigateTo({
         url: '../../pages/tripDetails/tripDetails?id=' + id,
       });

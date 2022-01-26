@@ -3,7 +3,6 @@
     "pages/index/index",
     "pages/authorize/authorize",
     "pages/chooseLib/chooseLib",
-    "pages/passenger/passenger",
     "pages/carOwner/carOwner",
     "pages/myCenter/myCenter",
     "pages/peopleLookCars/peopleLookCars",
@@ -14,22 +13,24 @@
     "pages/passengersTripDetails/PassengersTripDetails",
     "pages/webViewPage/webViewPage",
     "pages/SearchPage/SearchPage",
-    "pages/publishRoadInfo/publishRoadInfo",
-    "pages/ArticleDetails/ArticleDetails",
     "pages/ExpressNews/ExpressNews",
-    "pages/ReleaseRecord/ReleaseRecord",
-    "pages/AboutUs/AboutUs",
-    "pages/LookTransit/LookTransit"
+    "pages/AboutUs/AboutUs"
   ],
   "permission": {
     "scope.userLocation": {
-      "desc": "请点击确认"
+      "desc": "你的位置信息将用于小程序定位"
+    }
+  },
+  "plugins": {
+    "routePlan": {
+      "version": "1.0.19",
+      "provider": "wx50b5593e81dd937a"
     }
   },
   "window": {
     "backgroundColor": "#0091ff",
     "navigationBarBackgroundColor": "#F6F6F6",
-    "navigationBarTitleText": "我与三人行",
+    "navigationBarTitleText": "XX拼车",
     "backgroundTextStyle": "light",
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"

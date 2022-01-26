@@ -15,6 +15,7 @@ App({
 
     this.globalData = {
       openid: -1,
+      userInfo: null,
     }
   },
 
@@ -24,9 +25,9 @@ App({
    onGetOpenid() {
     // 调用云函数
     wx.cloud.callFunction({
-      name: 'login',
+      name: 'getOpenid',
     }).then((res) => {
-      console.error('xxxx', res)
+      console.log('1234567', res)
       const openid = res.result.openid
       this.globalData.openid = openid
     }).catch(err => {

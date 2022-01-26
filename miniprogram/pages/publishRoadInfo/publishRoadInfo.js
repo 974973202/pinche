@@ -3,12 +3,12 @@ const app = getApp()
 const db = wx.cloud.database();
 
 // 引入SDK核心类
-var QQMapWX = require('../../utils/qqmap-wx-jssdk.min.js');
+// var QQMapWX = require('../../utils/qqmap-wx-jssdk.min.js');
 
-// 实例化API核心类
-var qqmapsdk = new QQMapWX({
-  key: 'PELBZ-ACHRK-JHUJL-A553S-2WYMF-VYBQO' // 必填
-});
+// // 实例化API核心类
+// var qqmapsdk = new QQMapWX({
+//   key: 'PELBZ-ACHRK-JHUJL-A553S-2WYMF-VYBQO' // 必填
+// });
 
 Page({
 

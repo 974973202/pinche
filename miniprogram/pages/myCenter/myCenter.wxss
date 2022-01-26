@@ -45,6 +45,21 @@ page {
   color: #656565;
 }
 
+.avatar-url {
+  width: 200rpx;
+  height: 200rpx;
+  display: block;
+  overflow: hidden;
+  border: 6rpx solid #fff;
+  border-radius: 50%;
+}
+
+.nickname {
+  font-size: 36rpx;
+  margin-top: 20rpx;
+  font-weight: 400;
+}
+
 .setting-btn{
   width: 60rpx;
   height: 60rpx;

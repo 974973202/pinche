@@ -17,7 +17,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    console.log(app.globalData)
     this.setData({
       statusBarHeight: app.globalData.statusBarHeight,//状态栏高度
       titleBarHeight: app.globalData.titleBarHeight,//标题栏高度
@@ -37,7 +36,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    console.log(app.globalData)
   },
 
   /**

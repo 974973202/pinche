@@ -11,7 +11,7 @@
     </view>
   </view>
   <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">
-    <block wx:for="{{navData}}" wx:for-index="idx" wx:for-item="navItem">
+    <block wx:for="{{navData}}" wx:key="index" wx:for-index="idx" wx:for-item="navItem">
       <view class='nav-item {{currentNavTab == idx ? "active" :""}}' data-current="{{idx}}" bindtap='switchNav'>{{navItem}}</view>
     </block>
   </scroll-view>
@@ -40,11 +40,15 @@
   </view> -->
   <!-- 内容 -->
   <view class='data-list' wx:if="{{list.length != 0 || isLodding }}">
-      <view wx:for="{{list}}" wx:key="{{index}}" data-id="{{item._id}}" data-idx="{{index}}" class='list-table' bindtap='lookTripDetails'>
+      <view wx:for="{{list}}" wx:key="index" data-id="{{item._id}}" data-idx="{{index}}" class='list-table' bindtap='lookTripDetails'>
       <!-- 顶部信息 -->
       <view class='top-view'>
         <!-- 头像+昵称 -->
         <view class='headImgName'>
+          <!-- <view class="img">
+            <open-data type="userAvatarUrl"></open-data>
+          </view>
+          <open-data type="userNickName" class="name"></open-data> -->
           <image class='img' src='{{item.userInfo.avatarUrl}}'></image>
           <text class='name'>{{item.userInfo.nickName}}</text>
         </view>
@@ -57,8 +61,8 @@
       <!-- 行车路线 -->
       <view class='trip'>
         <view class='set-out'>
-          <text class='label'>时间：</text>
-          <text class='setOut-time'>{{item.createdTime}} {{item.exactTime}}</text>
+          <text class='label'>出行时间：</text>
+          <text class='setOut-time'>{{item.exactDate}}</text>
         </view>
         <view class='route-line'>
           <text class='label'>起点：</text>

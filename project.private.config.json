@@ -39,6 +39,13 @@
         {
           "name": "pages/NewPepleSearch/NewPepleSearch",
           "pathName": "pages/NewPepleSearch/NewPepleSearch",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/tripDetails/tripDetails",
+          "pathName": "pages/tripDetails/tripDetails",
+          "query": "id=54ad1eea61eec3eb0a7ded0a7bf2e2df",
           "scene": null
         }
       ]

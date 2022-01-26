@@ -53,6 +53,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log(options)
     //获取用户当前位置
     let _this = this;
     wx.showLoading({
@@ -70,6 +71,7 @@ Page({
         }
       },
     });
+    console.log('------------------')
     //截取参数
     _this.setData({
       id: options.id
@@ -93,10 +95,11 @@ Page({
    * 加载数据
    */
   addData: function (id) {
+    console.log('========', id)
     let _this = this;
     db.collection('PassengersRecord').doc(id).get({
       success: function (res) {
-        console.log(res.data);
+        console.warn(res, '========');
         let data = res.data;
         _this.setData({
           userInfo: data.userInfo,

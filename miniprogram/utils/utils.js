@@ -229,8 +229,8 @@ const tsFormatTime = inputTime => {
   let date;
   if(inputTime) {
     // var time = parseInt(inputTime) * 1000;
-    // date = new Date(time);
-    date = inputTime
+    date = new Date(inputTime);
+    // date = inputTime
   } else {
     date = new Date();
   }
@@ -415,15 +415,15 @@ function pad2(n) {
   return n < 10 ? "0" + n : n;
 }
 
-function generateTimeReqestNumber() {
-  var date = new Date();
+function generateTimeReqestNumber(time) {
+  var date = new Date(time);
   return (
-    date.getFullYear().toString() +
-    pad2(date.getMonth() + 1) +
-    pad2(date.getDate()) +
-    pad2(date.getHours()) +
-    pad2(date.getMinutes()) +
-    pad2(date.getSeconds())
+    date.getFullYear().toString() + "-" +
+    pad2(date.getMonth() + 1) + "-" +
+    pad2(date.getDate()) + " " + 
+    pad2(date.getHours()) + ":" +
+    pad2(date.getMinutes())
+    // pad2(date.getSeconds())
   );
 }
 

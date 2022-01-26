@@ -10,7 +10,7 @@
     class='button {{active ? "active" :""}}'
     open-type='getUserInfo'
     lang='zh_CN'
-    bindgetuserinfo='bingGetUserInfo'>
+    bindtap='bingGetUserInfo'>
     开始体验
     </button>
   </view>

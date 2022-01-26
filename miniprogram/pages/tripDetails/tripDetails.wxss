@@ -229,3 +229,17 @@ page {
   height: 40rpx;
   margin-right: 10rpx;
 }
+
+.primary-btn {
+	margin-right: 60rpx;
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+  color: #FFF;
+  font-size: 16px;
+  border-radius: 4px;
+  background: #3875FF;
+  height: 40px;
+	width: 80px;
+	font-weight:500;
+}

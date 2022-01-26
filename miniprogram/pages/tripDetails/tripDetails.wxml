@@ -8,7 +8,21 @@
 
 <view class='container'>
   <!-- 地图 -->
-  <map id="myMap" style="width:{{mapWidth}}rpx;height:{{mapHeight}}rpx" show-location="true" longitude="{{longitude}}" latitude="{{latitude}}" scale="{{scale}}" markers="{{markers}}" bindmarkertap="bindMarkertap" bindcontroltap="controlTap" bindregionchange="regionChange" controls="{{controls}}" polyline="{{polyline}}" include-points="{{includePoints}}">
+  <map id="myMap" 
+  style="width:{{mapWidth}}rpx;height:{{mapHeight}}rpx" 
+  show-location="true" 
+  longitude="{{longitude}}" 
+  latitude="{{latitude}}" 
+  subkey="JGUBZ-W2HKR-7VNWY-W4JVJ-YEFS3-NQFA4"
+  scale="{{scale}}"
+   markers="{{markers}}" 
+   controls="{{controls}}" 
+   polyline="{{polyline}}" 
+   include-points="{{includePoints}}"
+   bindmarkertap="bindMarkertap" 
+   bindcontroltap="controlTap" 
+   bindregionchange="regionChange" 
+   >
   
   </map>
 
@@ -19,6 +33,9 @@
       <view class='user-info'>
         <image class='img' src='{{userInfo.avatarUrl}}'></image>
         <text class='name'>{{userInfo.nickName}}</text>
+      </view>
+      <view class="primary-btn" bindtap="onWatchDemo">
+        导航
       </view>
     </view>
     

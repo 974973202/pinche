@@ -218,30 +218,9 @@ Page({
    * 道路选择
    */
   isSpeedChange: function (e) {
-    console.log(e.detail.value);
     let _this = this;
     _this.setData({
       isSpeedStr: e.detail.value,
-    });
-  },
-
-  /**
-   * 获取今天时间
-   */
-  getTodyTime: function () {
-    let _this = this;
-    _this.setData({
-      exactDateTag: "今天",
-    });
-  },
-
-  /**
-   * 获取明天时间
-   */
-  getTomorrowTime: function () {
-    let _this = this;
-    _this.setData({
-      exactDateTag: "明天",
     });
   },
 

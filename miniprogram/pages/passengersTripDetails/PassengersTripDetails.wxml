@@ -1,5 +1,5 @@
 <!--miniprogram/pages/tripDetails/tripDetails.wxml-->
-<wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs>
+<!-- <wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs> -->
 
 <view class='container'>
   <!-- 地图 -->
@@ -10,7 +10,8 @@
     <!-- 车主头像、昵称 -->
     <view class='top-view'>
       <view class='user-info'>
-        <image class='img' src='{{userInfo.avatarUrl}}'></image>
+        <image wx:if="{{userInfo.avatarUrl}}" class='img' src='{{userInfo.avatarUrl}}'></image>
+        <open-data wx:if="{{!userInfo.avatarUrl}}" type="userAvatarUrl"></open-data>
         <text class='name'>{{userInfo.nickName}}</text>
       </view>
     </view>
