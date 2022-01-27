@@ -53,11 +53,14 @@ Page({
     remarks: "",
   },
   onLoad() {
-    const exactDate = new Date(`${tsFormatTime()} ${exactTime()}`).getTime()
+    const t = tsFormatTime() + " " + exactTime()
+    const time = t.split(/[- : \/]/)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    // const exactDate = new Date(time).getTime()
     this.setData({
       dateIndex: tsFormatTime(),
       exactTime: exactTime(),
-      exactDate,
+      exactDate: exactDate,
     });
   },
 
@@ -115,11 +118,13 @@ Page({
    */
   bindPickerChange(e) {
     const currentData = e.detail.value;
+    console.log(currentData, 'currentData')
     const { exactTime } = this.data;
-    const exactDate = new Date(`${currentData} ${exactTime}`).getTime()
+    const time = (currentData + " " + exactTime).split(/[- : \/]/)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: currentData,
-      exactDate
+      exactDate: exactDate,
     });
   },
 
@@ -129,10 +134,11 @@ Page({
   bindTimeChange (e) {
     const exactTime = e.detail.value
     const { dateIndex } = this.data;
-    const exactDate = new Date(`${dateIndex} ${exactTime}`).getTime()
+    const time = (dateIndex + " " + exactTime).split(/[- : \/]/)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
     this.setData({
-      exactTime,
-      exactDate,
+      exactTime: exactTime,
+      exactDate: exactDate,
     });
   },
   //监听输入框  实现双向数据绑定
@@ -167,6 +173,7 @@ Page({
    */
   submitTap: function () {
     let _this = this;
+    let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
       _this.showModal("请选择上车地点");
       return false;
@@ -181,6 +188,10 @@ Page({
     }
     if (_this.data.phoneNumber == "") {
       _this.showModal("请输入联系电话");
+      return false;
+    }
+    if (!phoneReg.test(_this.data.phoneNumber)) {
+      _this.showModal("请输入正确的联系电话");
       return false;
     }
     if (_this.data.budget == "") {
@@ -218,6 +229,7 @@ Page({
         //具体时间***
         exactTime: _this.data.exactTime,
         exactDate: _this.data.exactDate,
+        dateIndex: _this.data.dateIndex,
         //人数***
         peopleNumber: _this.data.peopleNumber,
         //联系电话***

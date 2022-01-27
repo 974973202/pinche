@@ -21,7 +21,7 @@ title="车找人"
           </view>
           <view class='text-view'>
             <text class='label'>出行时间</text>
-            <text class='text'>{{item.exactDate}}</text>
+            <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
           </view>
         </view>
         <view class='item'>

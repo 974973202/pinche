@@ -12,9 +12,9 @@ title="人找车"
       <view>
         <view class='text-group'>
           <view class='text-item'>
-            <text class='label'>出发时间</text>
+            <text class='label'>出行时间</text>
             <view class='time cont'>
-              <text class='text'>{{item.createdTime}} -- {{item.exactTime}}</text>
+              <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
             </view>
           </view>
           <view class='text-item'>
@@ -57,9 +57,11 @@ title="人找车"
 
   <!-- 发起拼车 -->
   <view class='submit-btn'>
-    <navigator class='navigator' url='/pages/NewCarSearch/NewCarSearch'>
-        <!-- 新增出行信息 -->
+    <!-- <navigator class='navigator' url='/pages/NewCarSearch/NewCarSearch'>
         发起拼车
-    </navigator>
+    </navigator> -->
+    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
+        发起拼车
+    </button>
   </view>
 </view>

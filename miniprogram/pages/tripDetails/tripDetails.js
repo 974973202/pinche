@@ -80,7 +80,7 @@ Page({
     _this.setData({
       id: options.id,
     }, async () => {
-      await _this.addData(_this.data.id);
+      await _this.addData(options.id);
       wx.hideLoading()
     });
   },

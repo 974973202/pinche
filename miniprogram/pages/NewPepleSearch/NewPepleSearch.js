@@ -73,12 +73,14 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-    const exactDate = new Date(`${tsFormatTime()} ${exactTime()}`).getTime();
+   onLoad() {
+    const t = tsFormatTime() + " " + exactTime()
+    const time = t.split(/[- : \/]/)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: tsFormatTime(),
       exactTime: exactTime(),
-      exactDate,
+      exactDate: exactDate,
     });
   },
 
@@ -146,10 +148,12 @@ Page({
   bindPickerChange: function (e) {
     const currentData = e.detail.value;
     const { exactTime } = this.data;
-    const exactDate = new Date(`${currentData} ${exactTime}`).getTime();
+    const time = (currentData + " " + exactTime).split(/[- : \/]/)
+    console.log(time, 'timetime', currentData, exactTime)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: currentData,
-      exactDate,
+      exactDate: exactDate,
     });
   },
 
@@ -159,10 +163,11 @@ Page({
   bindTimeChange: function (e) {
     const exactTime = e.detail.value;
     const { dateIndex } = this.data;
-    const exactDate = new Date(`${dateIndex} ${exactTime}`).getTime();
+    const time = (dateIndex + " " + exactTime).split(/[- : \/]/)
+    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
     this.setData({
       exactTime,
-      exactDate,
+      exactDate: exactDate,
     });
   },
 
@@ -255,6 +260,7 @@ Page({
    */
   submitTap: function () {
     let _this = this;
+    let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
       _this.showModal("请选择上车地点");
       return false;
@@ -263,10 +269,10 @@ Page({
       _this.showModal("请选择下车地点");
       return false;
     }
-    // if (_this.data.tripsArray.length == 0){
-    //   _this.showModal('请输入中途停车点');
-    //   return false;
-    // }
+    if (!phoneReg.test(_this.data.phoneNumber)) {
+      _this.showModal("请输入正确的联系电话");
+      return false;
+    }
     if (_this.data.peopleNumber == "") {
       _this.showModal("请输入人数");
       return false;
@@ -310,6 +316,7 @@ Page({
         //具体时间***
         exactTime: _this.data.exactTime,
         exactDate: _this.data.exactDate,
+        dateIndex: _this.data.dateIndex,
         //高速
         isSpeed: _this.data.isSpeedStr,
         //人数***

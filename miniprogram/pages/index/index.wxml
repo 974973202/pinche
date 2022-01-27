@@ -7,7 +7,7 @@
   <view class='search'>
     <view class='searchbox' bindtap='bindSearchTap'>
       <image class='searchicon' src='../../images/icon/search.png'></image>
-      <text class='searchinput'>选择出行方向、地点...</text>
+      <text class='searchinput'>搜索出行方向、地点...</text>
     </view>
   </view>
   <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">

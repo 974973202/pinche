@@ -48,9 +48,6 @@ Page({
       .get({
         success: function (res) {
           console.log("车找人列表数据", res.data);
-          res?.data?.forEach((ele) => {
-            ele.exactDate = generateTimeReqestNumber(ele.exactDate);
-          });
           wx.hideLoading();
           _this.setData({
             list: res.data,
@@ -84,41 +81,41 @@ Page({
     params.userInfo = wx.getStorageSync('userInfo');
     console.log(params);
 
-    // wx.showModal({
-    //   title: "车找人",
-    //   content: "确定发布这条信息？",
-    //   success: (res) => {
-    //     if (res.confirm) {
-    //       console.log("ok");
-    //       // 操作数据库
-    //       db.collection("CarOwnerRecord").add({
-    //         data: params,
-    //         success: function (res) {
-    //           console.log(res);
-    //           //发布成功
-    //           wx.showToast({
-    //             title: "发布成功",
-    //             icon: "success",
-    //             duration: 2000,
-    //           });
-    //           const pages = getCurrentPages();
-    //           var prevPage = pages[pages.length - 2];
-    //           prevPage.setData({
-    //             currentNavTab: 0,
-    //             pageIndex: 1,
-    //           });
+    wx.showModal({
+      title: "车找人",
+      content: "确定发布这条信息？",
+      success: (res) => {
+        if (res.confirm) {
+          console.log("ok");
+          // 操作数据库
+          db.collection("CarOwnerRecord").add({
+            data: params,
+            success: function (res) {
+              console.log(res);
+              //发布成功
+              wx.showToast({
+                title: "发布成功",
+                icon: "success",
+                duration: 2000,
+              });
+              const pages = getCurrentPages();
+              var prevPage = pages[pages.length - 2];
+              prevPage.setData({
+                currentNavTab: 0,
+                pageIndex: 1,
+              });
 
-    //           wx.switchTab({
-    //             url: "/pages/index/index",
-    //           });
-    //         },
-    //         fail: console.error,
-    //       });
-    //     } else if (res.cancel) {
-    //       console.log("cancel");
-    //     }
-    //   },
-    // });
+              wx.switchTab({
+                url: "/pages/index/index",
+              });
+            },
+            fail: console.error,
+          });
+        } else if (res.cancel) {
+          console.log("cancel");
+        }
+      },
+    });
   },
 
   /**

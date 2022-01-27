@@ -185,6 +185,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
+    let time = new Date().getTime()
     wx.cloud.callFunction({
       name: 'queryInfo',
       data:{
@@ -192,7 +193,7 @@ Page({
         pageIndex:n,
         pageSize:5,
         filter:{},
-        startTime: new Date().getTime(),
+        startTime: time,
         // endTime: this.endTime()
       }
     }).then(res => {
@@ -313,7 +314,7 @@ Page({
     console.log(item)
     if (item.isSpeed){
       wx.navigateTo({
-        url: '../../pages/tripDetails/tripDetails?id=' + id,
+        url: `../../pages/tripDetails/tripDetails?id=${id}`,
       });
     }else{
       wx.navigateTo({
