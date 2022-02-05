@@ -43,7 +43,19 @@ var dateFormat = function (timestamp, format) {
   return format;
 }
 
+// var generateTimeReqestNumber = function generateTimeReqestNumber(time) {
+//   var date = new Date(time);
+//   return (
+//     date.getFullYear().toString() + "-" +
+//     pad2(date.getMonth()) + "-" +
+//     pad2(date.getDate()) + " " + 
+//     pad2(date.getHours()) + ":" +
+//     pad2(date.getMinutes())
+//     // pad2(date.getSeconds())
+//   );
+// }
 
 module.exports = {
-  dateFormat: dateFormat
+  dateFormat: dateFormat,
+  // generateTimeReqestNumber
 };

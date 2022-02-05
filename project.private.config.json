@@ -47,6 +47,12 @@
           "pathName": "pages/tripDetails/tripDetails",
           "query": "id=617ef50c61f15aa900ebf5773b81ce51",
           "scene": null
+        },
+        {
+          "name": "pages/RealAuthentication/RealAuthentication",
+          "pathName": "pages/RealAuthentication/RealAuthentication",
+          "query": "",
+          "scene": null
         }
       ]
     }

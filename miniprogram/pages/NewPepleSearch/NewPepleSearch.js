@@ -3,15 +3,15 @@
 const app = getApp();
 const db = wx.cloud.database();
 const { tsFormatTime, exactTime } = require("../../utils/utils");
+const { MOYUAN_KEY } = require("../../config/appConfig");
 
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    showIcon: true,
-    startRegion: ["福建省", "龙岩市", "上杭县"],
-    endRegion: ["福建省", "龙岩市", "上杭县"],
+    startRegion: [],
+    endRegion: [],
     //上车地点***
     startLocation: {
       name: "",
@@ -26,28 +26,13 @@ Page({
       latitude: "",
       longitude: "",
     },
-    //具体日期
-    dateArray: ["今天", "明天"],
-    objectDateArray: [
-      {
-        id: 0,
-        name: "今天",
-      },
-      {
-        id: 1,
-        name: "明天",
-      },
-    ],
-    dateIndex: 0,
     //具体日期***
-    exactDateTag: "今天",
+    dateIndex: 0, // 出发日期
     //具体时间***
-    exactTime: null,
+    exactTime: null, // 出发时间
     exactDate: null, // 具体时间戳
-    //中途停车点数组***
-    // tripsArray: [],
     //高速
-    isSpeed: [
+    isSpeedStr: [
       {
         name: "辅路",
         value: "否",
@@ -59,7 +44,7 @@ Page({
       },
     ],
     //是否高速***
-    isSpeedStr: "辅路",
+    isSpeed: "辅路",
     //人数***
     peopleNumber: "",
     //联系电话***
@@ -76,7 +61,7 @@ Page({
    onLoad() {
     const t = tsFormatTime() + " " + exactTime()
     const time = t.split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: tsFormatTime(),
       exactTime: exactTime(),
@@ -114,18 +99,18 @@ Page({
         dataset: { name },
       },
     } = e;
-    console.log(name, e);
     wx.showLoading({
       title: "正在加载地图...",
     });
-    wx.getLocation({
+    wx.getLocation({ // 当前自己的位置
       type: "wgs84",
       success: ({ latitude, longitude }) => {
-        console.log(latitude, longitude);
-        wx.chooseLocation({
+        wx.chooseLocation({ // 选择的位置
           latitude,
           longitude,
           success: (res) => {
+            this.getDistrict(res.latitude, res.longitude, name); // 获取省市区
+            console.log(res, '选择上/下车地点')
             this.setData({
               [name]: res,
             });
@@ -141,6 +126,26 @@ Page({
       },
     });
   },
+  getDistrict(latitude, longitude, name) {
+    wx.request({
+      url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${MOYUAN_KEY}`,
+      header: {
+        'Content-Type': 'application/json'
+      },
+      success: (res) => {
+        let region = {}
+        const { data: { result: { address_component = {} } } } = res;
+        const { province, city, district } = address_component;
+        if(name == 'startLocation') {
+          region.startRegion = [province, city, district]
+        }
+        if(name == 'endLocation') {
+          region.endRegion = [province, city, district]
+        }
+        this.setData({ ...region })
+      }
+    })
+  },
 
   /**
    * 日期选择器
@@ -149,8 +154,7 @@ Page({
     const currentData = e.detail.value;
     const { exactTime } = this.data;
     const time = (currentData + " " + exactTime).split(/[- : \/]/)
-    console.log(time, 'timetime', currentData, exactTime)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: currentData,
       exactDate: exactDate,
@@ -164,7 +168,7 @@ Page({
     const exactTime = e.detail.value;
     const { dateIndex } = this.data;
     const time = (dateIndex + " " + exactTime).split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     this.setData({
       exactTime,
       exactDate: exactDate,
@@ -225,7 +229,7 @@ Page({
   isSpeedChange: function (e) {
     let _this = this;
     _this.setData({
-      isSpeedStr: e.detail.value,
+      isSpeed: e.detail.value,
     });
   },
 
@@ -297,49 +301,29 @@ Page({
   /**
    * 添加函数
    */
-  addColoction: function () {
+  addColoction() {
     let _this = this;
+    const { isSpeedStr, ...rest } = this.data;
+    const addData = {
+      ...rest,
+      createdTime: db.serverDate(),
+      //状态
+      status: 0, //0:正常使用,1:被删除
+    }
+    delete addData.__webviewId__
     db.collection("CarSearchPeople").add({
-      data: {
-        //出发城市
-        startRegion: _this.data.startRegion,
-        //到大城市
-        endRegion: _this.data.endRegion,
-        //上车地点***
-        startLocation: _this.data.startLocation,
-        //下车地点***
-        endLocation: _this.data.endLocation,
-        //中途停车
-        // tripsArray: _this.data.tripsArray,
-        //具体日期***
-        exactDateTag: _this.data.exactDateTag,
-        //具体时间***
-        exactTime: _this.data.exactTime,
-        exactDate: _this.data.exactDate,
-        dateIndex: _this.data.dateIndex,
-        //高速
-        isSpeed: _this.data.isSpeedStr,
-        //人数***
-        peopleNumber: _this.data.peopleNumber,
-        //联系电话***
-        phoneNumber: _this.data.phoneNumber,
-        //预算***
-        budget: _this.data.budget,
-        //备注***
-        remarks: _this.data.remarks,
-        //创建时间
-        createdTime: db.serverDate(),
-        //状态
-        status: 0, //0:正常使用,1:被删除
-      },
-      success: function (res) {
+      data: addData,
+      success: (res) => {
         console.log(res);
         wx.showToast({
-          title: "发布成功",
+          title: "添加发布成功",
           icon: "success",
-          success: function (res) {
+          success: (res) => {
             //返回页面
-            wx.navigateBack();
+            // wx.navigateBack();
+            wx.navigateTo({
+              url: '/pages/carsLookPeople/carLoolPeople'
+            })
           },
         });
       },

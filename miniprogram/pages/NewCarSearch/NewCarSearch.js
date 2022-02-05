@@ -2,15 +2,15 @@
 const app = getApp();
 const db = wx.cloud.database();
 const { tsFormatTime, exactTime } = require("../../utils/utils");
+const { MOYUAN_KEY } = require("../../config/appConfig");
 
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    showIcon: true,
-    startRegion: ["福建省", "龙岩市", "上杭县"],
-    endRegion: ["福建省", "龙岩市", "上杭县"],
+    startRegion: [],
+    endRegion: [],
     //上车地点***
     startLocation: {
       name: "",
@@ -26,20 +26,8 @@ Page({
       longitude: "",
     },
     //具体日期
-    dateArray: ["今天", "明天"],
-    objectDateArray: [
-      {
-        id: 0,
-        name: "今天",
-      },
-      {
-        id: 1,
-        name: "明天",
-      },
-    ],
     dateIndex: null,
     //具体日期***
-    exactDateTag: 0,
     //具体时间***
     exactTime: null,
     exactDate: null, // 具体时间戳
@@ -55,7 +43,7 @@ Page({
   onLoad() {
     const t = tsFormatTime() + " " + exactTime()
     const time = t.split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     // const exactDate = new Date(time).getTime()
     this.setData({
       dateIndex: tsFormatTime(),
@@ -92,11 +80,12 @@ Page({
     wx.getLocation({
       type: "wgs84",
       success: ({ latitude, longitude }) => {
-        console.log(latitude, longitude);
+        // console.log(latitude, longitude);
         wx.chooseLocation({
           latitude,
           longitude,
           success: (res) => {
+            this.getDistrict(res.latitude, res.longitude, name); // 获取省市区
             this.setData({
               [name]: res,
             });
@@ -112,6 +101,26 @@ Page({
       },
     });
   },
+  getDistrict(latitude, longitude, name) {
+    wx.request({
+      url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${MOYUAN_KEY}`,
+      header: {
+        'Content-Type': 'application/json'
+      },
+      success: (res) => {
+        let region = {}
+        const { data: { result: { address_component = {} } } } = res;
+        const { province, city, district } = address_component;
+        if(name == 'startLocation') {
+          region.startRegion = [province, city, district]
+        }
+        if(name == 'endLocation') {
+          region.endRegion = [province, city, district]
+        }
+        this.setData({ ...region })
+      }
+    })
+  },
 
   /**
    * 日期选择器
@@ -121,7 +130,7 @@ Page({
     console.log(currentData, 'currentData')
     const { exactTime } = this.data;
     const time = (currentData + " " + exactTime).split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     this.setData({
       dateIndex: currentData,
       exactDate: exactDate,
@@ -135,7 +144,7 @@ Page({
     const exactTime = e.detail.value
     const { dateIndex } = this.data;
     const time = (dateIndex + " " + exactTime).split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1], time[2], time[3], time[4], '00').getTime()
+    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
     this.setData({
       exactTime: exactTime,
       exactDate: exactDate,
@@ -225,7 +234,6 @@ Page({
         //下车地点***
         endLocation: _this.data.endLocation,
         //具体日期***
-        exactDateTag: _this.data.exactDateTag,
         //具体时间***
         exactTime: _this.data.exactTime,
         exactDate: _this.data.exactDate,

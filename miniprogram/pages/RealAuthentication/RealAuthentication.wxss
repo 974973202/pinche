@@ -1,0 +1,49 @@
+page {
+  background: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 0 40rpx;
+}
+.l {
+  width: 100%;
+  height: 100%;
+}
+
+.f {
+  width: 100%;
+  box-sizing: border-box;
+}
+.int {
+  width: 100%;
+  display: flex;
+  margin: 20rpx 0;
+  border: 1rpx solid #999;
+  border-radius: 12rpx;
+  padding: 8rpx 28rpx;
+  box-sizing: border-box;
+}
+.f-name{
+
+}
+.f-phone {
+
+}
+.f-sfz{
+  width: 100%;
+  height: 400rpx;
+  border: 1rpx solid #555;
+  margin-bottom: 20rpx;
+}
+.upload-s {
+  width: 100%;
+  height: 400rpx;
+  background-size: 100% 100%;
+  /* background-image: url('../../images/icon/zsfz_img.jpg'); */
+}
+
+.f-sfz image {
+  width: 100%;
+  height: 400rpx;
+}

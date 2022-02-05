@@ -1,10 +1,10 @@
 <!--miniprogram/pages/peopleLookCars/peopleLookCars.wxml-->
-<navigation
+<!-- <navigation
 id='Navigation'
 show-icon='{{showIcon}}'
 title="车找人"
 >
-</navigation>
+</navigation> -->
 <view class='container'>
   <!-- 方向 -->
   <view wx:if="{{list.length != 0 || isLodding}}" class='list-view'>
@@ -69,7 +69,7 @@ title="车找人"
   <!-- 发起拼车 -->
   <view class='submit-btn'>
     <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
-        新增出行信息
+        发布出行信息
     </button>
   </view>
 </view>

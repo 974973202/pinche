@@ -1,5 +1,4 @@
 {
-  "usingComponents": {
-    "navigation": "../../components/Navigation/Navigation"
-  }
+  "usingComponents": {},
+  "navigationBarTitleText": "添加人找车信息"
 }

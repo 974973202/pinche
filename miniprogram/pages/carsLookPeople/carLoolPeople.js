@@ -98,12 +98,12 @@ Page({
                 icon: "success",
                 duration: 2000,
               });
-              const pages = getCurrentPages();
-              var prevPage = pages[pages.length - 2];
-              prevPage.setData({
-                currentNavTab: 0,
-                pageIndex: 1,
-              });
+              // const pages = getCurrentPages();
+              // var prevPage = pages[pages.length - 2];
+              // prevPage.setData({
+              //   currentNavTab: 0,
+              //   pageIndex: 1,
+              // });
 
               wx.switchTab({
                 url: "/pages/index/index",

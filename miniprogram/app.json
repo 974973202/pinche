@@ -14,7 +14,9 @@
     "pages/webViewPage/webViewPage",
     "pages/SearchPage/SearchPage",
     "pages/ExpressNews/ExpressNews",
-    "pages/AboutUs/AboutUs"
+    "pages/AboutUs/AboutUs",
+    "pages/RealAuthentication/RealAuthentication",
+    "pages/RealDriveAuthentication/RealDriveAuthentication"
   ],
   "permission": {
     "scope.userLocation": {
@@ -32,9 +34,7 @@
     "navigationBarBackgroundColor": "#F6F6F6",
     "navigationBarTitleText": "XX拼车",
     "backgroundTextStyle": "light",
-    "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
-  },
+    "navigationBarTextStyle": "black"  },
   "tabBar": {
     "color": "#333333",
     "selectedColor": "#0091ff",
@@ -48,7 +48,13 @@
         "selectedIconPath": "images/tab/tab0101.png"
       },
       {
-        "text": "我的",
+        "text": "车主发布",
+        "pagePath": "pages/NewPepleSearch/NewPepleSearch",
+        "iconPath": "images/tab/02.png",
+        "selectedIconPath": "images/tab/0201.png"
+      },
+      {
+        "text": "个人中心",
         "pagePath": "pages/myCenter/myCenter",
         "iconPath": "images/tab/tab03.png",
         "selectedIconPath": "images/tab/tab0301.png"

@@ -1,4 +1,4 @@
 {
-  "backgroundTextStyle": "light",
-  "navigationBarTextStyle": "white"
+  "usingComponents": {},
+  "navigationBarTitleText": "个人中心"
 }

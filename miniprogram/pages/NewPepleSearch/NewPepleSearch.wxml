@@ -1,18 +1,17 @@
 <!--miniprogram/pages/carsLookPeople/carLoolPeople.wxml-->
-<navigation
+<!-- <navigation
 id='Navigation'
 show-icon='{{showIcon}}'
 title="添加车找人信息"
 >
-</navigation>
+</navigation> -->
 <view class='container'>
   <!-- 方向 -->
-  <view class='list-view'>
+  <!-- <view class='list-view'>
     <view class='item'>
       <text class='label'>出行方向</text>
       <view class='cont direction'>
         <view class='address-view'>
-          <!-- 出发城市 -->
           <view class='picker'>
             <picker 
               mode="region"
@@ -23,11 +22,9 @@ title="添加车找人信息"
               {{startRegion[2]}}
             </picker>
           </view>
-          <!-- 出行方向 -->
           <view class='dric-img'>
             <image src='../../images/icon/cars.png'></image>
           </view>
-          <!-- 目的地城市 -->
           <view class='picker'>
             <picker 
               class="end"
@@ -39,10 +36,9 @@ title="添加车找人信息"
             </picker>
           </view>
         </view>
-        <!-- <text class='tips'>*目前拼车范围仅支持北京、廊坊地区*</text> -->
       </view>
     </view>
-  </view>
+  </view> -->
 
   <view class='list-view'>
     <!-- 时间 -->
@@ -108,7 +104,7 @@ title="添加车找人信息"
       <text class='label'>是否高速</text>
       <view class='cont'>
         <radio-group class="radio-group" bindchange="isSpeedChange">
-          <label class="radio" wx:for="{{isSpeed}}">
+          <label class="radio" wx:for="{{isSpeedStr}}">
             <radio color='#0091ff' value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
           </label>
         </radio-group>
@@ -155,6 +151,6 @@ title="添加车找人信息"
   </view>
 
   <!-- 发起拼车 -->
-  <view class='submit-btn' bindtap='submitTap'>添加</view>
+  <view class='submit-btn' bindtap='submitTap'>发布出行信息</view>
 </view>
 

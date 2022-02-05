@@ -1,10 +1,4 @@
 <!--miniprogram/pages/peopleLookCars/peopleLookCars.wxml-->
-<navigation
-id='Navigation'
-show-icon='{{showIcon}}'
-title="人找车"
->
-</navigation>
 <view class='container'>
   <!-- 方向 -->
   <view wx:if="{{list.length != 0 || isLodding }}" class='list-view'>
@@ -12,13 +6,13 @@ title="人找车"
       <view>
         <view class='text-group'>
           <view class='text-item'>
-            <text class='label'>出行时间</text>
+            <text class='label'>出行时间：</text>
             <view class='time cont'>
               <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
             </view>
           </view>
           <view class='text-item'>
-            <text class='label'>出行方向</text>
+            <text class='label'>出行方向：</text>
             <view class='driction cont'>
               <text class='text'>{{item.startRegion[2]}}</text>
               <image class='img' src=''></image>
@@ -26,7 +20,7 @@ title="人找车"
             </view>
           </view>
           <view class='text-item'>
-            <text class='label'>人数</text>
+            <text class='label'>人数：</text>
             <text class='cont text'>{{item.peopleNumber}} 人</text>
           </view>
         </view>
@@ -37,11 +31,11 @@ title="人找车"
       </view>
       <view>
         <view class='address-view'>
-          <text class='label'>起点</text>
+          <text class='label'>起点：</text>
           <text class='cont text'>{{item.startLocation.name}}</text>
         </view>
         <view class='address-view'>
-          <text class='label'>终点</text>
+          <text class='label'>终点：</text>
           <text class='cont text'>{{item.endLocation.name}}</text>
         </view>
       </view>
@@ -57,11 +51,8 @@ title="人找车"
 
   <!-- 发起拼车 -->
   <view class='submit-btn'>
-    <!-- <navigator class='navigator' url='/pages/NewCarSearch/NewCarSearch'>
-        发起拼车
-    </navigator> -->
     <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
-        发起拼车
+      发起预约
     </button>
   </view>
 </view>

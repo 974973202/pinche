@@ -123,4 +123,4 @@ page {
   font-size: 22rpx;
   color: #9B9B9B;
 }
-
+.disable.disabled { pointer-events: none; }

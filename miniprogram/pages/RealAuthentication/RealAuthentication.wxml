@@ -1,0 +1,20 @@
+<view class="l">
+  <form catchsubmit="formSubmit" class="f">
+    <view class="int f-name">
+      姓名：<input type="nickname" name="name" bindinput="inputedit" />
+    </view>
+    <view class="int f-phone">
+      手机号：<input type="number" name="phone" bindinput="inputedit" />
+    </view>
+    <view class="f-sfz">
+      <view wx:if="{{!zmSfzImage}}" bind:tap="onChooseMedia" data-name='zmSfzImage' style="background-image: url('../../images/icon/zsfz_img.jpg')" class="upload-s"></view>
+      <image wx:else src="{{zmSfzImage}}" /> 
+    </view>
+    <view class="f-sfz">
+      <view wx:if="{{!fmSfzImage}}" bind:tap="onChooseMedia" data-name='fmSfzImage' style="background-image: url('../../images/icon/fsfz_img.jpg')" class="upload-s"></view>
+      <image wx:else src="{{fmSfzImage}}" /> 
+
+    </view>
+    <button style="margin: 30rpx 0" type="primary" formType="submit">实名认证</button>
+  </form>
+</view>

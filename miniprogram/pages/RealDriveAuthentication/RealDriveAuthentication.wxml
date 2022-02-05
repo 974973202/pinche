@@ -1,0 +1,21 @@
+<view class="l">
+  <view class="jsz">请上传驾驶证</view>
+  <view class="f-jsz">
+    <view wx:if="{{!zmJszImage}}" bind:tap="onChooseMedia" data-name='zmJszImage' style="background-image: url('../../images/icon/zm_jsz.jpg')" class="upload-s"></view>
+    <image wx:else src="{{zmJszImage}}" />
+  </view>
+  <view class="f-jsz">
+    <view wx:if="{{!fmJszImage}}" bind:tap="onChooseMedia" data-name='fmJszImage' style="background-image: url('../../images/icon/fm_jsz.jpg')" class="upload-s"></view>
+    <image wx:else src="{{fmJszImage}}" />
+  </view>
+  <view class="xsz">请上传行驶证</view>
+  <view class="f-jsz">
+    <view wx:if="{{!zmXszImage}}" bind:tap="onChooseMedia" data-name='zmXszImage' style="background-image: url('../../images/icon/zm_xsz.jpg')" class="upload-s"></view>
+    <image wx:else src="{{zmXszImage}}" />
+  </view>
+  <view class="f-jsz">
+    <view wx:if="{{!fmXszImage}}" bind:tap="onChooseMedia" data-name='fmXszImage' style="background-image: url('../../images/icon/fm_xsz.jpg')" class="upload-s"></view>
+    <image wx:else src="{{fmXszImage}}" />
+  </view>
+  <button style="margin: 30rpx 0" type="primary" bindtap="onSubmit">车主认证</button>
+</view>

@@ -1,5 +1,6 @@
 // miniprogram/pages/myCenter/myCenter.js
-const app = getApp()
+const app = getApp();
+const db = wx.cloud.database()
 
 Page({
 
@@ -7,22 +8,61 @@ Page({
    * 页面的初始数据
    */
   data: {
-    statusBarHeight: 0,//状态栏高度
-    titleBarHeight:0,//标题栏高度
-    navBarHeight: 0,//导航栏高度
-    userInfo: {},
+    info: '',
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    this.getUser()
+  },
+  async getUser() {
+    const { data = [] } = await db.collection('User').field({
+      status: true,
+      name: true,
+      phone: true,
+    }).get();
     this.setData({
-      statusBarHeight: app.globalData.statusBarHeight,//状态栏高度
-      titleBarHeight: app.globalData.titleBarHeight,//标题栏高度
-      navBarHeight: app.globalData.navBarHeight,//导航栏高度
-      userInfo: app.globalData.userInfo,
-    });
+      info: data[0]
+    })
+    console.log(data, 'User')
+    if(data[0].status == 1) {
+      const { data = [] } = await db.collection('Certificates').field({
+        status: true,
+      }).get();
+      console.log(data, 'Certificates')
+    }
+  },
+
+  onDriveAuthorize() {
+    if(!this.data.info) {
+      wx.showToast({
+        title: "请先进行实名认证",
+        icon: "success",
+        success: (res) => {
+          //返回页面
+          // wx.navigateBack();
+          wx.navigateTo({
+            url: "/pages/RealAuthentication/RealAuthentication",
+          });
+        },
+      });
+    } else if (this.data.info.status == 1) {
+      wx.navigateTo({
+        url: "/pages/RealDriveAuthentication/RealDriveAuthentication"
+      });
+    } else if(this.data.info.status == 0) {
+      wx.showToast({
+        title: "正在进行实名认证中",
+        icon: "success",
+        // success: (res) => {
+        //   //返回页面
+        //   // wx.navigateBack();
+          
+        // },
+      });
+    }
   },
 
   /**
@@ -72,5 +112,5 @@ Page({
    */
   onShareAppMessage: function () {
 
-  }
+  },
 })

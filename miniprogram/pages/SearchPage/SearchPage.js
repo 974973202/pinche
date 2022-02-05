@@ -1,101 +1,204 @@
 // miniprogram/pages/SearchPage/SearchPage.js
 const app = getApp();
+const db = wx.cloud.database();
+const _ = db.command;
+const {
+  tsFormatTime,
+  exactTime,
+  generateTimeReqestNumber,
+} = require("../../utils/utils");
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
-    showIcon: true,
+    isLodding: true,
+
     statusBarHeight: 0, //状态栏高度
     titleBarHeight: 0, //标题栏高度
     navBarHeight: 0, //导航栏高度
-
-    startRegion: ["福建省", "龙岩市", "上杭县"],
-    endRegion: ["福建省", "龙岩市", "上杭县"],
-    //具体日期
-    typeArray: ["人找车", "车找人"],
-    objectTypeArray: [
-      {
-        id: 0,
-        name: "今天",
-      },
-      {
-        id: 1,
-        name: "明天",
-      },
-    ],
-    typeIndex: 0,
-    dnName: "CarOwnerRecord", //查询集合列表，默认人找车
+    navData: ["车找人", "人找车"],
 
     currentNavTab: 0, //当前状态
+
+    dnName: "CarOwnerRecord", //查询集合列表，默认人找车
 
     pageIndex: 1, //第一页
     hasMore: true, //是否还有下一页
     list: [],
-  },
 
+    hotList: [],
+    hotCurrent: 0,
+
+    //banner
+    imgUrls: ["../../images/icon/banner01.jpg"],
+    indicatorDots: true,
+    autoplay: false,
+    interval: 5000,
+    duration: 1000,
+    //轮播页当前index
+    swiperCurrent: 0,
+    webUrl: ["http://wap.coobus.cn/v2/#/favorite?code=constant"],
+
+    //发布信息按钮动画
+    status: "",
+    showModalStatus: true,
+  },
   /**
-   * 生命周期函数--监听页面加载
+   *
    */
-  onLoad: function (options) {
-    let _this = this;
-    _this.setData({
-      statusBarHeight: app.globalData.statusBarHeight, //状态栏高度
-      titleBarHeight: app.globalData.titleBarHeight, //标题栏高度
-      navBarHeight: app.globalData.navBarHeight, //导航栏高度
-      userInfo: app.globalData.userInfo,
+  onLoad(option) {
+    //是否连接数据库
+    if (!wx.cloud) {
+      wx.redirectTo({
+        url: "../chooseLib/chooseLib",
+      });
+      return;
+    }
+    console.log(option);
+    const eventChannel = this.getOpenerEventChannel();
+    eventChannel.emit("someEvent", { data: '从search发给index' });
+    // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
+    eventChannel.on("acceptDataFromOpenerPage", (data) => {
+      this.addData(1, data);//第一个参数页数，第二个参数分类
     });
-
-    let _start = _this.data.startRegion; //出发城市
-    let _end = _this.data.endRegion; //到大城市
-    // _this.addData(1);//第一个参数页数
+    // this.onGetSystemInfo();
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {},
-
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {},
+  onShow() {
+  },
+
   /**
-   * 获取有效的信息列表
+   * 生命周期函数--监听页面隐藏
    */
-  addData: function (n) {
-    //第一个参数页数
-    let _this = this;
-    let startTime = _this.startTime();
-    let endTime = _this.endTime();
+  onHide() {
+    this.setData({
+      status: "",
+    });
+  },
+  /**
+   * 获取设备信息
+   */
+  onGetSystemInfo: function () {
+    // 因为很多地方都需要用到，所有保存到全局对象中
+    if (app.globalData.statusBarHeight && app.globalData.titleBarHeight) {
+      this.setData({
+        statusBarHeight: app.globalData.statusBarHeight,
+        titleBarHeight: app.globalData.titleBarHeight,
+        navBarHeight: app.globalData.navBarHeight,
+        windowHeight: app.globalData.windowHeight,
+        windowWidth: app.globalData.windowWidth,
+      });
+    } else {
+      wx.getSystemInfo({
+        success: (res) => {
+          console.log(res);
+          if (!app.globalData) {
+            app.globalData = {};
+          }
+          //这里默认iOS安卓导航栏都是44;
+          app.globalData.titleBarHeight = 44;
+          app.globalData.statusBarHeight = res.statusBarHeight;
+          app.globalData.windowHeight = res.windowHeight;
+          app.globalData.windowWidth = res.windowWidth;
+          app.globalData.navBarHeight = res.statusBarHeight + 44;
+          this.setData({
+            statusBarHeight: app.globalData.statusBarHeight,
+            titleBarHeight: app.globalData.titleBarHeight,
+            navBarHeight: app.globalData.navBarHeight,
+            windowHeight: app.globalData.windowHeight,
+            windowWidth: app.globalData.windowWidth,
+          });
+        },
+        failure: () => {
+          this.setData({
+            statusBarHeight: 0,
+            titleBarHeight: 0,
+          });
+        },
+      });
+    }
+  },
+
+  /**
+   * 获取热点快报
+   */
+  // onGetHotNews(n){
+  //   db.collection('RoadInfo').where({
+  //     status: _.neq(0)
+  //   })
+  //   .orderBy('sendTime','desc')
+  //   .limit(n)
+  //   .get({
+  //     success (res) {
+  //       console.log(res.data);
+  //       let list = res.data
+  //       this.setData({
+  //         hotList: list
+  //       });
+  //     },
+  //     fail: console.error
+  //   })
+  // },
+
+  /**
+   * 导航列表点击
+   */
+  switchNav(event) {
+    const { currentNavTab } = this.data;
+    let cur = event.currentTarget.dataset.current;
+    console.log(cur, "eventevent", currentNavTab);
+    //每个tab选项宽度占1/5
+    // let singleNavWidth = this.data.windowWidth / 5;
+    //tab选项居中
+    // this.setData({
+    //   navScrollLeft: (cur - 2) * singleNavWidth
+    // })
+    if (currentNavTab == cur) {
+      return false;
+    } else {
+      this.setData({
+        currentNavTab: cur,
+        pageIndex: 1,
+        list: [],
+      });
+      //加载数据
+      // this.addData(1, cur);
+    }
+  },
+
+  /**
+   * 获取有效的拼车信息
+   */
+  addData(n, { data: { dnName, endRegion, startRegion } }) {
     wx.showLoading({
       title: "加载中...",
     });
-    //按照时间查询，规则开始当前时间60分钟前 到明天24：00；
     wx.cloud
       .callFunction({
         name: "queryInfo",
         data: {
-          dbName: _this.data.dnName,
+          dbName: dnName,
           pageIndex: n,
-          pageSize: 15,
+          pageSize: 5,
           filter: {
-            startRegion: _this.data.startRegion,
-            endRegion: _this.data.endRegion,
+            startRegion,
+            endRegion,
           },
-          startTime: _this.startTime(),
-          endTime: _this.endTime(),
+          startTime: new Date().getTime(),
+          // endTime: this.endTime()
         },
       })
       .then((res) => {
-        console.log(res);
-        _this.setData({
+        console.log(res.result.data);
+        res.result.data.forEach(
+          (ele) => (ele.exactDate = generateTimeReqestNumber(ele.exactDate))
+        );
+        this.setData({
           isLodding: false,
           list: res.result.data,
-          pageIndex: _this.data.pageIndex + 1,
+          pageIndex: this.data.pageIndex + 1,
           hasMore: res.result.hasMore,
         });
-
         wx.hideLoading();
       });
   },
@@ -103,81 +206,111 @@ Page({
   /**
    * 下拉刷新
    */
-  // onPullDownRefresh: function () {
-  //   wx.showLoading({
-  //     title: '加载中...',
-  //   });
-  //   let _this = this;
-  //   _this.setData({
-  //     pageIndex: 1
-  //   });
-  //   _this.addData(1);
-
-  //   //停止下拉动作
-  //   wx.stopPullDownRefresh();
-  // },
+  onPullDownRefresh() {
+    //显示刷新图标
+    wx.showLoading({
+      title: "加载中...",
+    });
+    this.setData({
+      pageIndex: 1,
+    });
+    // this.onGetHotNews(10);//获取热点新闻
+    this.addData(1, this.data.currentNavTab);
+    //停止刷新，页面回单
+    wx.stopPullDownRefresh();
+  },
 
   /**
    * 上拉加载更多
    */
-  onReachBottom: function () {
-    let _this = this;
-    if (!_this.data.hasMore) return; //没有下一页了
+  onReachBottom() {
+    console.log(this.data.pageIndex, "this.data.pageIndex");
+    if (!this.data.hasMore) return; //没有下一页了
 
-    let startTime = _this.startTime();
-    let endTime = _this.endTime();
     //按照时间查询，规则开始当前时间60分钟前 到明天24：00；
     wx.cloud
       .callFunction({
         name: "queryInfo",
         data: {
-          dbName: _this.data.dnName,
-          pageIndex: _this.data.pageIndex,
-          pageSize: 15,
-          filter: {
-            startRegion: _this.data.startRegion,
-            endRegion: _this.data.endRegion,
-          },
-          startTime: _this.startTime(),
-          endTime: _this.endTime(),
+          dbName: this.data.dnName,
+          pageIndex: this.data.pageIndex,
+          pageSize: 5,
+          filter: {},
+          startTime: new Date().getTime(),
+          // endTime: this.endTime()
         },
       })
       .then((res) => {
         console.log(res);
-        _this.setData({
-          list: _this.data.list.concat(res.result.data),
-          pageIndex: _this.data.pageIndex + 1,
+        this.setData({
+          list: this.data.list.concat(res.result.data),
+          pageIndex: this.data.pageIndex + 1,
           hasMore: res.result.hasMore,
         });
       });
   },
 
   /**
-   * 搜索事件
+   * 点击搜索
    */
-  onSubmitTap: function () {
-    wx.showToast({
-      title: "开发中...",
-      icon: "none",
-      duration: 1500,
-      mask: false,
+  bindSearchTap: function () {
+    wx.navigateTo({
+      url: "../../pages/SearchPage/SearchPage",
     });
-    // let _this = this;
-    // _this.addData(1);//第一个参数页数
+  },
+
+  /**
+   * 轮播图的切换事件
+   */
+  swiperChange(e) {
+    this.setData({
+      swiperCurrent: e.detail.current,
+    });
+  },
+
+  /**
+   * 轮播图点击事件
+   */
+  swipclick(e) {
+    console.log(this.data.swiperCurrent);
+    let _index = this.data.swiperCurrent;
+    let str = this.data.webUrl[_index];
+    wx.navigateTo({
+      url: "../../pages/webViewPage/webViewPage?url=" + str + "&name=推荐",
+    });
+  },
+
+  /**
+   * 热点新闻切换
+   */
+  hotSwiperChange(e) {
+    this.setData({
+      hotCurrent: e.detail.current,
+    });
+  },
+
+  /**
+   * 查看热点新闻
+   */
+  hotNewsClick(e) {
+    let _index = this.data.hotCurrent;
+    let id = this.data.hotList[_index]._id;
+    wx.navigateTo({
+      url: "../../pages/ArticleDetails/ArticleDetails?path=index&id=" + id,
+    });
   },
 
   /**
    * 查看行程详情
    */
-  lookTripDetails: function (e) {
-    let _this = this;
+  lookTripDetails(e) {
     let id = e.currentTarget.dataset.id;
     let idx = e.currentTarget.dataset.idx;
-    let item = _this.data.list[idx];
-    console.log(item.tripsArray);
-    if (item.tripsArray) {
+    let item = this.data.list[idx];
+    console.log(item);
+    if (item.isSpeed) {
       wx.navigateTo({
-        url: "../../pages/tripDetails/tripDetails?id=" + id,
+        url: `../../pages/tripDetails/tripDetails?id=${id}`,
       });
     } else {
       wx.navigateTo({
@@ -186,6 +319,27 @@ Page({
     }
   },
 
+  /**
+   * 发布信息按钮动画
+   */
+  trigger() {
+    let active = this.data.status;
+    if (active == "on") {
+      this.setData({
+        status: "",
+      });
+    } else {
+      this.setData({
+        status: "on",
+      });
+    }
+  },
+  // 隐藏遮罩层
+  hideModal() {
+    this.setData({
+      status: "",
+    });
+  },
   /**
    * 获取60分钟前时间戳
    */
@@ -206,59 +360,5 @@ Page({
     let threeTime = oneTime + 86400 * 2;
     console.log(threeTime * 1000);
     return threeTime * 1000;
-  },
-
-  /**
-   * 出发城市
-   */
-  startRegionChange: function (e) {
-    console.log(e.detail.value);
-    this.setData({
-      startRegion: e.detail.value,
-    });
-  },
-
-  /**
-   * 到大城市
-   */
-  endRegionChange: function (e) {
-    console.log(e.detail.value);
-    this.setData({
-      endRegion: e.detail.value,
-    });
-  },
-
-  /**
-   * 类型选择器
-   */
-  bindTypeChange: function (e) {
-    let _this = this;
-    console.log(e.detail.value);
-    switch (e.detail.value) {
-      case 0:
-        _this.setData({
-          dnName: "CarOwnerRecord",
-          typeIndex: e.detail.value,
-        });
-        break;
-      case 1:
-        _this.setData({
-          dnName: "PassengersRecord",
-          typeIndex: e.detail.value,
-        });
-        break;
-      case 2:
-        _this.setData({
-          dnName: "PassengersRecord",
-          typeIndex: e.detail.value,
-        });
-        break;
-      case 3:
-        _this.setData({
-          dnName: "PassengersRecord",
-          typeIndex: e.detail.value,
-        });
-        break;
-    }
   },
 });

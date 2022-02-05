@@ -3,32 +3,6 @@
 <view class='container'>
   <!-- 方向 -->
   <view class='list-view'>
-    <view class='item'>
-      <text class='label'>出行方向</text>
-      <view class='cont direction'>
-        <view class='address-view'>
-          <!-- 出发城市 -->
-          <view class='picker'>
-            <picker mode="region" data-name="startRegion" bindchange="regionChange" value="{{startRegion}}">
-              {{startRegion[2]}}
-            </picker>
-          </view>
-          <!-- 出行方向 -->
-          <view class='dric-img'>
-            <image src='../../images/icon/cars.png'></image>
-          </view>
-          <!-- 目的地城市 -->
-          <view class="picker">
-            <picker mode="region" data-name="endRegion" bindchange="regionChange" value="{{endRegion}}">
-              {{endRegion[2]}}
-            </picker>
-          </view>
-        </view>
-        <!-- <text class='tips'>*目前拼车范围仅支持北京、廊坊地区*</text> -->
-      </view>
-    </view>
-  </view>
-  <view class='list-view'>
     <!-- 时间 -->
     <view class='item'>
       <text class='label'>出发时间</text>

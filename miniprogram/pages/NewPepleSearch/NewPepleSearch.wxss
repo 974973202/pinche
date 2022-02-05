@@ -7,12 +7,10 @@ page {
   align-content: center;
 }
 .container{
-  padding-bottom: 120rpx;
+  /* padding-bottom: 120rpx; */
 }
 .list-view{
   width: 100%;
-  padding: 30rpx 0;
-  margin-bottom: 30rpx;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
