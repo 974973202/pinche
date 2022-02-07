@@ -21,7 +21,7 @@
           </view>
           <open-data type="userNickName" class="name"></open-data> -->
           <image class='img' src='{{item.userInfo.avatarUrl}}'></image>
-          <text class='name'>{{item.userInfo.nickName}}</text>
+          <text class='name'>{{item.userInfo.name}}</text>
         </view>
         <!-- 方向+电话 -->
         <view class='dreicTel'>

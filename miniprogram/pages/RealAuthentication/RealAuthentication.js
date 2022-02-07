@@ -83,6 +83,8 @@ Page({
           success: (res) => {
             //返回页面
             // wx.navigateBack();
+            const eventChannel = this.getOpenerEventChannel();
+            eventChannel.emit("getInfo", { name: data.name, phone:data.phone, status: 0 });
             wx.switchTab({
               url: "/pages/myCenter/myCenter",
             });

@@ -1,21 +1,25 @@
-<view class='user-info-view' style='background-image:url("https://7069-piqiukeji-67cad7-1258173401.tcb.qcloud.la/uploadImage/road_onYt75ZYoT5fIgAqjhlOF3xga63I1545637264457.jpg?sign=04f4d64ca2ac8f67961c2cec6c667b55&t=1545637308");padding-top:{{navBarHeight}}px'>
+<view class='user-info-view'>
   <view class='top-view'>
     <view class='user-info'>
       <view class="avatar-url">
         <open-data type="userAvatarUrl"></open-data>
       </view>
-      <open-data type="userNickName" class="nickname"></open-data>
+      <view class="user-item">
+        <view wx:if="{{info.status != 0 && info.name}}" class="nickname">{{info.name}}</view>
+        <open-data wx:else type="userNickName" class="nickname"></open-data>
+        <view wx:if="{{info.status != 0 && info.phone}}" class="nickname">{{info.phone}}</view>
+      </view>
     </view>
   </view>
 </view>
 <view class="container">
   <!-- 实名认证 -->
   <view class='group-list'>
-    <navigator wx:if="{{!info}}" class='list' url='/pages/RealAuthentication/RealAuthentication'>
+    <view wx:if="{{!info}}" class='list' bindtap="onAuthorize">
       <view class='item'>
         <text class='lable-text'>实名认证</text>
       </view>
-    </navigator>
+    </view>
     <view wx:if="{{info.status == 0}}" class='list'>
       <view class='item'>
         <text class='lable-text'>实名认证</text>
@@ -28,12 +32,12 @@
         <text style="color: green" class='lable-text'>已认证</text>
       </view>
     </view>
-    <navigator wx:if="{{info.status == 2}}" class='list' url='/pages/RealAuthentication/RealAuthentication'>
+    <view wx:if="{{info.status == 2}}" class='list' bindtap="onAuthorize">
       <view class='item'>
         <text class='lable-text'>实名认证</text>
         <text style="color: red" class='lable-text'>认证失败</text>
       </view>
-    </navigator>
+    </view>
 
     <view bindtap="onDriveAuthorize" class='list'>
       <view class='item'>
@@ -41,14 +45,14 @@
       </view>
     </view>
 
-    <navigator class='list' url='/pages/carsLookPeople/carLoolPeople'>
+    <view class='list' bindtap="onPublish">
       <view class='item'>
         <text class='lable-text'>我的发布</text>
       </view>
-    </navigator>
-    <navigator class='list' url='/pages/peopleLookCars/peopleLookCars'>
+    </view>
+    <navigator class='list' url='/pages/subscribeHistory/subscribeHistory'>
       <view class='item'>
-        <text class='lable-text'>我的预约</text>
+        <text class='lable-text'>预约记录</text>
       </view>
     </navigator>
     <navigator class='list' url='/pages/AboutUs/AboutUs'>

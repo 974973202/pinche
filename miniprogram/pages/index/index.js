@@ -5,29 +5,31 @@ Page({
   data: {
     searchType: [
       {
-        name: "找乘客",
+        name: "找车主",
         value: "0",
         checked: true,
       },
       {
-        name: "找车主",
+        name: "找乘客",
         value: "1",
         checked: false,
       },
     ],
-    startRegion: ["福建省", "龙岩市", "上杭县"],
-    endRegion: ["福建省", "龙岩市", "上杭县"],
-    dnName: 'CarOwnerRecord',
+    // startRegion: ["福建省", "龙岩市", "上杭县"],
+    // endRegion: ["福建省", "龙岩市", "上杭县"],
+    startRegion: ["湖北省", "武汉市", "洪山区"],
+    endRegion: ["湖北省", "武汉市", "洪山区"],
+    dnName: 'CarPublish',
   },
   /**
    * 类型选择器
    */
   bindTypeChange(e) {
     console.log(e.detail.value);
-    let dnName = 'CarOwnerRecord'
+    let dnName = 'CarPublish'
     switch (e.detail.value) {
       case "0":
-          dnName = "CarOwnerRecord";
+          dnName = "CarPublish";
         break;
       case "1":
           dnName = "PassengersRecord";

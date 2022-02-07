@@ -100,7 +100,7 @@
     </view>
     <!-- 车找人 -->
     <view class='cr blod-view {{status}}'>
-      <navigator class='navigator' url='/pages/carsLookPeople/carLoolPeople'>
+      <navigator class='navigator' url='/pages/myPublish/myPublish'>
         <image class='img' src='../../images/icon/cr.png'></image>
       </navigator>
     </view>

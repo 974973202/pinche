@@ -31,8 +31,8 @@
           "scene": null
         },
         {
-          "name": "pages/carsLookPeople/carLoolPeople",
-          "pathName": "pages/carsLookPeople/carLoolPeople",
+          "name": "pages/myPublish/myPublish",
+          "pathName": "pages/myPublish/myPublish",
           "query": "",
           "scene": null
         },
@@ -49,9 +49,15 @@
           "scene": null
         },
         {
-          "name": "pages/RealAuthentication/RealAuthentication",
-          "pathName": "pages/RealAuthentication/RealAuthentication",
+          "name": "pages/myCenter/myCenter",
+          "pathName": "pages/myCenter/myCenter",
           "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/subscribeHistory/subscribeHistory",
+          "pathName": "pages/subscribeHistory/subscribeHistory",
+          "query": "?phone=15622227777",
           "scene": null
         }
       ]

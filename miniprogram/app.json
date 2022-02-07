@@ -5,8 +5,6 @@
     "pages/chooseLib/chooseLib",
     "pages/carOwner/carOwner",
     "pages/myCenter/myCenter",
-    "pages/peopleLookCars/peopleLookCars",
-    "pages/carsLookPeople/carLoolPeople",
     "pages/NewCarSearch/NewCarSearch",
     "pages/NewPepleSearch/NewPepleSearch",
     "pages/tripDetails/tripDetails",
@@ -16,7 +14,8 @@
     "pages/ExpressNews/ExpressNews",
     "pages/AboutUs/AboutUs",
     "pages/RealAuthentication/RealAuthentication",
-    "pages/RealDriveAuthentication/RealDriveAuthentication"
+    "pages/RealDriveAuthentication/RealDriveAuthentication",
+    "pages/subscribeHistory/subscribeHistory"
   ],
   "permission": {
     "scope.userLocation": {

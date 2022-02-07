@@ -12,6 +12,10 @@ Page({
     isLodding: true,
     openid: "",
     list: [],
+    navData: ["我是车主", "我是乘客"],
+    currentNavTab: 0,
+    dbName: "CarPublish", // 'PeopleLookingCars'
+    dbNameRecord: "CarOwnerRecord", // 'PassengersRecord'
   },
   /**
    * 生命周期函数--监听页面加载
@@ -24,30 +28,34 @@ Page({
     _this.setData({
       openid: app.globalData.openid,
     });
-    // _this.addData(_this.data.openid);
+    _this.addData(_this.data.openid);
   },
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.addData(this.data.openid);
+    // this.addData(this.data.openid);
   },
 
   /**
    * 加载数据列表
    */
-  addData: function (openid) {
+  addData(openid) {
+    const { dbName, currentNavTab } = this.data;
     const _ = db.command;
     let _this = this;
-    db.collection("CarSearchPeople")
+    db.collection(dbName)
       .where({
         _openid: openid,
-        status: _.neq(1),
+        status: _.neq(2), //0:待发布, 1:发布成功 2:删除
       })
       .orderBy("exactDate", "desc")
       .get({
         success: function (res) {
-          console.log("车找人列表数据", res.data);
+          console.log(
+            currentNavTab == 0 ? "车找人列表数据" : "人找车列表数据",
+            res.data
+          );
           wx.hideLoading();
           _this.setData({
             list: res.data,
@@ -59,11 +67,34 @@ Page({
   },
 
   /**
+   * 导航列表点击
+   */
+  switchNav(event) {
+    const { currentNavTab, openid } = this.data;
+    let cur = event.currentTarget.dataset.current;
+    console.log(cur, "eventevent", currentNavTab);
+    if (currentNavTab == cur) {
+      return false;
+    } else {
+      this.setData({
+        currentNavTab: cur,
+        pageIndex: 1,
+        list: [],
+        dbName: cur == 0 ? "CarPublish" : "PeopleLookingCars",
+        dbNameRecord: cur == 0 ? "CarOwnerRecord" : "PassengersRecord",
+      });
+      // //加载数据
+      this.addData(openid);
+    }
+  },
+
+  /**
    * 发布函数
    */
   publishTap(e) {
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
+    const { dbName, openid } = this.data;
 
     let params = this.data.list[idx];
     if (!this.isValid(params.exactDate)) return false;
@@ -71,46 +102,40 @@ Page({
     // params.exactDateTag == '今天' ? this.getTodyTime(params.exactTime) : this.getTomorrowTime(params.exactTime);
     //存放时间戳
     //添加数据库时 _id、_openid不能存在否则报错
-    delete params._id;
-    delete params._openid;
-    
+    // delete params._id;
+    // delete params._openid;
+
     //判断是否有效
     // delete params.exactDateTag;
-    
+
     //添加个人信息
-    params.userInfo = wx.getStorageSync('userInfo');
-    console.log(params);
+    // params.userInfo = wx.getStorageSync('userInfo');
+    console.log(params, idx, id);
 
     wx.showModal({
       title: "车找人",
       content: "确定发布这条信息？",
-      success: (res) => {
+      success: async (res) => {
         if (res.confirm) {
-          console.log("ok");
           // 操作数据库
-          db.collection("CarOwnerRecord").add({
-            data: params,
-            success: function (res) {
-              console.log(res);
-              //发布成功
-              wx.showToast({
-                title: "发布成功",
-                icon: "success",
-                duration: 2000,
+          try {
+            const r = await db
+              .collection(dbName)
+              .where({ _id: id })
+              .update({
+                data: {
+                  status: 1,
+                },
               });
-              // const pages = getCurrentPages();
-              // var prevPage = pages[pages.length - 2];
-              // prevPage.setData({
-              //   currentNavTab: 0,
-              //   pageIndex: 1,
-              // });
-
-              wx.switchTab({
-                url: "/pages/index/index",
-              });
-            },
-            fail: console.error,
-          });
+            wx.showToast({
+              title: "发布成功",
+              icon: "success",
+              duration: 2000,
+            });
+            this.addData(openid);
+          } catch (e) {
+            throw Error(e);
+          }
         } else if (res.cancel) {
           console.log("cancel");
         }
@@ -123,6 +148,7 @@ Page({
    */
   deleteTap(e) {
     let _this = this;
+    const { dbName } = this.data;
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
 
@@ -134,35 +160,29 @@ Page({
       success: function (res) {
         if (res.confirm) {
           console.log("ok");
-          wx.showToast({
-            title: "",
-            icon: "loading",
-            success: function (res) {
-              //更新状态函数
-              db.collection("CarSearchPeople")
-                .doc(id)
-                .update({
-                  data: {
-                    status: 1,
-                  },
-                  success: function (res) {
-                    console.log(res);
-                    let list = _this.data.list;
-                    let filterRes = list.filter((ele, index) => {
-                      return index != idx;
-                    });
-                    _this.setData({
-                      list: filterRes,
-                    });
-                    wx.showToast({
-                      title: "删除成功",
-                      icon: "success",
-                    });
-                  },
-                  fail: console.error,
+          //更新状态函数
+          db.collection(dbName)
+            .doc(id)
+            .update({
+              data: {
+                status: 2,
+              },
+              success: function (res) {
+                console.log(res);
+                let list = _this.data.list;
+                let filterRes = list.filter((ele, index) => {
+                  return index != idx;
                 });
-            },
-          });
+                _this.setData({
+                  list: filterRes,
+                });
+                wx.showToast({
+                  title: "删除成功",
+                  icon: "success",
+                });
+              },
+              fail: console.error,
+            });
         } else if (res.cancel) {
           console.log("cancel");
         }
@@ -231,15 +251,11 @@ Page({
   },
 
   async addPublic() {
-    const userInfo = wx.getStorageSync('userInfo')
-    console.log(userInfo, 'userInfo')
-    if(!userInfo) {
-      const res = await wx.getUserProfile({
-        desc: '用于完善个人信息'
-      });
-      wx.setStorageSync('userInfo', res.userInfo);
+    const { currentNavTab } = this.data;
+    if (currentNavTab == 0) {
+      wx.navigateTo({ url: "/pages/NewPepleSearch/NewPepleSearch" });
+    } else {
+      wx.navigateTo({ url: "/pages/NewCarSearch/NewCarSearch" });
     }
-    wx.navigateTo({ url: '/pages/NewPepleSearch/NewPepleSearch' })
-    // url='/pages/NewPepleSearch/NewPepleSearch'
-  }
+  },
 });

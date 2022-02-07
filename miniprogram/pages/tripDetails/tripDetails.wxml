@@ -32,7 +32,7 @@
     <view class='top-view'>
       <view class='user-info'>
         <image class='img' src='{{userInfo.avatarUrl}}'></image>
-        <text class='name'>{{userInfo.nickName}}</text>
+        <text class='name'>{{userInfo.name}}</text>
       </view>
       <view class="primary-btn" bindtap="onWatchDemo">
         导航
@@ -49,6 +49,10 @@
         <view class='item'>
           <text class='label'>出发时间</text>
           <text class='text'>{{dateUtil.dateFormat(exactDate)}}</text>
+        </view>
+        <view class='item'>
+          <text class='label'>车型</text>
+          <text class='text'>{{modelType}}</text>
         </view>
         <view class='item address'>
           <view class='address-view'>
@@ -92,18 +96,18 @@
 
   <!-- 预约按钮 -->
   <view class='make-btn' >
-    <view class='left-btn'>
+    <!-- <view class='left-btn'>
       <view class='back' bindtap='bindGoBack'>
         <image src='../../images/icon/back.png'></image>
       </view>
       <view class='home' bindtap='bindGoHome'>
         <image src='../../images/icon/home3.png'></image>
       </view>
-    </view>
-    <view class='tel' bindtap='bindMakePhoneCall'>
+    </view> -->
+    <button disabled="{{peopleNumber == 0 || phoneNumber == phone}}" class='tel' bindtap='bindMakePhoneCall'>
       <image src='../../images/icon/tel3.png'></image>
       <text class='text'>马上预约</text>
-    </view>
+    </button>
     <button class='share' hover-class="other-button-hover" open-type="share">
       <image src='../../images/icon/share3.png'></image>
     </button>

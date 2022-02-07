@@ -1,8 +1,8 @@
 // miniprogram/pages/tripDetails/tripDetails.js
 const app = getApp();
 const db = wx.cloud.database();
-const plugin = requirePlugin('routePlan');
-const { REFERER, MOYUAN_KEY } = require('../../config/appConfig')
+const plugin = requirePlugin("routePlan");
+const { REFERER, MOYUAN_KEY } = require("../../config/appConfig");
 
 Page({
   /**
@@ -27,7 +27,7 @@ Page({
 
     startPoint: null,
     endPoint: null,
-		themeColor: '#427CFF',
+    themeColor: "#427CFF",
 
     //出发城市***
     startCity: [],
@@ -53,13 +53,16 @@ Page({
     budget: "",
     //备注***
     remarks: "s",
+    // 获取当前用户电话 用于判断自己不能预约自己
+    phone: "",
+    modelType: "",
+    passengerInfo: [],
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options, "tripDetails");
     //获取用户当前位置
     let _this = this;
     wx.showLoading({
@@ -77,12 +80,17 @@ Page({
       },
     });
     //截取参数
-    _this.setData({
-      id: options.id,
-    }, async () => {
-      await _this.addData(options.id);
-      wx.hideLoading()
-    });
+    _this.setData(
+      {
+        id: options.id,
+        phone: app.globalData.info.phone, // 获取当前用户电话
+      },
+      async () => {
+        await _this.addData(options.id);
+        wx.hideLoading();
+        console.log(options, "tripDetails", app.globalData.info.phone);
+      }
+    );
   },
 
   /**
@@ -104,38 +112,41 @@ Page({
   /**
    * 加载数据
    */
-  async addData (id) {
+  async addData(id) {
     let _this = this;
-    const { data } = await db.collection("CarOwnerRecord")
-      .doc(id).get()
-      _this.setData({
-        userInfo: data.userInfo,
-        //出发城市***
-        startCity: data.startRegion[2],
-        //到达城市***
-        endCity: data.endRegion[2],
-        //具体日期***
-        exactDate: data.exactDate,
-        //具体时间***
-        exactTime: data.exactTime,
-        //起点***
-        startLocation: data.startLocation,
-        //终点***
-        endLocation: data.endLocation,
-        //路线图***
-        // tripsArray: data.tripsArray,
-        //人数***
-        peopleNumber: data.peopleNumber,
-        //联系电话
-        phoneNumber: data.phoneNumber,
-        //预算***
-        budget: data.budget,
-        //备注***
-        remarks: data.remarks,
-      });
+    const { data } = await db.collection("CarPublish").doc(id).get();
+    console.log(data, "加载数据加载数据");
+    _this.setData({
+      userInfo: data.userInfo,
+      modelType: data.modelType,
+      //出发城市***
+      startCity: data.startRegion[2],
+      //到达城市***
+      endCity: data.endRegion[2],
+      //具体日期***
+      exactDate: data.exactDate,
+      //具体时间***
+      exactTime: data.exactTime,
+      //起点***
+      startLocation: data.startLocation,
+      //终点***
+      endLocation: data.endLocation,
+      //路线图***
+      // tripsArray: data.tripsArray,
+      //人数***
+      peopleNumber: data.peopleNumber,
+      //联系电话
+      phoneNumber: data.phoneNumber,
+      //预算***
+      budget: data.budget,
+      //备注***
+      remarks: data.remarks,
+      // 预约乘客的信息
+      passengerInfo: data.passengerInfo,
+    });
 
-      _this.createdMarker(_this.data.dataList);
-      _this.drawPolyline(_this.data.allLocation);
+    _this.createdMarker(_this.data.dataList);
+    _this.drawPolyline(_this.data.allLocation);
   },
 
   /**
@@ -162,9 +173,9 @@ Page({
         content: marker.name,
         padding: 10,
         borderRadius: 2,
-        display: 'ALWAYS'
+        display: "ALWAYS",
       };
-      console.log('iiiiiiiiii', i)
+      console.log("iiiiiiiiii", i);
       switch (i) {
         //起点
         case 0:
@@ -176,7 +187,7 @@ Page({
             latitude: marker.latitude,
             longitude: marker.longitude,
             name: marker.name,
-          }
+          };
           break;
         //终点
         case markerList.length - 1:
@@ -187,7 +198,7 @@ Page({
             latitude: marker.latitude,
             longitude: marker.longitude,
             name: marker.name,
-          }
+          };
           break;
       }
     }
@@ -197,7 +208,7 @@ Page({
       markers: currentMarker,
       allLocation: currentMarker,
       startPoint,
-      endPoint
+      endPoint,
     });
   },
 
@@ -205,7 +216,7 @@ Page({
    * 绘制路线图
    */
   drawPolyline: function (dataList) {
-    console.log(dataList, 'dataList')
+    console.log(dataList, "dataList");
     let _this = this;
     let polyline = [
       {
@@ -237,37 +248,70 @@ Page({
   },
 
   /**
-   * 查看地图坐标
-   */
-  // openLocationTap:function(e){
-  //   let _this = this;
-  //   let idx = e.currentTarget.dataset.idx;
-  //   let item = _this.data.tripsArray[idx];
-  //   console.log('idx:'+idx);
-  //   //获取位置授权
-  //   wx.getSetting({
-  //     // type: 'gcj02',
-  //     success: function (res) {
-  //       console.log(res);
-  //       //获取当前经纬度
-  //       wx.getLocation({
-  //         success: function (res) {
-  //           console.log(res);
-  //           //打开微信内置地图
-  //           wx.openLocation(item)
-  //         },
-  //         fail: console.error
-  //       })
-  //     },
-  //   });
-  // },
-  /**
    * 拨打电话
    */
   bindMakePhoneCall() {
-    wx.makePhoneCall({
-      phoneNumber: this.data.phoneNumber,
+    // 获取自己个人信息，写入车主信息中
+    const passengerInfo = app.globalData.info;
+    // 获取这条信息id 和 人数
+    const { id, peopleNumber, userInfo, modelType, startLocation, endLocation, budget, remarks, passengerInfo: carInfo, exactDate } = this.data;
+    const repectPhone = carInfo.some(ele => (ele.phone == passengerInfo.phone))
+    if(repectPhone) return wx.showModal({
+      content: '您已预约请勿重复预约',
+      showCancel: false,
+      // success: function (res) {
+      //   wx.switchTab({
+      //     url: "/pages/myCenter/myCenter",
+      //   });
+      // },
     });
+    // 绑定乘客信息
+    // 添加乘客预约记录
+
+    wx.showModal({
+      title: "预约车主",
+      content: "是否确定预约",
+      success(res) {
+        if (res.confirm) {
+           // 修改车主数据
+          wx.cloud.callFunction({
+            name: "subscribeHistory",
+            data: {
+              dbName: "CarPublish",
+              passengerInfo,
+              id,
+              peopleNumber,
+            },
+          }).then(async res => {
+            // 添加乘客(自己的)预约记录
+            const result = await db.collection('subscribeHistory').add({
+              data: {
+                carInfo: {
+                  userInfo, // 车主信息
+                  modelType, // 车型
+                  startLocation,  // 起点
+                  endLocation,  // 终点
+                  budget,  // 预算
+                  remarks, // 车主备注
+                  exactDate,
+                },
+                name: passengerInfo.name,
+                phone: passengerInfo.phone,
+                subscribeStatus: 0, // 0未出行 1已出行 2其他
+              }
+            })
+
+            wx.switchTab({
+              url: "/pages/myCenter/myCenter",
+            });
+          })
+        }
+      },
+    });
+
+    // wx.makePhoneCall({
+    //   phoneNumber: this.data.phoneNumber,
+    // });
   },
   /**
    * 返回
@@ -305,10 +349,10 @@ Page({
     const referer = REFERER;
     const endPoint = JSON.stringify(this.data.endPoint);
     const startPoint = this.data.startPoint
-    ? JSON.stringify(this.data.startPoint)
-    : "";
-    console.log(endPoint, startPoint)
-    const mode = 'driving'
+      ? JSON.stringify(this.data.startPoint)
+      : "";
+    console.log(endPoint, startPoint);
+    const mode = "driving";
     const navigation = 1;
     if (!key || !referer) {
       console.error("请输入有效的key和referer");

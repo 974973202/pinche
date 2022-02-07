@@ -1,4 +1,4 @@
-<!--miniprogram/pages/carsLookPeople/carLoolPeople.wxml-->
+<!--miniprogram/pages/myPublish/myPublish.wxml-->
 <!-- <navigation
 id='Navigation'
 show-icon='{{showIcon}}'
@@ -99,12 +99,21 @@ title="添加车找人信息"
         </view>
       </view>
     </view> -->
+    <!-- 车型 -->
+    <view class='item'>
+      <text class='label'>车型</text>
+      <view class='cont'>
+        <view class='input-view'>
+          <input bindinput="inputedit" data-name="modelType" placeholder='例：兰博基尼' value="{{modelType}}"/>
+        </view>
+      </view>
+    </view>
     <!-- 是否高速 -->
     <view class='item'>
       <text class='label'>是否高速</text>
       <view class='cont'>
         <radio-group class="radio-group" bindchange="isSpeedChange">
-          <label class="radio" wx:for="{{isSpeedStr}}">
+          <label class="radio" wx:for="{{isSpeedStr}}" wx:key="value">
             <radio color='#0091ff' value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
           </label>
         </radio-group>
@@ -147,6 +156,11 @@ title="添加车找人信息"
       <view class='cont price'>
         <textarea class='remark' bindinput="inputedit" data-name="remarks" placeholder="请输入..." value='{{remarks}}'/>
       </view>
+    </view>
+  <!-- 协议 -->
+    <view class='item'>
+      <radio bindtap='radioChange' color='#0091ff' checked="{{agreement}}"/>
+      <text>我已阅读并同意XX拼车</text><text>《合乘协议》</text>
     </view>
   </view>
 

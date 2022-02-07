@@ -1,4 +1,4 @@
-// miniprogram/pages/carsLookPeople/carLoolPeople.js
+// miniprogram/pages/myPublish/myPublish.js
 
 const app = getApp();
 const db = wx.cloud.database();
@@ -43,6 +43,8 @@ Page({
         value: "是",
       },
     ],
+    // 车型
+    modelType: '',
     //是否高速***
     isSpeed: "辅路",
     //人数***
@@ -53,6 +55,10 @@ Page({
     budget: "",
     //备注***
     remarks: "",
+    // 协议
+    agreement: false,
+    // 用户注册信息
+    userInfo: {},
   },
 
   /**
@@ -73,6 +79,28 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {},
+
+  onTabItemTap() {
+    if(!app.globalData.info) {
+      wx.showModal({
+        content: "请先进行实名认证",
+        showCancel: false,
+        success: (res) => {
+          //返回页面
+          // wx.navigateBack();
+          wx.switchTab({
+            url: "/pages/myCenter/myCenter",
+          });
+          
+        },
+      });
+    }
+    this.setData({
+      phoneNumber: app.globalData.info.phone,
+      userInfo: app.globalData.info,
+    })
+    console.log( app.globalData.info, ' app.globalData.info')
+  },
 
   /**
    * 出行方向
@@ -176,54 +204,6 @@ Page({
   },
 
   /**
-   * 添加中途停车点
-   */
-  // addTripsItem: function () {
-  //   let _this = this;
-  //   wx.chooseLocation({
-  //     success: function (res) {
-  //       console.log(res);
-  //       let list = _this.data.tripsArray;
-  //       list.push(res);
-  //       _this.setData({
-  //         tripsArray: list
-  //       });
-  //     },
-  //   })
-  // },
-
-  /**
-   * 修改停车点
-   */
-  // changeTripsItem: function () {
-  //   let _this = this;
-  //   wx.chooseLocation({
-  //     success: function (res) {
-  //       console.log(res);
-  //       _this.setData({
-
-  //       });
-  //     },
-  //   })
-  // },
-
-  /**
-   * 删除停车点
-   */
-  // delTripsItem: function (e) {
-  //   let _this = this;
-  //   let idx = e.currentTarget.dataset.idx;
-  //   let list = _this.data.tripsArray;
-  //   let filterRes = list.filter((ele, index) => {
-  //     return index != idx;
-  //   });
-  //   console.log(filterRes)
-  //   this.setData({
-  //     tripsArray: filterRes
-  //   })
-  // },
-
-  /**
    * 道路选择
    */
   isSpeedChange: function (e) {
@@ -250,6 +230,16 @@ Page({
   },
 
   /**
+   * 协议
+   */
+  radioChange() {
+    const { agreement } = this.data;
+    this.setData({
+      agreement: !agreement
+    })
+  },
+
+  /**
    * 错误提示信息
    */
   showModal(error) {
@@ -262,7 +252,7 @@ Page({
   /**
    * 点击发布函数
    */
-  submitTap: function () {
+  async submitTap () {
     let _this = this;
     let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
@@ -277,6 +267,10 @@ Page({
       _this.showModal("请输入正确的联系电话");
       return false;
     }
+    if (_this.data.modelType == "") {
+      _this.showModal("请填写车型");
+      return false;
+    }
     if (_this.data.peopleNumber == "") {
       _this.showModal("请输入人数");
       return false;
@@ -289,11 +283,28 @@ Page({
       _this.showModal("请输入预算金额");
       return false;
     }
+    if (!_this.data.agreement) {
+      _this.showModal("请勾选合乘协议");
+      return false;
+    }
+    if(_this.data.userInfo.phone != _this.data.phoneNumber) {
+      _this.showModal("实名电话与发布电话不一致");
+      return false;
+    }
+    // 获取微信头像信息
+    let getUserProfile = wx.getStorageSync("getUserProfile");
+    if (!getUserProfile) {
+      getUserProfile = await wx.getUserProfile({
+        desc: "用于完善个人信息",
+      });
+      wx.setStorageSync("getUserProfile", getUserProfile.userInfo);
+    }
+    console.log(getUserProfile, "getUserProfile");
     wx.showToast({
       title: "",
       icon: "loading",
       success: function (res) {
-        _this.addColoction();
+        _this.addColoction(getUserProfile);
       },
     });
   },
@@ -301,17 +312,19 @@ Page({
   /**
    * 添加函数
    */
-  addColoction() {
+  async addColoction(getUserProfile) {
     let _this = this;
     const { isSpeedStr, ...rest } = this.data;
     const addData = {
       ...rest,
       createdTime: db.serverDate(),
       //状态
-      status: 0, //0:正常使用,1:被删除
+      status: 0, //0:待发布, 1:发布成功 2:删除
     }
+    addData.userInfo.avatarUrl = getUserProfile.userInfo.avatarUrl
     delete addData.__webviewId__
-    db.collection("CarSearchPeople").add({
+    delete addData.userInfo._id
+    db.collection("CarPublish").add({
       data: addData,
       success: (res) => {
         console.log(res);
@@ -322,7 +335,7 @@ Page({
             //返回页面
             // wx.navigateBack();
             wx.navigateTo({
-              url: '/pages/carsLookPeople/carLoolPeople'
+              url: '/pages/myPublish/myPublish'
             })
           },
         });

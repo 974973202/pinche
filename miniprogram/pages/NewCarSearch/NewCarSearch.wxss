@@ -1,5 +1,5 @@
 /* miniprogram/pages/peopleLookCars/peopleLookCars.wxss */
-/* miniprogram/pages/carsLookPeople/carLoolPeople.wxss */
+/* miniprogram/pages/myPublish/myPublish.wxss */
 page {
   background: #f7f7f7;
   display: flex;

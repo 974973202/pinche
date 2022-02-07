@@ -1,4 +1,4 @@
-/* miniprogram/pages/carsLookPeople/carLoolPeople.wxss */
+/* miniprogram/pages/myPublish/myPublish.wxss */
 page {
   background: #f7f7f7;
   display: flex;
@@ -7,7 +7,7 @@ page {
   align-content: center;
 }
 .container{
-  /* padding-bottom: 120rpx; */
+  padding-bottom: 120rpx;
 }
 .list-view{
   width: 100%;
@@ -29,13 +29,13 @@ page {
 .label{
   font-size: 28rpx;
   color: #535353;
-  padding: 30rpx 10rpx 15px 0;
+  padding: 15rpx 10rpx 15px 0;
   width: 130rpx;
 }
 .cont{
   flex: 1;
   font-size: 28rpx;
-  padding: 30rpx 0 15px 0;
+  padding: 15rpx 0 15px 0;
   color: #1a1a1a;
 }
 .cont .address-view{

@@ -17,33 +17,6 @@ page {
   background-color: #0091ff;
   z-index: 99;
 }
-.search{
-  padding-right: 120px;
-  height: 44px;
-  display: flex;
-}
-.searchbox{
-  flex: 1;
-  height: 30px;
-  margin-left: 20rpx;
-  margin-right: 20rpx;
-  display: flex;
-  margin-top: 8px;
-  align-items: center;
-  border-radius: 27px;
-  background: hsla(0, 0%, 100%, .6);
-}
-.searchicon{
-  width: 20px;
-  height: 20px;
-  margin-left: 20rpx;
-  margin-right: 10rpx; 
-}
-.searchinput{
-  font-size: 14px;
-  color: #fff;
-  flex: 1;
-}
 .messageBtn{
   width: 50rpx;
   height: 50rpx;

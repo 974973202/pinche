@@ -1,0 +1,135 @@
+<!-- miniprogram/pages/peopleLookCars/peopleLookCars.wxml -->
+<view class="topNavBar">
+  <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">
+    <block wx:for="{{navData}}" wx:key="index" wx:for-index="id" wx:for-item="navItem">
+      <view class='nav-item {{currentNavTab == id ? "active" :""}}' data-current="{{id}}" bindtap='switchNav'>
+        {{navItem}}
+      </view>
+    </block>
+  </scroll-view>
+</view>
+<view wx:if="{{currentNavTab == 0}}" class='container'>
+  <!-- 方向 -->
+  <view wx:if="{{list.length != 0 || isLodding}}" class='list-view'>
+    <view class='item-view' wx:for="{{list}}" wx:key="index">
+      <view class='info'>
+        <view class='delete-btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
+          <image src='../../images/icon/del.png'></image>
+        </view>
+        <view class='item'>
+          <view class='text-view'>
+            <text class='label'>方向</text>
+            <text class='text'>{{item.startRegion[2]}}—{{item.endRegion[2]}}</text>
+          </view>
+          <view class='text-view'>
+            <text class='label'>出行时间</text>
+            <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
+          </view>
+        </view>
+        <view class='item'>
+          <view class='text-view'>
+            <text class='label'>起点</text>
+            <text class='text'>{{item.startLocation.name}}</text>
+          </view>
+          <view class='text-view'>
+            <text class='label'>终点</text>
+            <text class='text'>{{item.endLocation.name}}</text>
+          </view>
+        </view>
+        <view class='item'>
+          <view class='text-view'>
+            <text class='label'>座位</text>
+            <text class='text'>{{item.peopleNumber}} 个</text>
+          </view>
+          <view class='text-view'>
+            <text class='label'>路况</text>
+            <text class='text'>{{item.isSpeed}}</text>
+          </view>
+        </view>
+        <view class='item'>
+          <view class='text-view'>
+            <text class='label'>预算</text>
+            <view class='cont'>
+              <text class='text'>{{item.budget}}元/人</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class='btn-group'>
+        <view wx:if="{{item.status == 0}}" class='button' data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+          发布
+        </view>
+        <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button>
+        <button wx:if="{{item.status == 1}}" class='button'>预约详情</button>
+      </view>
+    </view>
+  </view>
+  <view wx:else class='null-view'>
+    <view class='img-view'>
+      <image src='../../images/icon/null_view.jpg'></image>
+    </view>
+    <!-- <text class="text">暂无出行信息</text> -->
+  </view>
+  <!-- 发起拼车 -->
+  <view class='submit-btn'>
+    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发布出行信息</button>
+  </view>
+</view>
+
+<view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
+  <!-- 方向 -->
+  <view wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
+    <view wx:for="{{list}}" wx:key = "index" class='sub'>
+      <view>
+        <view class='text-group'>
+          <view class='text-sub'>
+            <text class='label'>出行时间：</text>
+            <view class='time cont'>
+              <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
+            </view>
+          </view>
+          <view class='text-sub'>
+            <text class='label'>出行方向：</text>
+            <view class='sub_driction cont'>
+              <text class='text'>{{item.startRegion[2]}}</text>
+              <image class='img' src=''></image>
+              <text class='text'>{{item.endRegion[2]}}</text>
+            </view>
+          </view>
+          <view class='text-sub'>
+            <text class='label'>人数：</text>
+            <text class='cont text'>{{item.peopleNumber}} 人</text>
+          </view>
+        </view>
+        <view class='sub-btn-group'>
+          <view class='publish btn'data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>发布</view>
+          <view class='delete btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>删除</view>
+        </view>
+      </view>
+      <view>
+        <view class='address-view'>
+          <text class='label'>起点：</text>
+          <text class='cont text'>{{item.startLocation.name}}</text>
+        </view>
+        <view class='address-view'>
+          <text class='label'>终点：</text>
+          <text class='cont text'>{{item.endLocation.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class='sub-view'>
+    <view class='img-view'>
+      <image src='../../images/icon/null_view.jpg'></image>
+    </view>
+    <!-- <text class="text">暂无出行信息</text> -->
+  </view>
+
+  <!-- 发起拼车 -->
+  <view class='submit-btn'>
+    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
+      发起预约
+    </button>
+  </view>
+</view>

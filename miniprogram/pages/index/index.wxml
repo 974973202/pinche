@@ -5,7 +5,7 @@
       <view class='search-type-l'>查找类型：</view>
       <view class='search-type-c'>
         <radio-group class="radio-group" bindchange="bindTypeChange">
-          <label class="radio" wx:for="{{searchType}}">
+          <label class="radio" wx:for="{{searchType}}" wx:key="value">
             <radio color='#0091ff' value="{{item.value}}" checked="{{item.checked}}" />
             {{item.name}}
           </label>

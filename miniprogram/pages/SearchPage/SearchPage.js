@@ -183,6 +183,7 @@ Page({
           filter: {
             startRegion,
             endRegion,
+            status: 1
           },
           startTime: new Date().getTime(),
           // endTime: this.endTime()

@@ -1,0 +1,59 @@
+<wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs>
+
+<view class='my-subscribe'>
+  <!-- 方向 -->
+  <view wx:if="{{subscribeData.length != 0}}" class='sub-view'>
+    <view wx:for="{{subscribeData}}" wx:key = "index" class='sub'>
+      <view>
+        <view class='text-group'>
+
+          <view class='text-sub'>
+            <text class='label'>出行时间：</text>
+            <view class='time cont'>
+              <text class='text'>{{dateUtil.dateFormat(item.carInfo.exactDate)}}</text>
+            </view>
+          </view>
+
+          <view class='text-sub'>
+            <text class='label'>起点：</text>
+            <text class='cont text'>{{item.carInfo.endLocation.address}}</text>
+          </view>
+
+          <view class='text-sub'>
+            <text class='label'>终点：</text>
+            <text class='cont text'>{{item.carInfo.startLocation.address}}</text>
+            </view>
+          <view class='text-sub'>
+            <text class='label'>车主姓名：</text>
+            <text class='cont text'>{{item.carInfo.userInfo.name}}</text>
+          </view>
+          <view class='text-sub'>
+            <text class='label'>车主电话：</text>
+            <text class='cont text'>{{item.carInfo.userInfo.phone}}</text>
+          </view>
+          <view class='text-sub'>
+            <text class='label'>备注：</text>
+            <text class='cont text'>{{item.carInfo.remarks}}</text>
+          </view>
+        </view>
+        <view class='sub-btn-group'>
+          <!-- <view class='publish btn' data-id='{{item._id}}' bindtap='onCompleteOrder'>完成订单</view> -->
+          <view class='delete btn' data-phone='{{item.carInfo.userInfo.phone}}' bindtap='onCall'>呼叫车主</view>
+        </view>
+      </view>
+
+      <view>
+        <view class='address-view'>
+          <text class='label'>车型:</text>
+          <text class='cont text'>{{item.carInfo.modelType}}</text>
+        </view>
+        <view class='address-view'>
+          <text class='label'>预算：</text>
+          <text class='cont text'>{{item.carInfo.budget}} 元/人</text>
+        </view>
+      </view>
+
+    </view>
+  </view>
+
+</view>
