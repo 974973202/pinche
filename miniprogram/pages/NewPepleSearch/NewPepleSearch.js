@@ -3,7 +3,11 @@
 const app = getApp();
 const db = wx.cloud.database();
 const { tsFormatTime, exactTime } = require("../../utils/utils");
-const { MOYUAN_KEY } = require("../../config/appConfig");
+const {
+  MOYUAN_KEY,
+  PASSENGERSUBMESSAGE,
+  CARSUBMESSAGE,
+} = require("../../config/appConfig");
 
 Page({
   /**
@@ -395,47 +399,55 @@ Page({
       getUserProfile = getUserProfile.userInfo;
       wx.setStorageSync("getUserProfile", getUserProfile);
     }
-    wx.showToast({
-      title: "",
-      icon: "loading",
-      success: function (res) {
-        _this.addColoction(getUserProfile);
-      },
-    });
+    _this.addColoction(getUserProfile);
   },
 
   /**
    * 添加函数
    */
   async addColoction(getUserProfile) {
-    let _this = this;
-    const { isSpeedStr, ...rest } = this.data;
-    const addData = {
-      ...rest,
-      createdTime: db.serverDate(),
-      //状态
-      status: 0, //0:待发布, 1:发布成功 2:删除
-    };
-    addData.userInfo.avatarUrl = getUserProfile.avatarUrl;
-    delete addData.__webviewId__;
-    delete addData.userInfo._id;
-    db.collection("CarPublish").add({
-      data: addData,
-      success: (res) => {
-        console.log(res);
-        wx.showToast({
-          title: "添加发布成功",
-          icon: "success",
-          success: (res) => {
-            //返回页面
-            // wx.navigateBack();
-            wx.navigateTo({
-              url: "/pages/myPublish/myPublish",
-            });
-          },
-        });
+    // 发送给车主的订阅消息
+    wx.requestSubscribeMessage({
+      tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
+      success: (data) => {
+        const acceptTemplateIds =
+          Object.keys(data).filter((key) => data[key] === "accept") || [];
+        if (!acceptTemplateIds.length) {
+          console.warn("订阅消息流程失败!", data);
+        } else {
+          const { isSpeedStr, ...rest } = this.data;
+          const addData = {
+            ...rest,
+            createdTime: db.serverDate(),
+            //状态
+            status: 0, //0:待发布, 1:发布成功 2:删除
+          };
+          addData.userInfo.avatarUrl = getUserProfile.avatarUrl;
+          delete addData.__webviewId__;
+          delete addData.userInfo._id;
+          db.collection("CarPublish").add({
+            data: addData,
+            success: (res) => {
+              console.log(res);
+              wx.showToast({
+                title: "添加发布成功",
+                icon: "success",
+                success: (res) => {
+                  //返回页面
+                  // wx.navigateBack();
+                  wx.navigateTo({
+                    url: "/pages/myPublish/myPublish",
+                  });
+                },
+              });
+            },
+            fail: console.error,
+          });
+        }
       },
-      fail: console.error,
+      fail(res) {
+        console.warn("点击了取消!", res);
+      },
     });
   },
 });

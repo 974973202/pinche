@@ -10,4 +10,6 @@ export const REFERER = 'pinche';
 export const WEBSERVICE_APPID = 'wxc1c68623b7bdea7b';
 export const CUSTOM_KEY = ''; // 个性化地图key
 export const WS_HOST = 'https://apis.map.qq.com'
-export const SMART_SOLUTION_KEY = ''; //出行解决方案key
+export const SMART_SOLUTION_KEY = ''; //
+export const PASSENGERSUBMESSAGE = 'mYUqRgxDsJkV1Ebdi80T0aDHtY0u2H0a0rGsSIQGcos'
+export const CARSUBMESSAGE = 'h_1ihdW6gaxligKs_6FWDx6rcM7ko61Qe-yTggYamJk'

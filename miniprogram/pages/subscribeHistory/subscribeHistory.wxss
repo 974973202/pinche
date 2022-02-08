@@ -1,8 +1,10 @@
 .my-subscribe{
   /* padding: 140rpx 0; */
+  height: 100%;
 }
 .sub-view{
   width: 100%;
+  height: 100%;
   /* padding: 120rpx 0 30rpx 0; */
 }
 .sub{
