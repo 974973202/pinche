@@ -142,7 +142,7 @@ Page({
       //备注***
       remarks: data.remarks,
       // 预约乘客的信息
-      passengerInfo: data.passengerInfo,
+      passengerInfo: data.passengerInfo || [],
     });
 
     _this.createdMarker(_this.data.dataList);
@@ -250,20 +250,46 @@ Page({
   /**
    * 拨打电话
    */
-  bindMakePhoneCall() {
+  async bindMakePhoneCall() {
     // 获取自己个人信息，写入车主信息中
-    const passengerInfo = app.globalData.info;
+    let passengerInfo = app.globalData.info;
+    console.log(passengerInfo)
+    if (!passengerInfo.phone) return wx.showModal({
+      content: '请先进行实名认证',
+      showCancel: false,
+      success: (res) => {
+        wx.switchTab({
+          url: "/pages/myCenter/myCenter",
+        });
+      },
+    });
+
+    if(passengerInfo.status === 0 || passengerInfo.status === 2) {
+      // 解决数据不同步问题
+      const { data = [] } = await db.collection('User').where({
+        _openid: app.globalData.openid,
+      }).field({
+        status: true,
+        name: true,
+        phone: true,
+      }).get();
+      if(data.length>0 && data[0].status == 1) {
+        app.globalData.info = data[0];
+        passengerInfo = data[0];
+      } else {
+        let cont = passengerInfo.status === 0 ? '您尚未通过实名认证' : '实名认证失败，请重新认证'
+        return wx.showModal({
+          content: cont,
+          showCancel: false,
+        });
+      }
+    }
     // 获取这条信息id 和 人数
     const { id, peopleNumber, userInfo, modelType, startLocation, endLocation, budget, remarks, passengerInfo: carInfo, exactDate } = this.data;
     const repectPhone = carInfo.some(ele => (ele.phone == passengerInfo.phone))
     if(repectPhone) return wx.showModal({
       content: '您已预约请勿重复预约',
       showCancel: false,
-      // success: function (res) {
-      //   wx.switchTab({
-      //     url: "/pages/myCenter/myCenter",
-      //   });
-      // },
     });
     // 绑定乘客信息
     // 添加乘客预约记录

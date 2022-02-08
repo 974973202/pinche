@@ -135,7 +135,7 @@ Page({
           title: "申请认证成功",
         });
 
-        // 返回blog页面，并且刷新
+        // 返回myCenter页面，并且刷新
         wx.switchTab({
           url: "/pages/myCenter/myCenter",
         });

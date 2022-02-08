@@ -13,13 +13,13 @@
   <view wx:if="{{list.length != 0 || isLodding}}" class='list-view'>
     <view class='item-view' wx:for="{{list}}" wx:key="index">
       <view class='info'>
-        <view class='delete-btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
+        <view wx:if="{{item.status != 1}}" class='delete-btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
           <image src='../../images/icon/del.png'></image>
         </view>
         <view class='item'>
           <view class='text-view'>
             <text class='label'>方向</text>
-            <text class='text'>{{item.startRegion[2]}}—{{item.endRegion[2]}}</text>
+            <text class='text'>{{item.startRegion[2]}}—>{{item.endRegion[2]}}</text>
           </view>
           <view class='text-view'>
             <text class='label'>出行时间</text>
@@ -55,12 +55,29 @@
           </view>
         </view>
       </view>
+      <view class='info'>
+        <view class='item' wx:if="{{isPassenderDetail}}" wx:for="{{item.passengerInfo}}" wx:key="index">
+          <view class='text-view'>
+            <text class='label'>乘客姓名</text>
+            <text class='text'>{{item.name}}</text>
+          </view>
+          <view class='text-view'>
+            <text class='label'>乘客电话</text>
+            <text class='text'>{{item.phone}}</text>
+          </view>
+        </view>
+      </view>
       <view class='btn-group'>
         <view wx:if="{{item.status == 0}}" class='button' data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
           发布
         </view>
         <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button>
-        <button wx:if="{{item.status == 1}}" class='button'>预约详情</button>
+        <button data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='button'>
+          完成订单
+        </button>
+        <button bindtap='onPassengerDetail' wx:if="{{item.status == 1}}" class='button'>
+          预约详情
+        </button>
       </view>
     </view>
   </view>
@@ -75,11 +92,10 @@
     <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发布出行信息</button>
   </view>
 </view>
-
 <view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
   <!-- 方向 -->
   <view wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
-    <view wx:for="{{list}}" wx:key = "index" class='sub'>
+    <view wx:for="{{list}}" wx:key="index" class='sub'>
       <view>
         <view class='text-group'>
           <view class='text-sub'>
@@ -91,9 +107,7 @@
           <view class='text-sub'>
             <text class='label'>出行方向：</text>
             <view class='sub_driction cont'>
-              <text class='text'>{{item.startRegion[2]}}</text>
-              <image class='img' src=''></image>
-              <text class='text'>{{item.endRegion[2]}}</text>
+              <text class='text'>{{item.startRegion[2]}}-->{{item.endRegion[2]}}</text>
             </view>
           </view>
           <view class='text-sub'>
@@ -102,8 +116,16 @@
           </view>
         </view>
         <view class='sub-btn-group'>
-          <view class='publish btn'data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>发布</view>
-          <view class='delete btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>删除</view>
+          <view  wx:if="{{item.status == 1}}" class='publish btn'>已发布</view>
+          <view class='publish btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+            发布
+          </view>
+          <view class='delete btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
+            删除
+          </view>
+          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='delete btn'>
+            完成订单
+          </view>
         </view>
       </view>
       <view>
@@ -118,18 +140,14 @@
       </view>
     </view>
   </view>
-
   <view wx:else class='sub-view'>
     <view class='img-view'>
       <image src='../../images/icon/null_view.jpg'></image>
     </view>
     <!-- <text class="text">暂无出行信息</text> -->
   </view>
-
   <!-- 发起拼车 -->
   <view class='submit-btn'>
-    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>
-      发起预约
-    </button>
+    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发起预约</button>
   </view>
 </view>

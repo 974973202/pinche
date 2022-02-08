@@ -32,7 +32,7 @@ Page({
           dnName = "CarPublish";
         break;
       case "1":
-          dnName = "PassengersRecord";
+          dnName = "PassengerPublish";
         break;
     }
     this.setData({ dnName });

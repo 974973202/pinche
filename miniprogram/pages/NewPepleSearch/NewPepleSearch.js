@@ -44,7 +44,7 @@ Page({
       },
     ],
     // 车型
-    modelType: '',
+    modelType: "",
     //是否高速***
     isSpeed: "辅路",
     //人数***
@@ -64,10 +64,17 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-   onLoad() {
-    const t = tsFormatTime() + " " + exactTime()
-    const time = t.split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
+  onLoad() {
+    const t = tsFormatTime() + " " + exactTime();
+    const time = t.split(/[- : \/]/);
+    const exactDate = new Date(
+      time[0],
+      time[1] - 1,
+      time[2],
+      time[3],
+      time[4],
+      "00"
+    ).getTime();
     this.setData({
       dateIndex: tsFormatTime(),
       exactTime: exactTime(),
@@ -79,27 +86,95 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {},
+  goReal(cont) {
+    wx.showModal({
+      content: cont,
+      showCancel: false,
+      success: (res) => {
+        //返回页面
+        // wx.navigateBack();
+        wx.switchTab({
+          url: "/pages/myCenter/myCenter",
+        });
+      },
+    });
+  },
 
-  onTabItemTap() {
-    if(!app.globalData.info) {
-      wx.showModal({
-        content: "请先进行实名认证",
-        showCancel: false,
-        success: (res) => {
-          //返回页面
-          // wx.navigateBack();
-          wx.switchTab({
-            url: "/pages/myCenter/myCenter",
-          });
-          
-        },
-      });
+  async onShow() {
+    if (!app.globalData.info.phone) {
+      this.goReal("请先进行实名认证");
     }
-    this.setData({
-      phoneNumber: app.globalData.info.phone,
-      userInfo: app.globalData.info,
-    })
-    console.log( app.globalData.info, ' app.globalData.info')
+    // 未通过实名或已通过实名，数据未同步
+    if (
+      app.globalData.info.phone &&
+      (app.globalData.info.status === 0 || app.globalData.info.status === 2)
+    ) {
+      // 解决数据不同步问题
+      const { data = [] } = await db
+        .collection("User")
+        .where({
+          _openid: app.globalData.openid,
+        })
+        .field({
+          status: true,
+          name: true,
+          phone: true,
+        })
+        .get();
+      if (data.length > 0 && data[0].status == 1) {
+        app.globalData.info = data[0];
+        this.setData({
+          phoneNumber: app.globalData.info.phone,
+          userInfo: app.globalData.info,
+        });
+        // 判断是否车主认证
+        const { data: carData = [] } = await db
+          .collection("Certificates")
+          .where({ _openid: app.globalData.openid })
+          .field({
+            status: true,
+          })
+          .get();
+        if (carData[0].status === 0 || carData[0].status === 2) {
+          this.goReal(
+            carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
+          );
+        }
+        // 存在全局，我的发布里调用
+        if (carData[0].status === 1) {
+          app.globalData.carStatus = carData[0].status;
+        }
+      } else {
+        this.goReal(
+          data[0].status === 0 ? "实名认证中" : "实名认证失败，请重新认证"
+        );
+      }
+    }
+    // 通过实名认证
+    if (app.globalData.info.phone && app.globalData.info.status === 1) {
+      this.setData({
+        phoneNumber: app.globalData.info.phone,
+        userInfo: app.globalData.info,
+      });
+      // 判断是否车主认证
+      const { data: carData = [] } = await db
+        .collection("Certificates")
+        .where({ _openid: app.globalData.openid })
+        .field({
+          status: true,
+        })
+        .get();
+      if (carData[0].status === 0 || carData[0].status === 2) {
+        this.goReal(
+          carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
+        );
+      }
+      // 存在全局，我的发布里调用
+      if (carData[0].status === 1) {
+        app.globalData.carStatus = carData[0].status;
+      }
+    }
+    console.log(app.globalData.info, " app.globalData.info");
   },
 
   /**
@@ -130,15 +205,17 @@ Page({
     wx.showLoading({
       title: "正在加载地图...",
     });
-    wx.getLocation({ // 当前自己的位置
+    wx.getLocation({
+      // 当前自己的位置
       type: "wgs84",
       success: ({ latitude, longitude }) => {
-        wx.chooseLocation({ // 选择的位置
+        wx.chooseLocation({
+          // 选择的位置
           latitude,
           longitude,
           success: (res) => {
             this.getDistrict(res.latitude, res.longitude, name); // 获取省市区
-            console.log(res, '选择上/下车地点')
+            console.log(res, "选择上/下车地点");
             this.setData({
               [name]: res,
             });
@@ -158,21 +235,25 @@ Page({
     wx.request({
       url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${MOYUAN_KEY}`,
       header: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       success: (res) => {
-        let region = {}
-        const { data: { result: { address_component = {} } } } = res;
+        let region = {};
+        const {
+          data: {
+            result: { address_component = {} },
+          },
+        } = res;
         const { province, city, district } = address_component;
-        if(name == 'startLocation') {
-          region.startRegion = [province, city, district]
+        if (name == "startLocation") {
+          region.startRegion = [province, city, district];
         }
-        if(name == 'endLocation') {
-          region.endRegion = [province, city, district]
+        if (name == "endLocation") {
+          region.endRegion = [province, city, district];
         }
-        this.setData({ ...region })
-      }
-    })
+        this.setData({ ...region });
+      },
+    });
   },
 
   /**
@@ -181,8 +262,15 @@ Page({
   bindPickerChange: function (e) {
     const currentData = e.detail.value;
     const { exactTime } = this.data;
-    const time = (currentData + " " + exactTime).split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
+    const time = (currentData + " " + exactTime).split(/[- : \/]/);
+    const exactDate = new Date(
+      time[0],
+      time[1] - 1,
+      time[2],
+      time[3],
+      time[4],
+      "00"
+    ).getTime();
     this.setData({
       dateIndex: currentData,
       exactDate: exactDate,
@@ -195,8 +283,15 @@ Page({
   bindTimeChange: function (e) {
     const exactTime = e.detail.value;
     const { dateIndex } = this.data;
-    const time = (dateIndex + " " + exactTime).split(/[- : \/]/)
-    const exactDate = new Date(time[0], time[1]-1, time[2], time[3], time[4], '00').getTime()
+    const time = (dateIndex + " " + exactTime).split(/[- : \/]/);
+    const exactDate = new Date(
+      time[0],
+      time[1] - 1,
+      time[2],
+      time[3],
+      time[4],
+      "00"
+    ).getTime();
     this.setData({
       exactTime,
       exactDate: exactDate,
@@ -235,8 +330,8 @@ Page({
   radioChange() {
     const { agreement } = this.data;
     this.setData({
-      agreement: !agreement
-    })
+      agreement: !agreement,
+    });
   },
 
   /**
@@ -252,7 +347,7 @@ Page({
   /**
    * 点击发布函数
    */
-  async submitTap () {
+  async submitTap() {
     let _this = this;
     let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
@@ -287,7 +382,7 @@ Page({
       _this.showModal("请勾选合乘协议");
       return false;
     }
-    if(_this.data.userInfo.phone != _this.data.phoneNumber) {
+    if (_this.data.userInfo.phone != _this.data.phoneNumber) {
       _this.showModal("实名电话与发布电话不一致");
       return false;
     }
@@ -297,9 +392,9 @@ Page({
       getUserProfile = await wx.getUserProfile({
         desc: "用于完善个人信息",
       });
-      wx.setStorageSync("getUserProfile", getUserProfile.userInfo);
+      getUserProfile = getUserProfile.userInfo;
+      wx.setStorageSync("getUserProfile", getUserProfile);
     }
-    console.log(getUserProfile, "getUserProfile");
     wx.showToast({
       title: "",
       icon: "loading",
@@ -320,10 +415,10 @@ Page({
       createdTime: db.serverDate(),
       //状态
       status: 0, //0:待发布, 1:发布成功 2:删除
-    }
-    addData.userInfo.avatarUrl = getUserProfile.userInfo.avatarUrl
-    delete addData.__webviewId__
-    delete addData.userInfo._id
+    };
+    addData.userInfo.avatarUrl = getUserProfile.avatarUrl;
+    delete addData.__webviewId__;
+    delete addData.userInfo._id;
     db.collection("CarPublish").add({
       data: addData,
       success: (res) => {
@@ -335,8 +430,8 @@ Page({
             //返回页面
             // wx.navigateBack();
             wx.navigateTo({
-              url: '/pages/myPublish/myPublish'
-            })
+              url: "/pages/myPublish/myPublish",
+            });
           },
         });
       },

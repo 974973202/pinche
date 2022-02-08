@@ -1,5 +1,5 @@
 <!--miniprogram/pages/tripDetails/tripDetails.wxml-->
-<!-- <wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs> -->
+<wxs module="dateUtil" src="../../filter/timeUtil.wxs"></wxs>
 
 <view class='container'>
   <!-- 地图 -->
@@ -11,8 +11,7 @@
     <view class='top-view'>
       <view class='user-info'>
         <image wx:if="{{userInfo.avatarUrl}}" class='img' src='{{userInfo.avatarUrl}}'></image>
-        <open-data wx:if="{{!userInfo.avatarUrl}}" type="userAvatarUrl"></open-data>
-        <text class='name'>{{userInfo.nickName}}</text>
+        <text class='name'>{{userInfo.name}}</text>
       </view>
     </view>
     
@@ -73,17 +72,17 @@
 
   <!-- 预约按钮 -->
   <view class='make-btn' >
-    <view class='left-btn'>
+    <!-- <view class='left-btn'>
       <view class='back' bindtap='bindGoBack'>
         <image src='../../images/icon/back.png'></image>
       </view>
       <view class='home' bindtap='bindGoHome'>
         <image src='../../images/icon/home3.png'></image>
       </view>
-    </view>
+    </view> -->
     <view class='tel' bindtap='bindMakePhoneCall'>
       <image src='../../images/icon/tel3.png'></image>
-      <text class='text'>马上预约</text>
+      <text class='text'>联系乘客</text>
     </view>
     <button class='share' hover-class="other-button-hover" open-type="share">
       <image src='../../images/icon/share3.png'></image>

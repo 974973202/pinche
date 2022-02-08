@@ -39,6 +39,8 @@ Page({
     budget: "",
     //备注***
     remarks: "",
+    // 用户注册信息
+    userInfo: {},
   },
   onLoad() {
     const t = tsFormatTime() + " " + exactTime()
@@ -49,6 +51,13 @@ Page({
       dateIndex: tsFormatTime(),
       exactTime: exactTime(),
       exactDate: exactDate,
+    });
+  },
+
+  onShow(){
+    this.setData({
+      phoneNumber: app.globalData.info.phone,
+      userInfo: app.globalData.info,
     });
   },
 
@@ -180,7 +189,7 @@ Page({
   /**
    * 点击发布函数
    */
-  submitTap: function () {
+  async submitTap () {
     let _this = this;
     let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
@@ -203,16 +212,29 @@ Page({
       _this.showModal("请输入正确的联系电话");
       return false;
     }
+    if (_this.data.userInfo.phone != _this.data.phoneNumber) {
+      _this.showModal("实名电话与发布电话不一致");
+      return false;
+    }
     if (_this.data.budget == "") {
       _this.showModal("请输入预算金额");
       return false;
+    }
+    // 获取微信头像信息
+    let getUserProfile = wx.getStorageSync("getUserProfile");
+    if (!getUserProfile) {
+      getUserProfile = await wx.getUserProfile({
+        desc: "用于完善个人信息",
+      });
+      getUserProfile = getUserProfile.userInfo;
+      wx.setStorageSync("getUserProfile", getUserProfile);
     }
     wx.showToast({
       title: "",
       icon: "loading",
       success: function (res) {
         //模拟删除
-        _this.addColoction();
+        _this.addColoction(getUserProfile);
       },
     });
   },
@@ -220,10 +242,11 @@ Page({
   /**
    * 添加函数
    */
-  addColoction: function () {
+  addColoction(getUserProfile) {
+    const { userInfo } = this.data;
+    userInfo.avatarUrl = getUserProfile.avatarUrl;
     let _this = this;
-    console.log(db.serverDate())
-    db.collection("PeopleLookingCars").add({
+    db.collection("PassengerPublish").add({
       data: {
         //出发城市
         startRegion: _this.data.startRegion,
@@ -246,10 +269,12 @@ Page({
         budget: _this.data.budget,
         //备注***
         remarks: _this.data.remarks,
+        // 用户预约信息
+        userInfo,
         //创建时间
         createdTime: db.serverDate(),
         //状态
-        status: 0, //0:正常使用,1:被删除
+        status: 0, //0:待发布, 1:发布成功 2:删除
       },
       success: function (res) {
         console.log(res);
@@ -257,7 +282,9 @@ Page({
           title: "发布成功",
           icon: "success",
           success: function (res) {
-            wx.navigateBack();
+            wx.navigateTo({
+              url: "/pages/myPublish/myPublish",
+            });
           },
         });
       },

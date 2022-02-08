@@ -18,7 +18,7 @@ Page({
 
     currentNavTab: 0, //当前状态
 
-    dnName: "CarOwnerRecord", //查询集合列表，默认人找车
+    dnName: "CarPublish", //查询集合列表，默认人找车
 
     pageIndex: 1, //第一页
     hasMore: true, //是否还有下一页

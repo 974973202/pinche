@@ -17,7 +17,7 @@ App({
     this.globalData = {
       openid: -1,
       userInfo: null,
-      info: '', // 用户注册信息
+      info: {}, // 用户注册信息
     }
   },
 
@@ -28,7 +28,7 @@ App({
     // 调用云函数
     wx.cloud.callFunction({
       name: 'getOpenid',
-    }).then(({ result: { openid, info } }) => {
+    }).then(({ result: { openid, info ={} } }) => {
       console.log('1234567', openid, info)
       // const openid = res.result.openid
       this.globalData.openid = openid

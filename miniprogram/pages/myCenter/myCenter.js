@@ -8,16 +8,16 @@ Page({
    */
   data: {
     info: "",
+    carStatus: null,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    this.getUser();
+    // this.getUser();
   },
-  async getUser() {
-    console.log('000000000000000')
+  async onShow() {
     // const { data = [] } = await db.collection('User').field({
     //   status: true,
     //   name: true,
@@ -27,7 +27,7 @@ Page({
     //   info: data[0]
     // })
     let info = JSON.parse(JSON.stringify(app.globalData.info));
-    if(info) {
+    if (info.phone) {
       info.phone = info.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
       this.setData({
         info,
@@ -36,10 +36,15 @@ Page({
       if (app.globalData.info.status == 1) {
         const { data = [] } = await db
           .collection("Certificates")
+          .where({ _openid: app.globalData.openid })
           .field({
             status: true,
           })
           .get();
+        app.globalData.carStatus = data[0].status;
+        this.setData({
+          carStatus: data[0].status,
+        });
         console.log(data, "Certificates");
       }
     }
@@ -47,25 +52,26 @@ Page({
 
   onAuthorize() {
     wx.navigateTo({
-      url: '/pages/RealAuthentication/RealAuthentication',
+      url: "/pages/RealAuthentication/RealAuthentication",
       events: {
         // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
         getInfo: (data) => {
+          app.globalData.info = data;
           this.setData({
             info: data,
-          })
-          console.log(data, 'getInfo')
-        }
+          });
+          console.log(data, "getInfo");
+        },
       },
       // success: (res) => {
       //   // 通过eventChannel向被打开页面传送数据
       //   const { searchType, ...rest } = this.data;
       //   res.eventChannel.emit('acceptDataFromOpenerPage', { data: rest })
       // }
-    })
+    });
   },
 
-  onDriveAuthorize() {
+  onDriveAuthorize(e) {
     if (!this.data.info) {
       wx.showModal({
         content: "请先进行实名认证",
@@ -79,6 +85,8 @@ Page({
         },
       });
     } else if (this.data.info.status == 1) {
+      let carStatus = e.currentTarget.dataset.status;
+      if (carStatus === 0 || carStatus === 1) return;
       wx.navigateTo({
         url: "/pages/RealDriveAuthentication/RealDriveAuthentication",
       });
@@ -86,25 +94,32 @@ Page({
       wx.showToast({
         title: "正在进行实名认证中",
         icon: "success",
-        // success: (res) => {
-        //   //返回页面
-        //   // wx.navigateBack();
-
-        // },
+      });
+    } else if (this.data.info.status == 2) {
+      wx.showModal({
+        content: "实名认证失败，请重新认证",
+        showCancel: false,
+        success: (res) => {
+          //返回页面
+          // wx.navigateBack();
+          wx.navigateTo({
+            url: "/pages/RealAuthentication/RealAuthentication",
+          });
+        },
       });
     }
   },
 
   onPublish() {
-    
-    if(this.data.info.status != 1) {
-      if(this.data.info.status == 0) {
-         return wx.showModal({
+    // 进入发布必须先通过实名认证
+    if (this.data.info.status != 1) {
+      if (this.data.info.status == 0) {
+        return wx.showModal({
           title: "正在进行实名认证中",
           showCancel: false,
         });
       }
-      wx.showModal({
+      return wx.showModal({
         content: "请先进行实名认证",
         showCancel: false,
         success: (res) => {
@@ -129,9 +144,9 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-    console.log(app.globalData);
-  },
+  // onShow: function () {
+  //   console.log(app.globalData);
+  // },
 
   /**
    * 生命周期函数--监听页面隐藏

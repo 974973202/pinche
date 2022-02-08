@@ -97,7 +97,7 @@ Page({
   addData: function (id) {
     console.log('========', id)
     let _this = this;
-    db.collection('PassengersRecord').doc(id).get({
+    db.collection('PassengerPublish').doc(id).get({
       success: function (res) {
         console.warn(res, '========');
         let data = res.data;

@@ -8,14 +8,13 @@ Page({
    * 页面的初始数据
    */
   data: {
-    showIcon: true,
+    isPassenderDetail: false,
     isLodding: true,
     openid: "",
     list: [],
     navData: ["我是车主", "我是乘客"],
     currentNavTab: 0,
-    dbName: "CarPublish", // 'PeopleLookingCars'
-    dbNameRecord: "CarOwnerRecord", // 'PassengersRecord'
+    dbName: "CarPublish", // 'PassengerPublish'
   },
   /**
    * 生命周期函数--监听页面加载
@@ -37,6 +36,13 @@ Page({
     // this.addData(this.data.openid);
   },
 
+  onPassengerDetail() {
+    const { isPassenderDetail } = this.data;
+    this.setData({
+      isPassenderDetail: !isPassenderDetail
+    })
+  },
+
   /**
    * 加载数据列表
    */
@@ -47,7 +53,7 @@ Page({
     db.collection(dbName)
       .where({
         _openid: openid,
-        status: _.neq(2), //0:待发布, 1:发布成功 2:删除
+        status: _.in([0,1]), //0:待发布, 1:发布成功 2:删除 3:订单完成
       })
       .orderBy("exactDate", "desc")
       .get({
@@ -80,8 +86,7 @@ Page({
         currentNavTab: cur,
         pageIndex: 1,
         list: [],
-        dbName: cur == 0 ? "CarPublish" : "PeopleLookingCars",
-        dbNameRecord: cur == 0 ? "CarOwnerRecord" : "PassengersRecord",
+        dbName: cur == 0 ? "CarPublish" : "PassengerPublish",
       });
       // //加载数据
       this.addData(openid);
@@ -91,29 +96,31 @@ Page({
   /**
    * 发布函数
    */
-  publishTap(e) {
-    let idx = e.currentTarget.dataset.idx;
-    let id = e.currentTarget.dataset.id;
+  async publishTap(e) {
     const { dbName, openid } = this.data;
 
+    // 发布之前检查是否有未完成订单
+    const check = await db.collection(dbName)
+      .where({
+        _openid: openid,
+        status: 1, //0:待发布, 1:发布成功 2:删除 3:订单完成
+      })
+      .orderBy("exactDate", "desc")
+      .get();
+      if(check.data.length>0) {
+        return wx.showModal({
+          content: "请先完成未完成的订单",
+          showCancel: false,
+        })
+      }
+
+    let idx = e.currentTarget.dataset.idx;
+    let id = e.currentTarget.dataset.id;
     let params = this.data.list[idx];
-    if (!this.isValid(params.exactDate)) return false;
-    //修改出发时间
-    // params.exactDateTag == '今天' ? this.getTodyTime(params.exactTime) : this.getTomorrowTime(params.exactTime);
-    //存放时间戳
-    //添加数据库时 _id、_openid不能存在否则报错
-    // delete params._id;
-    // delete params._openid;
-
-    //判断是否有效
-    // delete params.exactDateTag;
-
-    //添加个人信息
-    // params.userInfo = wx.getStorageSync('userInfo');
-    console.log(params, idx, id);
-
+    if (!this.isValid(params.exactDate, '出行时间已超时')) return false;
+    let title = dbName == "CarPublish" ? '发布出行信息': '发布预约信息'
     wx.showModal({
-      title: "车找人",
+      title:  title,
       content: "确定发布这条信息？",
       success: async (res) => {
         if (res.confirm) {
@@ -142,6 +149,52 @@ Page({
       },
     });
   },
+
+  /**
+   * 完成订单
+   * @param {*} e 
+   */
+  async onSuccessOrder(e) {
+     const exactDate = e.currentTarget.dataset.exactDate;
+     const id = e.currentTarget.dataset.id;
+    let idx = e.currentTarget.dataset.idx;
+    const { dbName } = this.data;
+      if (!this.isValid(exactDate, '未到出行时间')) return false;
+      wx.showModal({
+        title: "",
+        content: "确认完成该订单？",
+        success: (res) => {
+          if (res.confirm) {
+            //更新状态函数
+            db.collection(dbName)
+              .doc(id)
+              .update({
+                data: {
+                  status: 3,
+                },
+                success: (res) => {
+                  console.log(res);
+                  let list = this.data.list;
+                  let filterRes = list.filter((ele, index) => {
+                    return index != idx;
+                  });
+                  this.setData({
+                    list: filterRes,
+                  });
+                  wx.showToast({
+                    title: "完成订单",
+                    icon: "success",
+                  });
+                },
+                fail: console.error,
+              });
+          } else if (res.cancel) {
+            console.log("cancel");
+          }
+        },
+      });
+
+   },
 
   /**
    * 删除函数
@@ -193,13 +246,13 @@ Page({
   /**
    * 校验发布时是否有效
    */
-  isValid(timeStr) {
+  isValid(timeStr, title) {
     // console.log(new Date(timeStr).getTime(), new Date().getTime())
     if (new Date(timeStr).getTime() >= new Date().getTime()) {
       return true;
     } else {
       wx.showToast({
-        title: "出行时间已超时,请重新设置",
+        title: title,
         icon: "error",
         duration: 2000,
       });
@@ -251,10 +304,22 @@ Page({
   },
 
   async addPublic() {
+    console.log(app.globalData)
     const { currentNavTab } = this.data;
     if (currentNavTab == 0) {
-      wx.navigateTo({ url: "/pages/NewPepleSearch/NewPepleSearch" });
+      // 车主发布信息
+      if(app.globalData.carStatus === 1) {
+        wx.switchTab({ url: "/pages/NewPepleSearch/NewPepleSearch" });
+      } else {
+        wx.showModal({
+          content: '必须先通过车主认证',
+          showCancel: false,
+        });
+      }
     } else {
+      // 乘客发布，判断是否实名认证
+      // myCenter页面，我的发布已经做了实名校验
+
       wx.navigateTo({ url: "/pages/NewCarSearch/NewCarSearch" });
     }
   },
