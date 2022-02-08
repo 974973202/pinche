@@ -27,14 +27,6 @@ Page({
   },
 
   onLoad: function () {
-    let _this = this;
-    //是否连接数据库
-    if (!wx.cloud) {
-      wx.redirectTo({
-        url: '../chooseLib/chooseLib',
-      })
-      return
-    }
     console.log(app.globalData.userInfo);
     //是否授权登录
     if (!app.globalData.userInfo) {

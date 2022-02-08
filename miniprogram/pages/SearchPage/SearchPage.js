@@ -45,13 +45,6 @@ Page({
    *
    */
   onLoad(option) {
-    //是否连接数据库
-    if (!wx.cloud) {
-      wx.redirectTo({
-        url: "../chooseLib/chooseLib",
-      });
-      return;
-    }
     console.log(option);
     const eventChannel = this.getOpenerEventChannel();
     eventChannel.emit("someEvent", { data: '从search发给index' });

@@ -1,11 +1,4 @@
 <!--miniprogram/pages/AboutUs/AboutUs.wxml-->
-<navigation
-id='Navigation'
-show-icon='{{showIcon}}'
-title="关于我们"
->
-</navigation>
-
 <view class='logo'>
   <image src='../../images/icon/us_logo.png'></image>
 </view>

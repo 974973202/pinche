@@ -1,4 +1,0 @@
-/* miniprogram/pages/webViewPage/webViewPage.wxss */
-.web-view{
-  background-color: red;
-}

@@ -1,17 +1,13 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/authorize/authorize",
-    "pages/chooseLib/chooseLib",
     "pages/carOwner/carOwner",
     "pages/myCenter/myCenter",
     "pages/NewCarSearch/NewCarSearch",
     "pages/NewPepleSearch/NewPepleSearch",
     "pages/tripDetails/tripDetails",
     "pages/passengersTripDetails/PassengersTripDetails",
-    "pages/webViewPage/webViewPage",
     "pages/SearchPage/SearchPage",
-    "pages/ExpressNews/ExpressNews",
     "pages/AboutUs/AboutUs",
     "pages/RealAuthentication/RealAuthentication",
     "pages/RealDriveAuthentication/RealDriveAuthentication",
