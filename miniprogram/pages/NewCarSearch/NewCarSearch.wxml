@@ -1,5 +1,5 @@
 <!-- miniprogram/pages/peopleLookCars/peopleLookCars.wxml -->
-<navigation id='Navigation' show-icon='{{showIcon}}' title="添加人找车信息"></navigation>
+<!-- <navigation id='Navigation' show-icon='{{showIcon}}' title="添加人找车信息"></navigation> -->
 <view class='container'>
   <!-- 方向 -->
   <view class='list-view'>
