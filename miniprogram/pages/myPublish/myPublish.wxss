@@ -151,6 +151,9 @@ page {
 /*
 *  222
 */
+.passenger-reg {
+  margin-bottom: 8rpx;
+}
 .my-subscribe{
   padding: 140rpx 0;
 }

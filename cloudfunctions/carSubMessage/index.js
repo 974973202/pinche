@@ -34,7 +34,7 @@ exports.main = async (event, context) => {
           }
         },
         templateId: 'h_1ihdW6gaxligKs_6FWDx6rcM7ko61Qe-yTggYamJk',
-        miniprogramState: 'developer'
+        miniprogramState: 'trial'
       })
     console.log(result)
     return result

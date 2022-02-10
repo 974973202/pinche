@@ -1,7 +1,16 @@
+<!-- 轮播图 -->
+<swiper class='banner' indicator-dots="{{true}}"
+  autoplay="{{true}}" circular='{{true}}' interval="{{2500}}" current="{{swiperCurrent}}"  bindchange="swiperChange">
+  <block wx:for="{{imgUrls}}" wx:key="index">
+    <swiper-item>
+      <image src="{{item}}" class="slide-image" bindtap="swipclick"/>
+    </swiper-item>
+  </block>
+</swiper>
 <!-- 搜索框 -->
 <view class='search'>
   <view class='searchCon'>
-    <view class='search-type'>
+    <!-- <view class='search-type'>
       <view class='search-type-l'>查找类型：</view>
       <view class='search-type-c'>
         <radio-group class="radio-group" bindchange="bindTypeChange">
@@ -11,7 +20,7 @@
           </label>
         </radio-group>
       </view>
-    </view>
+    </view> -->
     <view class='search-city'>
       <view class='search-city-begin'>
         <!-- 出发城市 -->
@@ -38,4 +47,16 @@
   <view class='searchBtn' bindtap='onSubmitTap'>
     <text>查询</text>
   </view>
+</view>
+
+<view class="recommend">
+  <view class="recommend-top">
+    <view class="recommend-title">推荐路线</view>
+  </view>
+  <view class="content">
+    <view bindtap="onChangeWay" data-item="{{item}}" wx:key="index" wx:for="{{wayInfo}}" class="cont content-left">
+      {{item.startRegion[item.startRegion.length-1]}}->
+      {{item.endRegion[item.endRegion.length-1]}}</view>
+  </view>
+  
 </view>

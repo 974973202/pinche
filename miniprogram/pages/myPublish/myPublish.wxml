@@ -72,7 +72,7 @@
           发布
         </view>
         <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button>
-        <button data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='button'>
+        <button data-id='{{item._id}}' data-idx='{{index}}' data-exactdate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='button'>
           完成订单
         </button>
         <button bindtap='onPassengerDetail' wx:if="{{item.status == 1}}" class='button'>
@@ -94,8 +94,24 @@
 </view>
 <view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
   <!-- 方向 -->
-  <view wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
+  <scroll-view scroll-y="{{true}}" wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
     <view wx:for="{{list}}" wx:key="index" class='sub'>
+      <view wx:if="{{item.status == 0}}" class="passenger-reg">正在为您匹配合适的车主...</view>
+      <view wx:if="{{item.status == 4}}" class="passenger-reg">匹配成功</view>
+      <view wx:if="{{item.status == 4}}" class="car-info">
+        <view class='text-sub'>
+          <text class='label'>车主姓名</text>
+          <view class='time cont'>
+            <text class='text'>梁增鑫</text>
+          </view>
+        </view>
+        <view class='text-sub'>
+          <text class='label'>联系电话</text>
+          <view class='time cont'>
+            <text class='text'>15622776780</text>
+          </view>
+        </view>
+      </view>
       <view>
         <view class='text-group'>
           <view class='text-sub'>
@@ -116,14 +132,17 @@
           </view>
         </view>
         <view class='sub-btn-group'>
-          <view  wx:if="{{item.status == 1}}" class='publish btn'>已发布</view>
-          <view class='publish btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+          <view wx:if="{{item.status == 1}}" class='publish btn'>已取消</view>
+          <!-- <view class='publish btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
             发布
+          </view> -->
+          <view class='delete btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='PassengerPublish'>
+            取消订单
           </view>
-          <view class='delete btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
-            删除
+          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='deleteTap' wx:if="{{item.status == 1}}" class='delete btn'>
+            删除订单
           </view>
-          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='delete btn'>
+          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 4}}" class='delete btn'>
             完成订单
           </view>
         </view>
@@ -139,7 +158,7 @@
         </view>
       </view>
     </view>
-  </view>
+  </scroll-view>
   <view wx:else class='sub-view'>
     <view class='img-view'>
       <image src='../../images/icon/null_view.jpg'></image>
@@ -147,7 +166,7 @@
     <!-- <text class="text">暂无出行信息</text> -->
   </view>
   <!-- 发起拼车 -->
-  <view class='submit-btn'>
+  <!-- <view class='submit-btn'>
     <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发起预约</button>
-  </view>
+  </view> -->
 </view>

@@ -257,10 +257,36 @@ Page({
     console.log("111111");
   },
 
+  onShowModal() {
+    wx.showModal({
+      title: '预约人数',
+      placeholderText: '请输入预约人数',
+      editable: true,
+      success: (res) => {
+        if (res.confirm) {
+          const reg = new RegExp("^[0-9]*$");
+          if(!reg.test(res.content)) {
+            wx.showToast({title: '请输入数字', icon: 'error'})
+          } else {
+            const { peopleNumber } = this.data;
+            let num = peopleNumber-Number(res.content)
+            if (num <0) {
+              wx.showModal({ content: '预约人数大于座位上限', showCancel: false});
+              return ;
+            }
+            this.bindMakePhoneCall(num)
+          }
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+
   /**
    * 马上预约
    */
-  async bindMakePhoneCall() {
+  async bindMakePhoneCall(num) {
     // 获取自己个人信息，写入车主信息中
     let passengerInfo = app.globalData.info;
     console.log(passengerInfo);
@@ -337,7 +363,7 @@ Page({
                 dbName: "CarPublish",
                 passengerInfo,
                 id,
-                peopleNumber,
+                peopleNumber: num,
               },
             })
             .then(async (res) => {
@@ -408,8 +434,11 @@ Page({
             fail(res) {
               console.warn("点击了取消!", res);
             },
-            // complete: () => {
-            // }
+            complete: () => {
+              wx.switchTab({
+                url: "/pages/myCenter/myCenter",
+              });
+            }
           });
         }
       },

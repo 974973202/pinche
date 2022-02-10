@@ -1,8 +1,8 @@
 // miniprogram/pages/NewCarSearch/NewCarSearch.js
 const app = getApp();
 const db = wx.cloud.database();
-const { tsFormatTime, exactTime } = require("../../utils/utils");
-const { MOYUAN_KEY } = require("../../config/appConfig");
+const { tsFormatTime, exactTime, generateTimeReqestNumber } = require("../../utils/utils");
+const { MOYUAN_KEY, PASSENGERSUBMESSAGE, CARSUBMESSAGE } = require("../../config/appConfig");
 
 Page({
   /**
@@ -190,34 +190,33 @@ Page({
    * 点击发布函数
    */
   async submitTap () {
-    let _this = this;
     let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
-    if (_this.data.startLocation.name == "") {
-      _this.showModal("请选择上车地点");
+    if (this.data.startLocation.name == "") {
+      this.showModal("请选择上车地点");
       return false;
     }
-    if (_this.data.endLocation.name == "") {
-      _this.showModal("请选择下车地点");
+    if (this.data.endLocation.name == "") {
+      this.showModal("请选择下车地点");
       return false;
     }
-    if (_this.data.peopleNumber == "") {
-      _this.showModal("请输入人数");
+    if (this.data.peopleNumber == "") {
+      this.showModal("请输入人数");
       return false;
     }
-    if (_this.data.phoneNumber == "") {
-      _this.showModal("请输入联系电话");
+    if (this.data.phoneNumber == "") {
+      this.showModal("请输入联系电话");
       return false;
     }
-    if (!phoneReg.test(_this.data.phoneNumber)) {
-      _this.showModal("请输入正确的联系电话");
+    if (!phoneReg.test(this.data.phoneNumber)) {
+      this.showModal("请输入正确的联系电话");
       return false;
     }
-    if (_this.data.userInfo.phone != _this.data.phoneNumber) {
-      _this.showModal("实名电话与发布电话不一致");
+    if (this.data.userInfo.phone != this.data.phoneNumber) {
+      this.showModal("实名电话与发布电话不一致");
       return false;
     }
-    if (_this.data.budget == "") {
-      _this.showModal("请输入预算金额");
+    if (this.data.budget == "") {
+      this.showModal("请输入预算金额");
       return false;
     }
     // 获取微信头像信息
@@ -229,19 +228,50 @@ Page({
       getUserProfile = getUserProfile.userInfo;
       wx.setStorageSync("getUserProfile", getUserProfile);
     }
-    wx.showToast({
-      title: "",
-      icon: "loading",
-      success: function (res) {
-        //模拟删除
-        _this.addColoction(getUserProfile);
-      },
-    });
+    this.subscribe(getUserProfile);
   },
 
   /**
    * 添加函数
    */
+   subscribe(getUserProfile) {
+     const { startLocation, endLocation, userInfo, exactDate } = this.data;
+    // 发送给预约者订阅消息
+    wx.requestSubscribeMessage({
+      tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
+      success(data) {
+        const acceptTemplateIds =
+          Object.keys(data).filter((key) => data[key] === "accept") || [];
+        if (!acceptTemplateIds.length) {
+          console.warn("订阅消息流程失败!", data);
+        } else {
+          wx.cloud
+            .callFunction({ // 先把自己的预约信息发给自己 -》 后面被预约再发给车主
+              name: "carSubMessage",
+              data: {
+                carOpenid: app.globalData.openid, //此处是自己的openid
+                name: userInfo.name,
+                startLocation: startLocation.name.slice(0, 20),
+                endLocation: endLocation.name.slice(0, 20),
+                exactDate: generateTimeReqestNumber(exactDate),
+                phone: userInfo.phone,
+              },
+            })
+            .then((res) => {
+              console.log(res);
+            });
+        }
+      },
+      fail(res) {
+        console.warn("点击了取消!", res);
+      },
+      complete: () => {
+        this.addColoction(getUserProfile)
+      }
+    });
+
+    
+  },
   addColoction(getUserProfile) {
     const { userInfo } = this.data;
     userInfo.avatarUrl = getUserProfile.avatarUrl;
@@ -276,14 +306,22 @@ Page({
         //状态
         status: 0, //0:待发布, 1:发布成功 2:删除
       },
-      success: function (res) {
+      success: (res) => {
         console.log(res);
         wx.showToast({
           title: "发布成功",
           icon: "success",
-          success: function (res) {
+          success: (res) => {
             wx.navigateTo({
               url: "/pages/myPublish/myPublish",
+              success: (res) => {
+                // 通过eventChannel向被打开页面传送数据
+                const obj = {
+                  currentNavTab: 1,
+                  dbName: 'PassengerPublish'
+                }
+                res.eventChannel.emit("acceptCarPublishData", { data: obj });
+              },
             });
           },
         });

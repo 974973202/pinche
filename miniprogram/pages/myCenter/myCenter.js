@@ -41,10 +41,12 @@ Page({
             status: true,
           })
           .get();
-        app.globalData.carStatus = data[0].status;
-        this.setData({
-          carStatus: data[0].status,
-        });
+        if (data.length > 0) {
+          app.globalData.carStatus = data[0].status;
+          this.setData({
+            carStatus: data[0].status,
+          });
+        }
         console.log(data, "Certificates");
       }
     }

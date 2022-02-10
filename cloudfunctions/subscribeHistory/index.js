@@ -21,7 +21,7 @@ exports.main = async (event, context) => {
     }).update({
       data: {
         passengerInfo: _.push(passengerInfo),
-        peopleNumber: peopleNumber-1
+        peopleNumber,
       }
     })
 

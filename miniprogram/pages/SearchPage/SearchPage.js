@@ -24,19 +24,6 @@ Page({
     hasMore: true, //是否还有下一页
     list: [],
 
-    hotList: [],
-    hotCurrent: 0,
-
-    //banner
-    imgUrls: ["../../images/icon/banner01.jpg"],
-    indicatorDots: true,
-    autoplay: false,
-    interval: 5000,
-    duration: 1000,
-    //轮播页当前index
-    swiperCurrent: 0,
-    webUrl: ["http://wap.coobus.cn/v2/#/favorite?code=constant"],
-
     //发布信息按钮动画
     status: "",
     showModalStatus: true,
@@ -67,6 +54,46 @@ Page({
     this.setData({
       status: "",
     });
+  },
+  async addPublic() {
+    // 乘客发布，判断是否实名认证
+    // myCenter页面，我的发布已经做了实名校验
+    if (app.globalData.info.status === 1) {
+      // 判断乘客是否有订单 正在进行或未完成
+      // 0:匹配中, 1:已取消 2:删除 3:订单完成 4:匹配成功
+      const { data } = await db
+      .collection('PassengerPublish')
+      .where({
+        _openid: app.globalData.openid,
+        status: _.in([0,4]), 
+      })
+      .field({
+        status: true,
+      })
+      .get();
+      if(data.length> 0) {
+        if(data[0].status === 0) {
+          wx.showModal({
+            content: "已有订单正在匹配中",
+            showCancel: false,
+          });
+        }
+        if(data[0].status === 4) {
+          wx.showModal({
+            content: "有订单尚未完成",
+            showCancel: false,
+          });
+        }
+        return ;
+       }
+      console.log(data)
+      wx.navigateTo({ url: "/pages/NewCarSearch/NewCarSearch" });
+    } else {
+      wx.showModal({
+        content: "必须先通过实名认证",
+        showCancel: false,
+      });
+    }
   },
   /**
    * 获取设备信息
@@ -132,32 +159,6 @@ Page({
   //     fail: console.error
   //   })
   // },
-
-  /**
-   * 导航列表点击
-   */
-  switchNav(event) {
-    const { currentNavTab } = this.data;
-    let cur = event.currentTarget.dataset.current;
-    console.log(cur, "eventevent", currentNavTab);
-    //每个tab选项宽度占1/5
-    // let singleNavWidth = this.data.windowWidth / 5;
-    //tab选项居中
-    // this.setData({
-    //   navScrollLeft: (cur - 2) * singleNavWidth
-    // })
-    if (currentNavTab == cur) {
-      return false;
-    } else {
-      this.setData({
-        currentNavTab: cur,
-        pageIndex: 1,
-        list: [],
-      });
-      //加载数据
-      // this.addData(1, cur);
-    }
-  },
 
   /**
    * 获取有效的拼车信息
@@ -252,48 +253,7 @@ Page({
       url: "../../pages/SearchPage/SearchPage",
     });
   },
-
-  /**
-   * 轮播图的切换事件
-   */
-  swiperChange(e) {
-    this.setData({
-      swiperCurrent: e.detail.current,
-    });
-  },
-
-  /**
-   * 轮播图点击事件
-   */
-  swipclick(e) {
-    console.log(this.data.swiperCurrent);
-    let _index = this.data.swiperCurrent;
-    let str = this.data.webUrl[_index];
-    wx.navigateTo({
-      url: "../../pages/webViewPage/webViewPage?url=" + str + "&name=推荐",
-    });
-  },
-
-  /**
-   * 热点新闻切换
-   */
-  hotSwiperChange(e) {
-    this.setData({
-      hotCurrent: e.detail.current,
-    });
-  },
-
-  /**
-   * 查看热点新闻
-   */
-  hotNewsClick(e) {
-    let _index = this.data.hotCurrent;
-    let id = this.data.hotList[_index]._id;
-    wx.navigateTo({
-      url: "../../pages/ArticleDetails/ArticleDetails?path=index&id=" + id,
-    });
-  },
-
+  
   /**
    * 查看行程详情
    */

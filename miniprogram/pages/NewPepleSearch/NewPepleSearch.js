@@ -139,10 +139,15 @@ Page({
             status: true,
           })
           .get();
+          if (!carData[0]) {
+            this.goReal("需要进行车主认证");
+            return;
+          }
         if (carData[0].status === 0 || carData[0].status === 2) {
           this.goReal(
             carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
           );
+          return;
         }
         // 存在全局，我的发布里调用
         if (carData[0].status === 1) {
@@ -152,6 +157,7 @@ Page({
         this.goReal(
           data[0].status === 0 ? "实名认证中" : "实名认证失败，请重新认证"
         );
+        return;
       }
     }
     // 通过实名认证
@@ -168,10 +174,15 @@ Page({
           status: true,
         })
         .get();
+      if (!carData[0]) {
+        this.goReal("需要进行车主认证");
+        return;
+      }
       if (carData[0].status === 0 || carData[0].status === 2) {
         this.goReal(
           carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
         );
+        return;
       }
       // 存在全局，我的发布里调用
       if (carData[0].status === 1) {

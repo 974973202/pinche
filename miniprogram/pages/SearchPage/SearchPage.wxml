@@ -1,14 +1,5 @@
 <!-- index.wxml -->
 <view class="layout">
-  <!-- 轮播图 -->
-  <!-- <swiper class='banner' indicator-dots="{{indicatorDots}}"
-    autoplay="{{autoplay}}" circular='{{true}}' interval="{{interval}}" duration="{{duration}}" current="{{swiperCurrent}}"  bindchange="swiperChange">
-    <block wx:for="{{imgUrls}}">
-      <swiper-item>
-        <image src="{{item}}" class="slide-image" bindtap="swipclick"/>
-      </swiper-item>
-    </block>
-  </swiper> -->
   <!-- 内容 -->
   <view class='data-list' wx:if="{{list.length != 0 || isLodding }}">
     <view wx:for="{{list}}" wx:key="index" data-id="{{item._id}}" data-idx="{{index}}" class='list-table' bindtap='lookTripDetails'>
@@ -72,6 +63,11 @@
     </view>
     <!-- <text class="text">暂无出行信息</text> -->
   </view>
-  <!-- 透明遮盖层，用于退出评分层 -->
-  <view bindtouchmove="hideModal" bindtap="hideModal" class="touming-view" style='height:{{windowHeight}}px' wx:if="{{status == 'on'}}"></view>
+  <view class='passenger-sub'>
+    <view class="tip-title">
+      <view>没有合适的顺风车？马上预约！</view>
+      <view>预约后系统将持续为您匹配顺风车</view>
+    </view>
+    <button class="tip-btn" bindtap="addPublic">马上预约</button>
+  </view>
 </view>
