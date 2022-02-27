@@ -113,20 +113,20 @@ Page({
     const { dbName, openid } = this.data;
 
     // 发布之前检查是否有未完成订单
-    const check = await db
-      .collection(dbName)
-      .where({
-        _openid: openid,
-        status: 1, //0:待发布, 1:发布成功 2:删除 3:订单完成
-      })
-      .orderBy("exactDate", "desc")
-      .get();
-    if (check.data.length > 0) {
-      return wx.showModal({
-        content: "请先完成未完成的订单",
-        showCancel: false,
-      });
-    }
+    // const check = await db
+    //   .collection(dbName)
+    //   .where({
+    //     _openid: openid,
+    //     status: 1, //0:待发布, 1:发布成功 2:删除 3:订单完成
+    //   })
+    //   .orderBy("exactDate", "desc")
+    //   .get();
+    // if (check.data.length > 0) {
+    //   return wx.showModal({
+    //     content: "请先完成未完成的订单",
+    //     showCancel: false,
+    //   });
+    // }
 
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
@@ -207,7 +207,6 @@ Page({
    * @param {*} e
    */
   async onSuccessOrder(e) {
-    console.log(e)
     const exactdate = e.currentTarget.dataset.exactdate;
     const id = e.currentTarget.dataset.id;
     let idx = e.currentTarget.dataset.idx;

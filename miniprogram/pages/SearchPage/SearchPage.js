@@ -32,11 +32,12 @@ Page({
    *
    */
   onLoad(option) {
-    console.log(option);
+    console.log(option, 'option');
     const eventChannel = this.getOpenerEventChannel();
     eventChannel.emit("someEvent", { data: '从search发给index' });
     // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
     eventChannel.on("acceptDataFromOpenerPage", (data) => {
+      this.setData({ eventData: data })
       this.addData(1, data);//第一个参数页数，第二个参数分类
     });
     // this.onGetSystemInfo();
@@ -140,27 +141,6 @@ Page({
   },
 
   /**
-   * 获取热点快报
-   */
-  // onGetHotNews(n){
-  //   db.collection('RoadInfo').where({
-  //     status: _.neq(0)
-  //   })
-  //   .orderBy('sendTime','desc')
-  //   .limit(n)
-  //   .get({
-  //     success (res) {
-  //       console.log(res.data);
-  //       let list = res.data
-  //       this.setData({
-  //         hotList: list
-  //       });
-  //     },
-  //     fail: console.error
-  //   })
-  // },
-
-  /**
    * 获取有效的拼车信息
    */
   addData(n, { data: { dnName, endRegion, startRegion } }) {
@@ -210,7 +190,7 @@ Page({
       pageIndex: 1,
     });
     // this.onGetHotNews(10);//获取热点新闻
-    this.addData(1, this.data.currentNavTab);
+    this.addData(1, this.data.eventData);
     //停止刷新，页面回单
     wx.stopPullDownRefresh();
   },
@@ -221,6 +201,7 @@ Page({
   onReachBottom() {
     console.log(this.data.pageIndex, "this.data.pageIndex");
     if (!this.data.hasMore) return; //没有下一页了
+    const { endRegion, startRegion } = this.data.eventData;
 
     //按照时间查询，规则开始当前时间60分钟前 到明天24：00；
     wx.cloud
@@ -230,14 +211,22 @@ Page({
           dbName: this.data.dnName,
           pageIndex: this.data.pageIndex,
           pageSize: 5,
-          filter: {},
+          filter: {
+            startRegion,
+            endRegion,
+            status: 1
+          },
           startTime: new Date().getTime(),
           // endTime: this.endTime()
         },
       })
       .then((res) => {
         console.log(res);
+        res.result.data.forEach(
+          (ele) => (ele.exactDate = generateTimeReqestNumber(ele.exactDate))
+        );
         this.setData({
+          isLodding: false,
           list: this.data.list.concat(res.result.data),
           pageIndex: this.data.pageIndex + 1,
           hasMore: res.result.hasMore,

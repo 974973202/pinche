@@ -35,8 +35,6 @@ Page({
     peopleNumber: "",
     //联系电话***
     phoneNumber: "",
-    //预算***
-    budget: "",
     //备注***
     remarks: "",
     // 用户注册信息
@@ -215,10 +213,6 @@ Page({
       this.showModal("实名电话与发布电话不一致");
       return false;
     }
-    if (this.data.budget == "") {
-      this.showModal("请输入预算金额");
-      return false;
-    }
     // 获取微信头像信息
     let getUserProfile = wx.getStorageSync("getUserProfile");
     if (!getUserProfile) {
@@ -296,7 +290,6 @@ Page({
         //联系电话***
         phoneNumber: _this.data.phoneNumber,
         //预算***
-        budget: _this.data.budget,
         //备注***
         remarks: _this.data.remarks,
         // 用户预约信息

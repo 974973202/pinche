@@ -59,7 +59,7 @@
       </view>
     </view>
     <!-- 预算 -->
-    <view class='item'>
+    <!-- <view class='item'>
       <text class='label'>预算</text>
       <view class='cont price'>
         <view class='input-view'>
@@ -68,7 +68,7 @@
         </view>
         <text class='tips'>*预算 ≠ 实际结算金额，请与乘客协商*</text>
       </view>
-    </view>
+    </view> -->
     <!-- 备注 -->
     <view class='item'>
       <text class='label'>备注</text>

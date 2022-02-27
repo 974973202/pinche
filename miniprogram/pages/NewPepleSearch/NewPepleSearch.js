@@ -63,6 +63,8 @@ Page({
     agreement: false,
     // 用户注册信息
     userInfo: {},
+
+    modelShow: false,
   },
 
   /**
@@ -460,5 +462,10 @@ Page({
         console.warn("点击了取消!", res);
       },
     });
+  },
+
+  onTreaty() {
+    const { modelShow } = this.data;
+    this.setData({modelShow: !modelShow})
   },
 });

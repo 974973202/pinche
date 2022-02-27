@@ -197,6 +197,25 @@ cont.trips{
   width: auto;
 }
 
+.treaty-txt {
+  font-size: 32rpx;
+}
+.treaty-color {
+  color: #0091ff;
+}
+.model-title{
+  margin-bottom: 40rpx;
+}
+.model-close{
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 40rpx;
+  width: 50rpx;
+  height: 50rpx;
+  border: 2rpx solid #ccc;
+  border-radius: 50%;
+}
 .submit-btn{
   position: fixed;
   left: 0;
@@ -208,5 +227,18 @@ cont.trips{
   text-align: center;
   line-height: 100rpx;
   font-size: 30rpx;
-  z-index: 99999;
+  z-index: 99;
+}
+.model {
+  position: fixed;
+  padding: 40rpx 0 0 0;
+  box-sizing: border-box;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
 }
