@@ -31,7 +31,6 @@ Page({
         wayInfo: data[0].wayInfo
       })
     }
-    console.log(data[0].wayInfo)
   },
 
   /**
