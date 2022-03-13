@@ -27,7 +27,7 @@
   "window": {
     "backgroundColor": "#0091ff",
     "navigationBarBackgroundColor": "#F6F6F6",
-    "navigationBarTitleText": "骑驴出行",
+    "navigationBarTitleText": "侣程出行",
     "backgroundTextStyle": "light",
     "navigationBarTextStyle": "black"  },
   "tabBar": {
