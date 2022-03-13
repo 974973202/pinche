@@ -215,13 +215,13 @@ Page({
     }
     // 获取微信头像信息
     let getUserProfile = wx.getStorageSync("getUserProfile");
-    if (!getUserProfile) {
-      getUserProfile = await wx.getUserProfile({
-        desc: "用于完善个人信息",
-      });
-      getUserProfile = getUserProfile.userInfo;
-      wx.setStorageSync("getUserProfile", getUserProfile);
-    }
+    // if (!getUserProfile) {
+    //   getUserProfile = await wx.getUserProfile({
+    //     desc: "用于完善个人信息",
+    //   });
+    //   getUserProfile = getUserProfile.userInfo;
+    //   wx.setStorageSync("getUserProfile", getUserProfile);
+    // }
     this.subscribe(getUserProfile);
   },
 
@@ -230,6 +230,7 @@ Page({
    */
    subscribe(getUserProfile) {
      const { startLocation, endLocation, userInfo, exactDate } = this.data;
+     console.log(wx.getAccountInfoSync().miniProgram.envVersion)
     // 发送给预约者订阅消息
     wx.requestSubscribeMessage({
       tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
@@ -249,6 +250,7 @@ Page({
                 endLocation: endLocation.name.slice(0, 20),
                 exactDate: generateTimeReqestNumber(exactDate),
                 phone: userInfo.phone,
+                miniprogramState: wx.getAccountInfoSync().miniProgram.envVersion
               },
             })
             .then((res) => {

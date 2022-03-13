@@ -57,6 +57,14 @@ Page({
     });
   },
   async addPublic() {
+    let getUserProfile = wx.getStorageSync("getUserProfile");
+    if (!getUserProfile) {
+      getUserProfile = await wx.getUserProfile({
+        desc: "用于完善个人信息",
+      });
+      getUserProfile = getUserProfile.userInfo;
+      wx.setStorageSync("getUserProfile", getUserProfile);
+    }
     // 乘客发布，判断是否实名认证
     // myCenter页面，我的发布已经做了实名校验
     if (app.globalData.info.status === 1) {

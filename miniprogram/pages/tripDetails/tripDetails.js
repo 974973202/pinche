@@ -408,6 +408,7 @@ Page({
                       endLocation: endLocation.name.slice(0, 20),
                       exactDate: generateTimeReqestNumber(exactDate),
                       phone: userInfo.phone,
+                      miniprogramState: wx.getAccountInfoSync().miniProgram.envVersion, // 获取当前环境，测试，体验，生产
                     },
                   })
                   .then((res) => {
@@ -424,6 +425,7 @@ Page({
                       endLocation: endLocation.name.slice(0, 20),
                       exactDate: generateTimeReqestNumber(exactDate),
                       phone: passengerInfo.phone,
+                      miniprogramState: wx.getAccountInfoSync().miniProgram.envVersion
                     },
                   })
                   .then((res) => {

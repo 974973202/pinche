@@ -191,6 +191,14 @@ Page({
         app.globalData.carStatus = carData[0].status;
       }
     }
+    let getUserProfile = wx.getStorageSync("getUserProfile");
+    if (!getUserProfile) {
+      getUserProfile = await wx.getUserProfile({
+        desc: "用于完善个人信息",
+      });
+      getUserProfile = getUserProfile.userInfo;
+      wx.setStorageSync("getUserProfile", getUserProfile);
+    }
     console.log(app.globalData.info, " app.globalData.info");
   },
 

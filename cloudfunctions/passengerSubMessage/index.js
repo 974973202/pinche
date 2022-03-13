@@ -33,8 +33,8 @@ exports.main = async (event, context) => {
             value: event.phone
           }
         },
-        templateId: 'mYUqRgxDsJkV1Ebdi80T0aDHtY0u2H0a0rGsSIQGcos',
-        miniprogramState: 'trial'
+        templateId: 'vTBYeIGWH0DtZcFaq0SgisgU6y_LWAEMS5XZpix2OYA',
+        miniprogramState: event.miniprogramState
       })
     console.log(result)
     return result

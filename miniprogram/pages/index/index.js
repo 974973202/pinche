@@ -1,6 +1,9 @@
 //index.js
 const app = getApp();
 const db = wx.cloud.database();
+const {
+  MOYUAN_KEY,
+} = require("../../config/appConfig");
 
 Page({
   data: {
@@ -16,7 +19,7 @@ Page({
     //     checked: false,
     //   },
     // ],
-    startRegion: ["福建省", "龙岩市", "上杭县"],
+    startRegion: [],
     endRegion: ["福建省", "龙岩市", "上杭县"],
     dnName: "CarPublish",
     //轮播页当前index
@@ -26,11 +29,42 @@ Page({
   },
  async onLoad() {
     const {data} = await db.collection('wayInfo').get();
+    console.log(data, 'datadata')
     if(data.length>0) {
       this.setData({
         wayInfo: data[0].wayInfo
       })
     }
+    this.getDistrict()
+  },
+
+  getDistrict() {
+    wx.getLocation({
+      type: 'wgs84',
+
+      success: ({ latitude, longitude })=> {
+        wx.request({
+          url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${MOYUAN_KEY}`,
+          header: {
+            "Content-Type": "application/json",
+          },
+          success: (res) => {
+            const {
+              data: {
+                result: { address_component = {} },
+              },
+            } = res;
+            const { province, city, district } = address_component;
+            this.setData({ startRegion: [province, city, district] });
+          },
+        });
+      },
+      fail:()=> {
+       this.setData({ startRegion: ["福建省", "龙岩市", "上杭县"] });
+        console.log('fail')
+      }
+
+     })
   },
 
   /**
@@ -99,6 +133,12 @@ Page({
   },
 
   async onSubmitTap() {
+    const { endRegion } = this.data;
+    if(endRegion.length <= 0) return wx.showToast({
+      title: '请选择达到城市',
+      icon: "error",
+      duration: 2000,
+    });
     const { dnName } = this.data;
     // if (dnName === "PassengerPublish") {
     //   // zhao
@@ -175,17 +215,4 @@ Page({
     //     wx.hideLoading();
     //   });
   },
-  // goReal(cont) {
-  //   wx.showModal({
-  //     content: cont,
-  //     showCancel: false,
-  //     success: (res) => {
-  //       //返回页面
-  //       // wx.navigateBack();
-  //       wx.switchTab({
-  //         url: "/pages/myCenter/myCenter",
-  //       });
-  //     },
-  //   });
-  // },
 });
