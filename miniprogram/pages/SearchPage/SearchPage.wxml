@@ -63,11 +63,11 @@
     </view>
     <!-- <text class="text">暂无出行信息</text> -->
   </view>
-  <view class='passenger-sub'>
+  <!-- <view class='passenger-sub'>
     <view class="tip-title">
       <view>没有合适的顺风车？马上预约！</view>
       <view>预约后系统将持续为您匹配顺风车</view>
     </view>
     <button class="tip-btn" bindtap="addPublic">马上预约</button>
-  </view>
+  </view> -->
 </view>

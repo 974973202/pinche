@@ -374,7 +374,7 @@ Page({
   async addPublic() {
     // 车主发布信息
     if (app.globalData.carStatus === 1) {
-      wx.switchTab({ url: "/pages/NewPepleSearch/NewPepleSearch" });
+      wx.navigateTo({ url: "/pages/DrivePublish/DrivePublish" });
     } else {
       wx.showModal({
         content: "必须先通过车主认证",

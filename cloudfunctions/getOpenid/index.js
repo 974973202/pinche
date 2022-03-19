@@ -14,7 +14,6 @@ exports.main = async (event, context) => {
   const { data = [] } = await db.collection('User').where({
     _openid: wxContext.OPENID,
   }).field({
-    status: true,
     name: true,
     phone: true,
   }).get();

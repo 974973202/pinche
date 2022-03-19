@@ -10,12 +10,32 @@ Page({
     fmJszImage: "",
     zmXszImage: "",
     fmXszImage: "",
+    photo: '',
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {},
+  async onLoad(options) {
+    const { data: User = [{}] } = await db
+      .collection("User")
+      .field({
+        name: true,
+        phone: true,
+      })
+      .get();
+    this.setData({
+      name: User[0]?.name,
+      phone: User[0]?.phone,
+    });
+  },
+
+  inputedit(e){
+    const { type } = e.currentTarget.dataset;
+    this.setData({
+      [type]: e.detail.value
+    })
+  },
 
   onChooseMedia(e) {
     const {
@@ -52,7 +72,16 @@ Page({
   },
 
   onSubmit(e) {
-    const { zmJszImage, fmJszImage, zmXszImage, fmXszImage } = this.data;
+    const { zmJszImage, fmJszImage, zmXszImage, fmXszImage, phone, name } = this.data;
+    const reg = new RegExp(/^1[3,4,5,6,7,8,9][0-9]{9}$/);
+    if(!phone || !(reg.test(phone))) {
+      wx.showToast({ title: "输入正确手机号", icon: "error" });
+      return;
+    }
+    if(!name) {
+      wx.showToast({ title: "请输入姓名", icon: "error" });
+      return;
+    }
     if (!zmJszImage || !fmJszImage) {
       // 请上传完整驾驶证信息
       wx.showModal({
@@ -79,7 +108,7 @@ Page({
     // 1、图片 -> 云存储 fileID 云文件ID
     let promiseArr = [];
     for (let key of Object.keys(this.data)) {
-      if (key !== "__webviewId__") {
+      if (!["__webviewId__", 'name', 'phone'].includes(key)) {
         let p = new Promise((resolve, reject) => {
           let item = this.data[key];
           // 文件扩展名
@@ -107,24 +136,24 @@ Page({
         promiseArr.push(p);
       }
     }
-    console.log(this.data, "data");
+    console.log(this.data, "data", promiseArr);
 
     // 存入到云数据库
     Promise.all(promiseArr)
       .then(async () => {
-        const { data: userData = [] } = await db
-          .collection("User")
-          .field({
-            name: true,
-            phone: true,
-          })
-          .get();
+        // const { data: userData = [{}] } = await db
+        //   .collection("User")
+        //   .field({
+        //     name: true,
+        //     phone: true,
+        //   })
+        //   .get();
         const { __webviewId__, ...rest } = this.data;
         const res = await db.collection("Certificates").add({
           data: {
             ...rest,
-            name: userData[0].name,
-            phone: userData[0].phone,
+            // name: userData[0].name,
+            // phone: userData[0].phone,
             status: 0, // 状态： 0 审核中 1 审核通过 2 审核不通过
             createTime: db.serverDate(), // 服务端的时间
           },

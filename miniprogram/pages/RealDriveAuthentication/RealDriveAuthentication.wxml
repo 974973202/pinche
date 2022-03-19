@@ -1,4 +1,16 @@
 <view class="l">
+  <view class="int f-name">
+      姓名：<input value="{{name}}" data-type="name" name="name" bindinput="inputedit" />
+    </view>
+    <view class="int f-phone">
+      手机号：<input value="{{phone}}" data-type="phone" name="phone" bindinput="inputedit" />
+    </view>
+  <view class="jsz">请上传照片</view>
+  <view class="f-jsz">
+    <view wx:if="{{!photo}}" bind:tap="onChooseMedia" data-name='photo' class="upload-s"></view>
+    <image wx:else src="{{photo}}" />
+  </view>
+
   <view class="jsz">请上传驾驶证</view>
   <view class="f-jsz">
     <view wx:if="{{!zmJszImage}}" bind:tap="onChooseMedia" data-name='zmJszImage' style="background-image: url('../../images/icon/zm_jsz.jpg')" class="upload-s"></view>

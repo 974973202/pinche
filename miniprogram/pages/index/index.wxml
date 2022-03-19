@@ -44,9 +44,10 @@
     </view>
   </view>
   <!-- 按钮 -->
-  <view class='searchBtn' bindtap='onSubmitTap'>
+  <view wx:if="{{User[0].phone}}" class='searchBtn' bindtap='onSubmitTap'>
     <text>查询</text>
   </view>
+    <button wx:else class='searchBtn' open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">查询</button>
 </view>
 
 <view class="recommend">

@@ -7,7 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    info: "",
+    User: {},
     carStatus: null,
   },
 
@@ -18,37 +18,28 @@ Page({
     // this.getUser();
   },
   async onShow() {
-    // const { data = [] } = await db.collection('User').field({
-    //   status: true,
-    //   name: true,
-    //   phone: true,
-    // }).get();
-    // this.setData({
-    //   info: data[0]
-    // })
-    let info = JSON.parse(JSON.stringify(app.globalData.info));
-    if (info.phone) {
-      info.phone = info.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
+    const { data: User = {} } = await db
+      .collection("User")
+      .field({
+        name: true,
+        phone: true,
+      })
+      .get();
+    this.setData({
+      User: User[0],
+    });
+    const { data = [] } = await db
+      .collection("Certificates")
+      .where({ _openid: app.globalData.openid })
+      .field({
+        status: true,
+      })
+      .get();
+    if (data.length > 0) {
+      app.globalData.carStatus = data[0].status;
       this.setData({
-        info,
+        carStatus: data[0].status,
       });
-      console.log(app.globalData.info, "info");
-      if (app.globalData.info.status == 1) {
-        const { data = [] } = await db
-          .collection("Certificates")
-          .where({ _openid: app.globalData.openid })
-          .field({
-            status: true,
-          })
-          .get();
-        if (data.length > 0) {
-          app.globalData.carStatus = data[0].status;
-          this.setData({
-            carStatus: data[0].status,
-          });
-        }
-        console.log(data, "Certificates");
-      }
     }
   },
 
@@ -74,67 +65,119 @@ Page({
   },
 
   onDriveAuthorize(e) {
-    if (!this.data.info) {
-      wx.showModal({
-        content: "请先进行实名认证",
-        showCancel: false,
-        success: (res) => {
-          //返回页面
-          // wx.navigateBack();
-          wx.navigateTo({
-            url: "/pages/RealAuthentication/RealAuthentication",
-          });
-        },
-      });
-    } else if (this.data.info.status == 1) {
-      let carStatus = e.currentTarget.dataset.status;
-      if (carStatus === 0 || carStatus === 1) return;
-      wx.navigateTo({
-        url: "/pages/RealDriveAuthentication/RealDriveAuthentication",
-      });
-    } else if (this.data.info.status == 0) {
-      wx.showToast({
-        title: "正在进行实名认证中",
-        icon: "success",
-      });
-    } else if (this.data.info.status == 2) {
-      wx.showModal({
-        content: "实名认证失败，请重新认证",
-        showCancel: false,
-        success: (res) => {
-          //返回页面
-          // wx.navigateBack();
-          wx.navigateTo({
-            url: "/pages/RealAuthentication/RealAuthentication",
-          });
-        },
-      });
+    let carStatus = e.currentTarget.dataset.status;
+    if (carStatus === 0 || carStatus === 1) return;
+    wx.navigateTo({
+      url: "/pages/RealDriveAuthentication/RealDriveAuthentication",
+    });
+  },
+
+  async getPhoneNumber(e) {
+    let cloudID = e.detail.cloudID; //开放数据ID
+    if (!cloudID) {
+      // app.showToast('用户未授权')
+      console.log("用户未授权");
+      return;
     }
+
+    wx.cloud
+      .callFunction({
+        name: "getPhone",
+        data: {
+          cloudID: e.detail.cloudID,
+        },
+      })
+      .then((res) => {
+        const phone = res.result.list[0].data.phoneNumber;
+        db.collection("User").add({
+          data: {
+            name: "",
+            phone: phone,
+            createTime: db.serverDate(), // 服务端的时间
+          },
+        });
+        wx.navigateTo({
+          url: "/pages/RealDriveAuthentication/RealDriveAuthentication",
+        });
+      });
   },
 
   onPublish() {
     // 进入发布必须先通过实名认证
-    if (this.data.info.status != 1) {
-      if (this.data.info.status == 0) {
-        return wx.showModal({
-          title: "正在进行实名认证中",
-          showCancel: false,
-        });
-      }
-      return wx.showModal({
-        content: "请先进行实名认证",
-        showCancel: false,
-        success: (res) => {
-          //返回页面
-          // wx.navigateBack();
-          wx.navigateTo({
-            url: "/pages/RealAuthentication/RealAuthentication",
-          });
-        },
-      });
-    }
+    // if (this.data.info.status != 1) {
+    //   if (this.data.info.status == 0) {
+    //     return wx.showModal({
+    //       title: "正在进行实名认证中",
+    //       showCancel: false,
+    //     });
+    //   }
+    //   return wx.showModal({
+    //     content: "请先进行实名认证",
+    //     showCancel: false,
+    //     success: (res) => {
+    //       //返回页面
+    //       // wx.navigateBack();
+    //       wx.navigateTo({
+    //         url: "/pages/RealAuthentication/RealAuthentication",
+    //       });
+    //     },
+    //   });
+    // }
     wx.navigateTo({
       url: "/pages/myPublish/myPublish",
+    });
+  },
+
+  onEditModal(e) {
+    const { name } = e.currentTarget.dataset;
+    wx.showModal({
+      title: `修改${name === "name" ? "姓名" : "手机号"}`,
+      placeholderText: `请输入${name === "name" ? "姓名" : "手机号"}`,
+      editable: true,
+      success: (res) => {
+        if (res.confirm) {
+          if (name === "phone") {
+            const reg = new RegExp(/^1[3,4,5,6,7,8,9][0-9]{9}$/);
+            if (!reg.test(res.content)) {
+              wx.showToast({ title: "输入正确手机号", icon: "error" });
+            } else {
+              db.collection("User")
+                .where({ _openid: app.globalData.openid })
+                .update({
+                  data: { phone: res.content },
+                })
+                .then(() => {
+                  const { User } = this.data;
+                  this.setData({
+                    User: {
+                      ...User,
+                      phone: res.content,
+                    },
+                  });
+                  wx.showToast({ title: "修改成功", icon: "success" });
+                });
+            }
+          } else {
+            db.collection("User")
+              .where({ _openid: app.globalData.openid })
+              .update({
+                data: { name: res.content },
+              })
+              .then(() => {
+                const { User } = this.data;
+                this.setData({
+                  User: {
+                    ...User,
+                    name: res.content,
+                  },
+                });
+                wx.showToast({ title: "修改成功", icon: "success" });
+              });
+          }
+        } else if (res.cancel) {
+          console.log("用户点击取消");
+        }
+      },
     });
   },
 

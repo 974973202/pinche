@@ -57,7 +57,7 @@ Page({
     });
   },
   async addPublic() {
-    let getUserProfile = wx.getStorageSync("getUserProfile");
+    let getUserProfile = wx.getStoragceSync("getUserProfile");
     if (!getUserProfile) {
       getUserProfile = await wx.getUserProfile({
         desc: "用于完善个人信息",

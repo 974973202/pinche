@@ -107,99 +107,36 @@ Page({
   },
 
   async onShow() {
-    if (!app.globalData.info.phone) {
-      this.goReal("请先进行实名认证");
-    }
-    // 未通过实名或已通过实名，数据未同步
-    if (
-      app.globalData.info.phone &&
-      (app.globalData.info.status === 0 || app.globalData.info.status === 2)
-    ) {
-      // 解决数据不同步问题
-      const { data = [] } = await db
-        .collection("User")
-        .where({
-          _openid: app.globalData.openid,
-        })
-        .field({
-          status: true,
-          name: true,
-          phone: true,
-        })
-        .get();
-      if (data.length > 0 && data[0].status == 1) {
-        app.globalData.info = data[0];
-        this.setData({
-          phoneNumber: app.globalData.info.phone,
-          userInfo: app.globalData.info,
-        });
-        // 判断是否车主认证
-        const { data: carData = [] } = await db
-          .collection("Certificates")
-          .where({ _openid: app.globalData.openid })
-          .field({
-            status: true,
-          })
-          .get();
-          if (!carData[0]) {
-            this.goReal("需要进行车主认证");
-            return;
-          }
-        if (carData[0].status === 0 || carData[0].status === 2) {
-          this.goReal(
-            carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
-          );
-          return;
-        }
-        // 存在全局，我的发布里调用
-        if (carData[0].status === 1) {
-          app.globalData.carStatus = carData[0].status;
-        }
-      } else {
-        this.goReal(
-          data[0].status === 0 ? "实名认证中" : "实名认证失败，请重新认证"
-        );
-        return;
-      }
-    }
-    // 通过实名认证
-    if (app.globalData.info.phone && app.globalData.info.status === 1) {
-      this.setData({
-        phoneNumber: app.globalData.info.phone,
-        userInfo: app.globalData.info,
-      });
       // 判断是否车主认证
-      const { data: carData = [] } = await db
-        .collection("Certificates")
-        .where({ _openid: app.globalData.openid })
-        .field({
-          status: true,
-        })
-        .get();
-      if (!carData[0]) {
-        this.goReal("需要进行车主认证");
-        return;
-      }
-      if (carData[0].status === 0 || carData[0].status === 2) {
-        this.goReal(
-          carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
-        );
-        return;
-      }
-      // 存在全局，我的发布里调用
-      if (carData[0].status === 1) {
-        app.globalData.carStatus = carData[0].status;
-      }
+    const { data: carData = [] } = await db
+      .collection("Certificates")
+      .where({ _openid: app.globalData.openid })
+      .get();
+    if (!carData[0]) {
+      this.goReal("需要进行车主认证");
+      return;
     }
-    let getUserProfile = wx.getStorageSync("getUserProfile");
-    if (!getUserProfile) {
-      getUserProfile = await wx.getUserProfile({
-        desc: "用于完善个人信息",
-      });
-      getUserProfile = getUserProfile.userInfo;
-      wx.setStorageSync("getUserProfile", getUserProfile);
+    if (carData[0].status === 0 || carData[0].status === 2) {
+      this.goReal(
+        carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
+      );
+      return;
     }
-    console.log(app.globalData.info, " app.globalData.info");
+    // 存在全局，我的发布里调用
+    if (carData[0].status === 1) {
+      app.globalData.carStatus = carData[0].status;
+      this.setData({
+        carData
+      })
+    }
+    // let getUserProfile = wx.getStorageSync("getUserProfile");
+    // if (!getUserProfile) {
+    //   getUserProfile = await wx.getUserProfile({
+    //     desc: "用于完善个人信息",
+    //   });
+    //   getUserProfile = getUserProfile.userInfo;
+    //   wx.setStorageSync("getUserProfile", getUserProfile);
+    // }
   },
 
   /**
@@ -412,21 +349,21 @@ Page({
       return false;
     }
     // 获取微信头像信息
-    let getUserProfile = wx.getStorageSync("getUserProfile");
-    if (!getUserProfile) {
-      getUserProfile = await wx.getUserProfile({
-        desc: "用于完善个人信息",
-      });
-      getUserProfile = getUserProfile.userInfo;
-      wx.setStorageSync("getUserProfile", getUserProfile);
-    }
-    _this.addColoction(getUserProfile);
+    // let getUserProfile = wx.getStorageSync("getUserProfile");
+    // if (!getUserProfile) {
+    //   getUserProfile = await wx.getUserProfile({
+    //     desc: "用于完善个人信息",
+    //   });
+    //   getUserProfile = getUserProfile.userInfo;
+    //   wx.setStorageSync("getUserProfile", getUserProfile);
+    // }
+    // _this.addColoction(getUserProfile);
   },
 
   /**
    * 添加函数
    */
-  async addColoction(getUserProfile) {
+  async addColoction() {
     // 发送给车主的订阅消息
     wx.requestSubscribeMessage({
       tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
@@ -443,7 +380,7 @@ Page({
             //状态
             status: 0, //0:待发布, 1:发布成功 2:删除
           };
-          addData.userInfo.avatarUrl = getUserProfile.avatarUrl;
+          addData.userInfo.avatarUrl = carData[0].photo;
           delete addData.__webviewId__;
           delete addData.userInfo._id;
           db.collection("CarPublish").add({

@@ -4,14 +4,15 @@
     "pages/carOwner/carOwner",
     "pages/myCenter/myCenter",
     "pages/NewCarSearch/NewCarSearch",
-    "pages/NewPepleSearch/NewPepleSearch",
+    "pages/DrivePublish/DrivePublish",
     "pages/tripDetails/tripDetails",
     "pages/passengersTripDetails/PassengersTripDetails",
     "pages/SearchPage/SearchPage",
     "pages/AboutUs/AboutUs",
     "pages/RealAuthentication/RealAuthentication",
     "pages/RealDriveAuthentication/RealDriveAuthentication",
-    "pages/subscribeHistory/subscribeHistory"
+    "pages/subscribeHistory/subscribeHistory",
+    "pages/SubstituteDriving/SubstituteDriving"
   ],
   "permission": {
     "scope.userLocation": {
@@ -43,8 +44,8 @@
         "selectedIconPath": "images/tab/tab0101.png"
       },
       {
-        "text": "车主发布",
-        "pagePath": "pages/NewPepleSearch/NewPepleSearch",
+        "text": "代驾服务",
+        "pagePath": "pages/SubstituteDriving/SubstituteDriving",
         "iconPath": "images/tab/02.png",
         "selectedIconPath": "images/tab/0201.png"
       },

@@ -1,5 +1,5 @@
 <!-- miniprogram/pages/peopleLookCars/peopleLookCars.wxml -->
-<view class="topNavBar">
+<!-- <view class="topNavBar">
   <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">
     <block wx:for="{{navData}}" wx:key="index" wx:for-index="id" wx:for-item="navItem">
       <view class='nav-item {{currentNavTab == id ? "active" :""}}' data-current="{{id}}" bindtap='switchNav'>
@@ -7,8 +7,8 @@
       </view>
     </block>
   </scroll-view>
-</view>
-<view wx:if="{{currentNavTab == 0}}" class='container'>
+</view> -->
+<view class='container'>
   <!-- 方向 -->
   <view wx:if="{{list.length != 0 || isLodding}}" class='list-view'>
     <view class='item-view' wx:for="{{list}}" wx:key="index">
@@ -92,8 +92,8 @@
     <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发布出行信息</button>
   </view>
 </view>
-<view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
-  <!-- 方向 -->
+
+<!-- <view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
   <scroll-view scroll-y="{{true}}" wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
     <view wx:for="{{list}}" wx:key="index" class='sub'>
       <view wx:if="{{item.status == 0}}" class="passenger-reg">正在为您匹配合适的车主...</view>
@@ -123,7 +123,7 @@
           <view class='text-sub'>
             <text class='label'>出行方向</text>
             <view class='sub_driction cont'>
-              <text class='text'>{{item.startRegion[2]}}-->{{item.endRegion[2]}}</text>
+              <text class='text'>{{item.startRegion[2]}}--{{item.endRegion[2]}}</text>
             </view>
           </view>
           <view class='text-sub'>
@@ -133,9 +133,6 @@
         </view>
         <view class='sub-btn-group'>
           <view wx:if="{{item.status == 1}}" class='publish btn'>已取消</view>
-          <!-- <view class='publish btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
-            发布
-          </view> -->
           <view class='delete btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='PassengerPublish'>
             取消订单
           </view>
@@ -163,10 +160,5 @@
     <view class='img-view'>
       <image src='../../images/icon/null_view.jpg'></image>
     </view>
-    <!-- <text class="text">暂无出行信息</text> -->
   </view>
-  <!-- 发起拼车 -->
-  <!-- <view class='submit-btn'>
-    <button open-type="getUserInfo" bindtap='addPublic' class='navigator'>发起预约</button>
-  </view> -->
-</view>
+</view> -->
