@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/carOwner/carOwner",
     "pages/myCenter/myCenter",
+    "pages/myPublish/myPublish",
     "pages/NewCarSearch/NewCarSearch",
     "pages/DrivePublish/DrivePublish",
     "pages/tripDetails/tripDetails",

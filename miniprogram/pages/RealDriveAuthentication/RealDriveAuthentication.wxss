@@ -19,6 +19,19 @@ page {
   padding: 8rpx 28rpx;
   box-sizing: border-box;
 }
+.photo {
+  text-align: center;
+  font-size: 56rpx;
+}
+.f-photo{
+  width: 400rpx;
+  height: 400rpx;
+  border: 1rpx solid #555;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .jsz{
   text-align: center;
   font-size: 56rpx;

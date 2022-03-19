@@ -13,7 +13,7 @@
   show-location="true" 
   longitude="{{longitude}}" 
   latitude="{{latitude}}" 
-  subkey="JGUBZ-W2HKR-7VNWY-W4JVJ-YEFS3-NQFA4"
+  subkey="{{MOYUAN_KEY}}"
   scale="{{scale}}"
    markers="{{markers}}" 
    controls="{{controls}}" 
@@ -31,8 +31,8 @@
     <!-- 车主头像、昵称 -->
     <view class='top-view'>
       <view class='user-info'>
-        <image class='img' src='{{userInfo.avatarUrl}}'></image>
-        <text class='name'>{{userInfo.name}}</text>
+        <image class='img' src='{{carData[0].photo}}'></image>
+        <text class='name'>{{carData[0].name}}</text>
       </view>
       <view class="primary-btn" bindtap="onWatchDemo">
         导航

@@ -149,12 +149,14 @@ Page({
         //   })
         //   .get();
         const { __webviewId__, ...rest } = this.data;
-        const res = await db.collection("Certificates").add({
+        const res = await db.collection("User")
+          .where({ _openid: app.globalData.openid })
+          .update({
           data: {
             ...rest,
             // name: userData[0].name,
             // phone: userData[0].phone,
-            status: 0, // 状态： 0 审核中 1 审核通过 2 审核不通过
+            driveStatus: 0, // 状态： 0 审核中 1 审核通过 2 审核不通过
             createTime: db.serverDate(), // 服务端的时间
           },
         });

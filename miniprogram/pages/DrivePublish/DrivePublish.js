@@ -61,8 +61,6 @@ Page({
     remarks: "",
     // 协议
     agreement: false,
-    // 用户注册信息
-    userInfo: {},
 
     modelShow: false,
   },
@@ -108,35 +106,27 @@ Page({
 
   async onShow() {
       // 判断是否车主认证
-    const { data: carData = [] } = await db
-      .collection("Certificates")
+    const { data: carData = [{}] } = await db
+      .collection("User")
       .where({ _openid: app.globalData.openid })
       .get();
     if (!carData[0]) {
       this.goReal("需要进行车主认证");
       return;
     }
-    if (carData[0].status === 0 || carData[0].status === 2) {
+    if (carData[0].driveStatus === 0 || carData[0].driveStatus === 2) {
       this.goReal(
-        carData[0].status === 0 ? "车主认证中" : "车主认证失败，请重新认证"
+        carData[0].driveStatus === 0 ? "车主认证中" : "车主认证失败，请重新认证"
       );
       return;
     }
     // 存在全局，我的发布里调用
-    if (carData[0].status === 1) {
-      app.globalData.carStatus = carData[0].status;
+    if (carData[0].driveStatus === 1) {
+      app.globalData.carStatus = carData[0].driveStatus;
       this.setData({
         carData
       })
     }
-    // let getUserProfile = wx.getStorageSync("getUserProfile");
-    // if (!getUserProfile) {
-    //   getUserProfile = await wx.getUserProfile({
-    //     desc: "用于完善个人信息",
-    //   });
-    //   getUserProfile = getUserProfile.userInfo;
-    //   wx.setStorageSync("getUserProfile", getUserProfile);
-    // }
   },
 
   /**
@@ -311,17 +301,12 @@ Page({
    */
   async submitTap() {
     let _this = this;
-    let phoneReg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (_this.data.startLocation.name == "") {
       _this.showModal("请选择上车地点");
       return false;
     }
     if (_this.data.endLocation.name == "") {
       _this.showModal("请选择下车地点");
-      return false;
-    }
-    if (!phoneReg.test(_this.data.phoneNumber)) {
-      _this.showModal("请输入正确的联系电话");
       return false;
     }
     if (_this.data.modelType == "") {
@@ -332,10 +317,6 @@ Page({
       _this.showModal("请输入人数");
       return false;
     }
-    if (_this.data.phoneNumber == "") {
-      _this.showModal("请输入联系电话");
-      return false;
-    }
     if (_this.data.budget == "") {
       _this.showModal("请输入预算金额");
       return false;
@@ -344,26 +325,14 @@ Page({
       _this.showModal("请勾选合乘协议");
       return false;
     }
-    if (_this.data.userInfo.phone != _this.data.phoneNumber) {
-      _this.showModal("实名电话与发布电话不一致");
-      return false;
-    }
-    // 获取微信头像信息
-    // let getUserProfile = wx.getStorageSync("getUserProfile");
-    // if (!getUserProfile) {
-    //   getUserProfile = await wx.getUserProfile({
-    //     desc: "用于完善个人信息",
-    //   });
-    //   getUserProfile = getUserProfile.userInfo;
-    //   wx.setStorageSync("getUserProfile", getUserProfile);
-    // }
-    // _this.addColoction(getUserProfile);
+    _this.addColoction();
   },
 
   /**
    * 添加函数
    */
   async addColoction() {
+    const { carData } = this.data;
     // 发送给车主的订阅消息
     wx.requestSubscribeMessage({
       tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
@@ -380,9 +349,7 @@ Page({
             //状态
             status: 0, //0:待发布, 1:发布成功 2:删除
           };
-          addData.userInfo.avatarUrl = carData[0].photo;
           delete addData.__webviewId__;
-          delete addData.userInfo._id;
           db.collection("CarPublish").add({
             data: addData,
             success: (res) => {

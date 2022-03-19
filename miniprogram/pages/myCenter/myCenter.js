@@ -18,29 +18,19 @@ Page({
     // this.getUser();
   },
   async onShow() {
-    const { data: User = {} } = await db
+    const { data: User = [{}] } = await db
       .collection("User")
-      .field({
-        name: true,
-        phone: true,
-      })
       .get();
     this.setData({
       User: User[0],
     });
-    const { data = [] } = await db
-      .collection("Certificates")
-      .where({ _openid: app.globalData.openid })
-      .field({
-        status: true,
-      })
-      .get();
-    if (data.length > 0) {
-      app.globalData.carStatus = data[0].status;
+    if (User.length > 0) {
+      app.globalData.carStatus = User[0].driveStatus;
       this.setData({
-        carStatus: data[0].status,
+        carStatus: User[0].driveStatus,
       });
     }
+    console.log(User, 'UserUser')
   },
 
   onAuthorize() {
@@ -92,6 +82,8 @@ Page({
         db.collection("User").add({
           data: {
             name: "",
+            status: 0,
+            driveStatus: 0,
             phone: phone,
             createTime: db.serverDate(), // 服务端的时间
           },
@@ -103,26 +95,6 @@ Page({
   },
 
   onPublish() {
-    // 进入发布必须先通过实名认证
-    // if (this.data.info.status != 1) {
-    //   if (this.data.info.status == 0) {
-    //     return wx.showModal({
-    //       title: "正在进行实名认证中",
-    //       showCancel: false,
-    //     });
-    //   }
-    //   return wx.showModal({
-    //     content: "请先进行实名认证",
-    //     showCancel: false,
-    //     success: (res) => {
-    //       //返回页面
-    //       // wx.navigateBack();
-    //       wx.navigateTo({
-    //         url: "/pages/RealAuthentication/RealAuthentication",
-    //       });
-    //     },
-    //   });
-    // }
     wx.navigateTo({
       url: "/pages/myPublish/myPublish",
     });

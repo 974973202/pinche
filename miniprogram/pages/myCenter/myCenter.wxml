@@ -2,7 +2,8 @@
   <view class='top-view'>
     <view class='user-info'>
       <view class="avatar-url">
-        <open-data type="userAvatarUrl"></open-data>
+        <image class="avatar-url" wx:if="{{User.photo}}" src="{{User.photo}}" />
+        <open-data wx:else type="userAvatarUrl"></open-data>
       </view>
       <view class="user-item">
         <view wx:if="{{User.name}}" class="nickname">{{User.name}}</view>

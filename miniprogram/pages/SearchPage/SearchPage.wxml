@@ -11,8 +11,8 @@
             <open-data type="userAvatarUrl"></open-data>
           </view>
           <open-data type="userNickName" class="name"></open-data> -->
-          <image class='img' src='{{item.userInfo.avatarUrl}}'></image>
-          <text class='name'>{{item.userInfo.name}}</text>
+          <image class='img' src='{{item.carData[0].photo}}'></image>
+          <text class='name'>{{item.carData[0].name}}</text>
         </view>
         <!-- 方向+电话 -->
         <view class='dreicTel'>
@@ -29,12 +29,6 @@
         <view class='route-line'>
           <text class='label'>起点：</text>
           <text class='route'>{{item.startLocation.name}}</text>
-        </view>
-        <view wx:if="{{item.tripsArray}}" class='route-line'>
-          <text class='label'>途径：</text>
-          <view class='route'>
-            <text class='route-item' wx:for="{{item.tripsArray}}">{{item.name}}</text>
-          </view>
         </view>
         <view class='route-line'>
           <text class='label'>终点：</text>

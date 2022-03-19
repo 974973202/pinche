@@ -93,8 +93,7 @@
       <text class='label'>联系电话</text>
       <view class='cont'>
         <view class='input-view'>
-          <input type="number" bindinput="inputedit" data-name="phoneNumber" placeholder='请输入手机号' value="{{phoneNumber}}"/>
-          <text class='text'>人</text>
+          <input type="number" disabled="{{true}}" value="{{carData[0].phone}}"/>
         </view>
       </view>
     </view>

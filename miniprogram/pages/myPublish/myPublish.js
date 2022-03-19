@@ -130,38 +130,47 @@ Page({
 
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
-    let params = this.data.list[idx];
-    if (!this.isValid(params.exactDate, "出行时间已超时")) return false;
-    let title = dbName == "CarPublish" ? "发布出行信息" : "发布预约信息";
-    wx.showModal({
-      title: title,
-      content: "确定发布这条信息？",
-      success: async (res) => {
-        if (res.confirm) {
-          // 操作数据库
-          try {
-            const r = await db
-              .collection(dbName)
-              .where({ _id: id })
-              .update({
-                data: {
-                  status: 1,
-                },
+    let type = e.currentTarget.dataset.type;
+    if ( type === 'publish') {
+      let params = this.data.list[idx];
+      if (!this.isValid(params.exactDate, "出行时间已超时")) return false;
+      let title = dbName == "CarPublish" ? "发布出行信息" : "发布预约信息";
+      wx.showModal({
+        title: title,
+        content: "确定发布这条信息？",
+        success: async (res) => {
+          if (res.confirm) {
+            // 操作数据库
+            try {
+              const r = await db
+                .collection(dbName)
+                .where({ _id: id })
+                .update({
+                  data: {
+                    status: 1,
+                  },
+                });
+              wx.showToast({
+                title: "发布成功",
+                icon: "success",
+                duration: 2000,
               });
-            wx.showToast({
-              title: "发布成功",
-              icon: "success",
-              duration: 2000,
-            });
-            this.addData(openid);
-          } catch (e) {
-            throw Error(e);
+              this.addData(openid);
+            } catch (e) {
+              throw Error(e);
+            }
+          } else if (res.cancel) {
+            console.log("cancel");
           }
-        } else if (res.cancel) {
-          console.log("cancel");
-        }
-      },
-    });
+        },
+      });
+    } else {
+      wx.showToast({
+        title: "功能开发中",
+        icon: "success",
+        duration: 2000,
+      });
+    }
   },
 
   /**

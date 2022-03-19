@@ -68,7 +68,10 @@
         </view>
       </view>
       <view class='btn-group'>
-        <view wx:if="{{item.status == 0}}" class='button' data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+        <view wx:if="{{item.status == 0}}" class='edit' data-type="edit" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+          修改出行时间
+        </view>
+        <view wx:if="{{item.status == 0}}" class='button' data-type="publish" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
           发布
         </view>
         <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button>

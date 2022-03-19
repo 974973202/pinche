@@ -29,7 +29,7 @@ Page({
     controls: [],
     // --------------------------------------------------------
     //信息
-    userInfo: {},
+    carData: {},
 
     startPoint: null,
     endPoint: null,
@@ -125,7 +125,7 @@ Page({
     const { data } = await db.collection("CarPublish").doc(id).get();
     console.log(data, "加载数据加载数据");
     _this.setData({
-      userInfo: data.userInfo,
+      carData: data.carData,
       modelType: data.modelType,
       //出发城市***
       startCity: data.startRegion[2],
@@ -334,7 +334,7 @@ Page({
                 const {
                   id,
                   peopleNumber,
-                  userInfo,
+                  carData,
                   modelType,
                   startLocation,
                   endLocation,
@@ -378,7 +378,7 @@ Page({
                             .add({
                               data: {
                                 carInfo: {
-                                  userInfo, // 车主信息
+                                  carData, // 车主信息
                                   modelType, // 车型
                                   startLocation, // 起点
                                   endLocation, // 终点
@@ -412,7 +412,7 @@ Page({
                               .callFunction({
                                 name: "passengerSubMessage",
                                 data: {
-                                  name: userInfo.name,
+                                  name: carData.name,
                                   startLocation: startLocation.name.slice(
                                     0,
                                     20
@@ -420,7 +420,7 @@ Page({
                                   endLocation: endLocation.name.slice(0, 20),
                                   exactDate:
                                     generateTimeReqestNumber(exactDate),
-                                  phone: userInfo.phone,
+                                  phone: carData.phone,
                                   miniprogramState:
                                     wx.getAccountInfoSync().miniProgram
                                       .envVersion, // 获取当前环境，测试，体验，生产

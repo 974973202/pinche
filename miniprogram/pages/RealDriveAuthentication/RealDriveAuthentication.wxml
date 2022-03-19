@@ -5,8 +5,9 @@
     <view class="int f-phone">
       手机号：<input value="{{phone}}" data-type="phone" name="phone" bindinput="inputedit" />
     </view>
-  <view class="jsz">请上传照片</view>
-  <view class="f-jsz">
+
+  <view class="photo">请上传个人照片</view>
+  <view class="f-photo">
     <view wx:if="{{!photo}}" bind:tap="onChooseMedia" data-name='photo' class="upload-s"></view>
     <image wx:else src="{{photo}}" />
   </view>
