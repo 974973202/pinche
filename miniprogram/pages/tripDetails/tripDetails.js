@@ -275,7 +275,7 @@ Page({
               });
               return;
             }
-            this.bindMakePhoneCall(num);
+            this.bindMakePhoneCall(num, Number(res.content));
           }
         } else if (res.cancel) {
           console.log("用户点击取消");
@@ -287,16 +287,17 @@ Page({
   /**
    * 马上预约
    */
-  async bindMakePhoneCall(num) {
-    const { data = [] } = await db
+  async bindMakePhoneCall(num, mynum) {
+    const { data = [{}] } = await db
       .collection("User")
       .where({ _openid: app.globalData.openid })
       .get();
-    const { name, phone } = data[0];
+    const { name = '', phone } = data[0] || {};
     let passengerInfo = {
       name,
       phone,
       status: 0, // 记录乘客是否上车
+      number: mynum
     };
     if (!name) {
       wx.showModal({
@@ -314,8 +315,9 @@ Page({
                 passengerInfo = {
                   ...passengerInfo,
                   name: res.confirm,
+                  number: mynum
                 };
-                this.handleTrip(passengerInfo, num)
+                this.handleTrip(passengerInfo, num, mynum)
                 
               });
           } else if (res.cancel) {
@@ -324,11 +326,11 @@ Page({
         },
       });
     } else {
-      this.handleTrip(passengerInfo, num)
+      this.handleTrip(passengerInfo, num, mynum)
     }
   },
 
-  handleTrip(passengerInfo, num) {
+  handleTrip(passengerInfo, num, mynum) {
     // 获取这条信息id 和 人数
     const {
       id,
@@ -389,6 +391,7 @@ Page({
                     name: passengerInfo.name,
                     phone: passengerInfo.phone,
                     subscribeStatus: 0, // 0未出行 1已出行 2其他
+                    number: mynum,
                   },
                 });
             });

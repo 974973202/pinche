@@ -83,7 +83,6 @@ Page({
           data: {
             name: "",
             status: 0,
-            driveStatus: 0,
             phone: phone,
             createTime: db.serverDate(), // 服务端的时间
           },

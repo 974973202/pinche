@@ -33,14 +33,17 @@ Page({
     let myid = e.currentTarget.dataset.myid;
     let phone = e.currentTarget.dataset.phone;
     let type = e.currentTarget.dataset.type;
-    let { data: { passengerInfo } } = await db.collection('CarPublish').doc(id).get();
+    let { data: { passengerInfo, peopleNumber } } = await db.collection('CarPublish').doc(id).get();
     
     // 取消订单
     if(type === 'cancel') {
       let info = []
+      let num = 0
       passengerInfo.forEach(ele => {
         if(ele.phone != phone) {
           info.push(ele)
+        } else {
+          num = ele.number
         }
       });
 
@@ -49,6 +52,7 @@ Page({
       .update({
         data: {
           passengerInfo: info,
+          peopleNumber: Number(peopleNumber) + Number(num)
         },
         success: (res) => {
           console.log(res);

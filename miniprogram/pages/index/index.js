@@ -128,11 +128,14 @@ Page({
           data: {
             name: "",
             status: 0,
-            driveStatus: 0,
             phone: phone,
             createTime: db.serverDate(), // 服务端的时间
           },
         });
+        this.setData({
+          User:[{ phone: phone, }],
+        });
+        app.globalData.info = { phone: phone, }
         this.onSubmitTap();
       });
   },
