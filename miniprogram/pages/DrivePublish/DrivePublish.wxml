@@ -6,14 +6,14 @@
       <view class='cont time-picker'>
         <!-- 日期选择器 -->
         <view class='picker'>
-          <picker mode="date" bindchange="bindPickerChange" value="{{dateIndex}}" start="{{dateIndex}}" end="2035-12-31">
+          <picker mode="date" bindchange="bindPickerChange" value="{{dateIndex}}" end="2035-12-31">
             <!-- {{dateArray[dateIndex]}} -->
             {{dateIndex}}
           </picker>
         </view>
         <!-- 时间选择器 -->
         <view class='picker'>
-          <picker mode="time" value="{{exactTime}}" start="{{exactTime}}" end="23:59" bindchange="bindTimeChange">
+          <picker mode="time" value="{{exactTime}}" end="23:59" bindchange="bindTimeChange">
             {{exactTime}}
           </picker>
         </view>
@@ -35,30 +35,6 @@
         <text wx:else class='text'>{{endLocation.name}}</text>
       </view>
     </view>
-    <!-- 中途停车 -->
-    <!-- <view class='item'>
-      <text class='label'>中途停车</text>
-      <view class='cont trips'>
-        <view class='trips-item' wx:for="{{tripsArray}}" wx:key = "index">
-          <view class='name'>
-            <text>{{item.name}}</text>
-          </view>
-          <view class='operate'>
-            <view class='edit icon' data-idx='{{index}}' bindtap="changeTripsItem">
-              <image src='../../images/icon/edit.png'></image>
-            </view>
-            <view class='delt icon' data-idx='{{index}}' bindtap="delTripsItem">
-              <image src='../../images/icon/delete.png'></image>
-            </view>
-          </view>
-        </view>
-        <view class='add-btn' bindtap="addTripsItem">
-          <image class='icon' src='../../images/icon/add.png'></image>
-          <text>添加</text>
-        </view>
-      </view>
-    </view> -->
-    <!-- 车型 -->
     <view class='item'>
       <text class='label'>车型</text>
       <view class='cont'>

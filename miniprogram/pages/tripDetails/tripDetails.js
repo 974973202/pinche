@@ -143,8 +143,6 @@ Page({
       // tripsArray: data.tripsArray,
       //人数***
       peopleNumber: data.peopleNumber,
-      //联系电话
-      phoneNumber: data.phoneNumber,
       //预算***
       budget: data.budget,
       //备注***
@@ -290,19 +288,6 @@ Page({
    * 马上预约
    */
   async bindMakePhoneCall(num) {
-    // 获取自己个人信息，写入车主信息中
-    // let passengerInfo = app.globalData.info;
-    // console.log(passengerInfo);
-    // if (!passengerInfo.phone)
-    //   return wx.showModal({
-    //     content: "请先进行实名认证",
-    //     showCancel: false,
-    //     success: (res) => {
-    //       wx.switchTab({
-    //         url: "/pages/myCenter/myCenter",
-    //       });
-    //     },
-    //   });
     const { data = [] } = await db
       .collection("User")
       .where({ _openid: app.globalData.openid })
@@ -311,6 +296,7 @@ Page({
     let passengerInfo = {
       name,
       phone,
+      status: 0, // 记录乘客是否上车
     };
     if (!name) {
       wx.showModal({
@@ -329,154 +315,153 @@ Page({
                   ...passengerInfo,
                   name: res.confirm,
                 };
-
-                // 获取这条信息id 和 人数
-                const {
-                  id,
-                  peopleNumber,
-                  carData,
-                  modelType,
-                  startLocation,
-                  endLocation,
-                  budget,
-                  remarks,
-                  passengerInfo: carInfo, // 司机下面记录的乘客信息
-                  exactDate,
-                  carOpenid,
-                } = this.data;
-                const repectPhone = carInfo.some(
-                  (ele) => ele.phone == passengerInfo.phone
-                );
-                if (repectPhone)
-                  return wx.showModal({
-                    content: "您已预约请勿重复预约",
-                    showCancel: false,
-                  });
-                // 绑定乘客信息
-                // 添加乘客预约记录
-
-                wx.showModal({
-                  title: "预约车主",
-                  content: "是否确定预约",
-                  success(res) {
-                    if (res.confirm) {
-                      // 修改车主数据
-                      wx.cloud
-                        .callFunction({
-                          name: "subscribeHistory",
-                          data: {
-                            dbName: "CarPublish",
-                            passengerInfo,
-                            id,
-                            peopleNumber: num,
-                          },
-                        })
-                        .then(async (res) => {
-                          // 添加乘客(自己的)预约记录
-                          const result = await db
-                            .collection("subscribeHistory")
-                            .add({
-                              data: {
-                                carInfo: {
-                                  carData, // 车主信息
-                                  modelType, // 车型
-                                  startLocation, // 起点
-                                  endLocation, // 终点
-                                  budget, // 预算
-                                  remarks, // 车主备注
-                                  exactDate,
-                                },
-                                name: passengerInfo.name,
-                                phone: passengerInfo.phone,
-                                subscribeStatus: 0, // 0未出行 1已出行 2其他
-                              },
-                            });
-
-                          // wx.switchTab({
-                          //   url: "/pages/myCenter/myCenter",
-                          // });
-                        });
-
-                      // 发送给预约者订阅消息
-                      wx.requestSubscribeMessage({
-                        tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
-                        success(data) {
-                          const acceptTemplateIds =
-                            Object.keys(data).filter(
-                              (key) => data[key] === "accept"
-                            ) || [];
-                          if (!acceptTemplateIds.length) {
-                            console.warn("订阅消息流程失败!", data);
-                          } else {
-                            wx.cloud
-                              .callFunction({
-                                name: "passengerSubMessage",
-                                data: {
-                                  name: carData.name,
-                                  startLocation: startLocation.name.slice(
-                                    0,
-                                    20
-                                  ),
-                                  endLocation: endLocation.name.slice(0, 20),
-                                  exactDate:
-                                    generateTimeReqestNumber(exactDate),
-                                  phone: carData.phone,
-                                  miniprogramState:
-                                    wx.getAccountInfoSync().miniProgram
-                                      .envVersion, // 获取当前环境，测试，体验，生产
-                                },
-                              })
-                              .then((res) => {
-                                console.log(res);
-                              });
-                            // 发送给车主的订阅消息
-                            wx.cloud
-                              .callFunction({
-                                name: "carSubMessage",
-                                data: {
-                                  carOpenid,
-                                  name: passengerInfo.name,
-                                  startLocation: startLocation.name.slice(
-                                    0,
-                                    20
-                                  ),
-                                  endLocation: endLocation.name.slice(0, 20),
-                                  exactDate:
-                                    generateTimeReqestNumber(exactDate),
-                                  phone: passengerInfo.phone,
-                                  miniprogramState:
-                                    wx.getAccountInfoSync().miniProgram
-                                      .envVersion,
-                                },
-                              })
-                              .then((res) => {
-                                console.log(res);
-                              });
-                          }
-                        },
-                        fail(res) {
-                          console.warn("点击了取消!", res);
-                        },
-                        complete: () => {
-                          wx.switchTab({
-                            url: "/pages/myCenter/myCenter",
-                          });
-                        },
-                      });
-                    }
-                  },
-                });
+                this.handleTrip(passengerInfo, num)
+                
               });
           } else if (res.cancel) {
             console.log("用户点击取消");
           }
         },
       });
+    } else {
+      this.handleTrip(passengerInfo, num)
     }
+  },
 
-    // wx.makePhoneCall({
-    //   phoneNumber: this.data.phoneNumber,
-    // });
+  handleTrip(passengerInfo, num) {
+    // 获取这条信息id 和 人数
+    const {
+      id,
+      peopleNumber,
+      carData,
+      modelType,
+      startLocation,
+      endLocation,
+      budget,
+      remarks,
+      passengerInfo: carInfo, // 司机下面记录的乘客信息
+      exactDate,
+      carOpenid,
+    } = this.data;
+    const repectPhone = carInfo.some(
+      (ele) => ele.phone == passengerInfo.phone
+    );
+    if (repectPhone)
+      return wx.showModal({
+        content: "您已预约请勿重复预约",
+        showCancel: false,
+      });
+    // 绑定乘客信息
+    // 添加乘客预约记录
+
+    wx.showModal({
+      title: "预约车主",
+      content: "是否确定预约",
+      success(res) {
+        if (res.confirm) {
+          // 修改车主数据
+          wx.cloud
+            .callFunction({
+              name: "subscribeHistory",
+              data: {
+                dbName: "CarPublish",
+                passengerInfo,
+                id,
+                peopleNumber: num,
+              },
+            })
+            .then(async (res) => {
+              // 添加乘客(自己的)预约记录
+              const result = await db
+                .collection("subscribeHistory")
+                .add({
+                  data: {
+                    carInfo: {
+                      carData, // 车主信息
+                      modelType, // 车型
+                      startLocation, // 起点
+                      endLocation, // 终点
+                      budget, // 预算
+                      remarks, // 车主备注
+                      exactDate,
+                      carId: id, 
+                    },
+                    name: passengerInfo.name,
+                    phone: passengerInfo.phone,
+                    subscribeStatus: 0, // 0未出行 1已出行 2其他
+                  },
+                });
+            });
+
+          // 发送给预约者订阅消息
+          wx.requestSubscribeMessage({
+            tmplIds: [PASSENGERSUBMESSAGE, CARSUBMESSAGE],
+            success(data) {
+              const acceptTemplateIds =
+                Object.keys(data).filter(
+                  (key) => data[key] === "accept"
+                ) || [];
+              if (!acceptTemplateIds.length) {
+                console.warn("订阅消息流程失败!", data);
+              } else {
+                wx.cloud
+                  .callFunction({
+                    name: "passengerSubMessage",
+                    data: {
+                      name: carData.name,
+                      startLocation: startLocation.name.slice(
+                        0,
+                        20
+                      ),
+                      endLocation: endLocation.name.slice(0, 20),
+                      exactDate:
+                        generateTimeReqestNumber(exactDate),
+                      phone: carData.phone,
+                      miniprogramState:
+                        wx.getAccountInfoSync().miniProgram
+                          .envVersion, // 获取当前环境，测试，体验，生产
+                    },
+                  })
+                  .then((res) => {
+                    console.log(res);
+                  });
+                // 发送给车主的订阅消息
+                wx.cloud
+                  .callFunction({
+                    name: "carSubMessage",
+                    data: {
+                      carOpenid,
+                      name: passengerInfo.name,
+                      startLocation: startLocation.name.slice(
+                        0,
+                        20
+                      ),
+                      endLocation: endLocation.name.slice(0, 20),
+                      exactDate:
+                        generateTimeReqestNumber(exactDate),
+                      phone: passengerInfo.phone,
+                      miniprogramState:
+                        wx.getAccountInfoSync().miniProgram
+                          .envVersion,
+                    },
+                  })
+                  .then((res) => {
+                    console.log(res);
+                  });
+              }
+            },
+            fail(res) {
+              console.warn("点击了取消!", res);
+            },
+            complete: () => {
+              wx.switchTab({
+                url: "/pages/myCenter/myCenter",
+              });
+            },
+          });
+        }
+      },
+    });
   },
   /**
    * 返回

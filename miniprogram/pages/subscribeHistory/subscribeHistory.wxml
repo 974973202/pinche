@@ -25,11 +25,11 @@
             </view>
           <view class='text-sub'>
             <text class='label'>车主姓名：</text>
-            <text class='cont text'>{{item.carInfo.userInfo.name}}</text>
+            <text class='cont text'>{{item.carInfo.carData[0].name}}</text>
           </view>
           <view class='text-sub'>
             <text class='label'>车主电话：</text>
-            <text class='cont text'>{{item.carInfo.userInfo.phone}}</text>
+            <text class='cont text'>{{item.carInfo.carData[0].phone}}</text>
           </view>
           <view class='text-sub'>
             <text class='label'>备注：</text>
@@ -37,8 +37,11 @@
           </view>
         </view>
         <view class='sub-btn-group'>
-          <!-- <view class='publish btn' data-id='{{item._id}}' bindtap='onCompleteOrder'>完成订单</view> -->
-          <view class='delete btn' data-phone='{{item.carInfo.userInfo.phone}}' bindtap='onCall'>呼叫车主</view>
+          <view class='delete btn' data-phone='{{item.carInfo.carData[0].phone}}' bindtap='onCall'>呼叫车主</view>
+          <view class='publish btn' data-type="up" wx:if="{{item.subscribeStatus == 0}}" data-myid='{{item._id}}' data-phone="{{item.phone}}" data-id='{{item.carInfo.carId}}' bindtap='handleDrive'>我已上车</view>
+          <view class='publish btn' data-type="down" wx:if="{{item.subscribeStatus == 1}}" data-myid='{{item._id}}' data-phone="{{item.phone}}" data-id='{{item.carInfo.carId}}' bindtap='handleDrive'>我已到达</view>
+          <view class='delete btn' data-type="cancel" wx:if="{{item.subscribeStatus == 0}}" data-myid='{{item._id}}' data-phone="{{item.phone}}" data-id='{{item.carInfo.carId}}' bindtap='handleDrive'>取消订单</view>
+          <view class='publish btn' wx:if="{{item.subscribeStatus == 2}}">已完成</view>
         </view>
       </view>
 

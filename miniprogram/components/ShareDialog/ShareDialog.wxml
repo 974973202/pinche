@@ -1,0 +1,28 @@
+<view wx:if="{{showDialog}}" class="dialog_wrapper" catchtouchmove="noMove">
+  <view class="dialog_box">
+    
+    <view class='item'>
+      <text class='label'>出发时间</text>
+      <view class='cont time-picker'>
+        <!-- 日期选择器 -->
+        <view class='picker'>
+          <picker mode="date" bindchange="bindPickerChange" value="{{dateIndex}}" end="2035-12-31">
+            {{dateIndex}}
+          </picker>
+        </view>
+        <!-- 时间选择器 -->
+        <view class='picker'>
+          <picker mode="time" value="{{exactTime}}" end="23:59" bindchange="bindTimeChange">
+            {{exactTime}}
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <view class="footer_btn">
+      <button bindtap="hideShareDialog" plain class="btn1">取消</button>
+      <button bindtap="handleSave" plain class="btn2">确定</button>
+      <!-- <button plain open-type="share" bindtap="shareToFriends" class="btn2">立即分享</button> -->
+    </view>
+  </view>
+</view>

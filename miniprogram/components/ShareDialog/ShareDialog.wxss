@@ -1,0 +1,116 @@
+.dialog_wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100002;
+  background: rgba(0, 0, 0, 0.75);
+}
+.dialog_wrapper .dialog_box {
+  position: absolute;
+  overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 76%;
+  color: #333333;
+  border-radius: 24rpx;
+  height: 38%;
+  background: #ffffff;
+}
+.dialog_wrapper .dialogBg {
+  position: relative;
+  width: 100%;
+  height: 50%;
+}
+.share_text {
+  position: relative;
+  margin-top: 5rpx;
+  width: 100%;
+  color: 333333;
+  font-size: 39rpx;
+  text-align: center;
+}
+.share_text text {
+  font-size: 42rpx;
+  color: #00cb00;
+}
+.footer_btn {
+  display: flex;
+  position: absolute;
+  bottom: 0%;
+  width: 100%;
+  height: 20%;
+  overflow: hidden;
+}
+.footer_btn .btn1 {
+  width: 42%;
+  height: 80%;
+  line-height: 84rpx;
+  border: 0;
+  color: #808080;
+  background-size: 100% 98.5%;
+  font-size: 33rpx;
+  font-weight: 700;
+  padding: 0;
+}
+.footer_btn .btn2 {
+  width: 42%;
+  height: 80%;
+  line-height: 84rpx;
+  border: 0;
+  background-size: 100% 98.5%;
+  color: #808080;
+  font-size: 33rpx;
+  font-weight: 700;
+  padding: 0;
+}
+
+
+
+
+.item{
+  display: flex;
+  justify-content: space-between;
+  margin: 0 30rpx;
+  border-bottom: 1px solid #f7f7f7;
+}
+.label{
+  font-size: 28rpx;
+  color: #535353;
+  padding: 15rpx 10rpx 15px 0;
+  width: 130rpx;
+}
+.cont{
+  flex: 1;
+  font-size: 28rpx;
+  padding: 15rpx 0 15px 0;
+  color: #1a1a1a;
+}
+.picker{
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-content: center;
+  border-radius: 10rpx;
+  border: 1px solid #9B9B9B;
+  justify-content: flex-end;
+  height: 40rpx;
+}
+.picker picker{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+.picker:after{
+  content: '';
+  display: block;
+  width: 10rpx;
+  height: 10rpx;
+  margin: 10rpx 20rpx 0 20rpx;
+  border-top: 1px solid #9B9B9B ;
+  border-right: 1px solid #9B9B9B ;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg)
+}

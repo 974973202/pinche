@@ -6,4 +6,5 @@
 <view class='cont-text'>
   <text>   “侣程出行”始终奉行免费的服务宗旨，为广大出行人员提供更为方便快捷、准确的信息.</text>
   <text class="right-text">—— 风正科技</text>
+  <view class="pay">打赏</view>
 </view>

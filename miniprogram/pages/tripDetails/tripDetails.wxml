@@ -104,7 +104,7 @@
         <image src='../../images/icon/home3.png'></image>
       </view>
     </view> -->
-    <button disabled="{{peopleNumber == 0 || phoneNumber == phone}}" class='tel' bindtap='onShowModal'>
+    <button disabled="{{peopleNumber == 0 || carData[0].phone == phone}}" class='tel' bindtap='onShowModal'>
       <image src='../../images/icon/tel3.png'></image>
       <text class='text'>马上预约</text>
     </button>

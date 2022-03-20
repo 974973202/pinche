@@ -29,13 +29,7 @@ App({
     wx.cloud.callFunction({
       name: 'getOpenid',
     }).then(({ result: { openid, info ={} } }) => {
-      console.log('1234567', openid, info)
-      // const openid = res.result.openid
       this.globalData.openid = openid
-      this.globalData.info = {
-        phone: wx.getStorageSync("myPhone"),
-        name: wx.getStorageSync("myName"),
-      }
     }).catch(err => {
       // handle error
       console.error('errerr', err)

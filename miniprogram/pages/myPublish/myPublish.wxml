@@ -1,19 +1,29 @@
 <!-- miniprogram/pages/peopleLookCars/peopleLookCars.wxml -->
-<!-- <view class="topNavBar">
-  <scroll-view scrpll-x="true" class='nav' scroll-with-animation="{{true}}">
-    <block wx:for="{{navData}}" wx:key="index" wx:for-index="id" wx:for-item="navItem">
-      <view class='nav-item {{currentNavTab == id ? "active" :""}}' data-current="{{id}}" bindtap='switchNav'>
-        {{navItem}}
-      </view>
-    </block>
-  </scroll-view>
-</view> -->
 <view class='container'>
+  <view class="selectTop">
+    <view class="selectTitle">订单状态</view>
+    <view class='select_box'>
+      <view class='select' catchtap='selectTaps'>
+        <text class='select_text'>{{selectDatas[selectIndex]}}</text>
+        <image class='select_img {{shows&&"select_img_rotate"}}' src='../../images/sanjiao.png'></image>
+      </view>
+      <view class='option_box' style='height:{{shows?400:0}}rpx;'>
+        <text 
+          class='option'
+          style='{{selectIndex==selectDatas.length-1&&"border:0;"}}'
+            wx:for='{{selectDatas}}' wx:key='this' 
+          data-index='{{index}}' 
+          catchtap='optionTaps'>
+          {{item}}
+        </text>
+      </view>
+    </view>
+  </view>
   <!-- 方向 -->
   <view wx:if="{{list.length != 0 || isLodding}}" class='list-view'>
     <view class='item-view' wx:for="{{list}}" wx:key="index">
       <view class='info'>
-        <view wx:if="{{item.status != 1}}" class='delete-btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
+        <view class='delete-btn' data-idx='{{index}}' data-id='{{item._id}}' bindtap='deleteTap'>
           <image src='../../images/icon/del.png'></image>
         </view>
         <view class='item'>
@@ -56,25 +66,37 @@
         </view>
       </view>
       <view class='info'>
-        <view class='item' wx:if="{{item.status == 1}}" wx:for="{{item.passengerInfo}}" wx:key="index">
+        <view class='item' wx:for="{{item.passengerInfo}}" wx:key="index">
           <view class='text-view'>
-            <text class='label'>乘客姓名</text>
+            <text class='label'>乘客姓名：</text>
             <text class='text'>{{item.name}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>乘客电话</text>
+            <text class='label'>电话：</text>
             <text class='text'>{{item.phone}}</text>
+          </view>
+          <view class='text-view'>
+            <text class='label'>状态：</text>
+            <text class='text'>
+              {{item.status == 0 ? '未上车' : item.status == 1 ? '已上车' : '已下车' }}
+            </text>
           </view>
         </view>
       </view>
+      <view wx:if="{{item.status == 2}}" class="shuiyin">
+        <view class="shuiyin-item">已完成</view>
+      </view>
+      <view wx:if="{{item.status == 1}}" class="shuiyin">
+        <view class="shuiyin-item" style="color:red">已发布</view>
+      </view>
       <view class='btn-group'>
-        <view wx:if="{{item.status == 0}}" class='edit' data-type="edit" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
+        <view wx:if="{{item.status == 0}}" data-dateIndex="{{item.dateIndex}}" data-exactTime="{{item.exactTime}}" class='edit' data-type="edit" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
           修改出行时间
         </view>
         <view wx:if="{{item.status == 0}}" class='button' data-type="publish" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
           发布
         </view>
-        <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button>
+        <!-- <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button> -->
         <button data-id='{{item._id}}' data-idx='{{index}}' data-exactdate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='button'>
           完成订单
         </button>
@@ -96,72 +118,4 @@
   </view>
 </view>
 
-<!-- <view wx:if="{{currentNavTab == 1}}" class='my-subscribe'>
-  <scroll-view scroll-y="{{true}}" wx:if="{{list.length != 0 || isLodding }}" class='sub-view'>
-    <view wx:for="{{list}}" wx:key="index" class='sub'>
-      <view wx:if="{{item.status == 0}}" class="passenger-reg">正在为您匹配合适的车主...</view>
-      <view wx:if="{{item.status == 4}}" class="passenger-reg">匹配成功</view>
-      <view wx:if="{{item.status == 4}}" class="car-info">
-        <view class='text-sub'>
-          <text class='label'>车主姓名</text>
-          <view class='time cont'>
-            <text class='text'>{{item.carInfo[0].name}}</text>
-          </view>
-        </view>
-        <view class='text-sub'>
-          <text class='label'>联系电话</text>
-          <view class='time cont'>
-            <text class='text'>{{item.carInfo[0].phone}}</text>
-          </view>
-        </view>
-      </view>
-      <view>
-        <view class='text-group'>
-          <view class='text-sub'>
-            <text class='label'>出行时间</text>
-            <view class='time cont'>
-              <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
-            </view>
-          </view>
-          <view class='text-sub'>
-            <text class='label'>出行方向</text>
-            <view class='sub_driction cont'>
-              <text class='text'>{{item.startRegion[2]}}--{{item.endRegion[2]}}</text>
-            </view>
-          </view>
-          <view class='text-sub'>
-            <text class='label'>人数</text>
-            <text class='cont text'>{{item.peopleNumber}} 人</text>
-          </view>
-        </view>
-        <view class='sub-btn-group'>
-          <view wx:if="{{item.status == 1}}" class='publish btn'>已取消</view>
-          <view class='delete btn' wx:if="{{item.status == 0}}" data-idx='{{index}}' data-id='{{item._id}}' bindtap='PassengerPublish'>
-            取消订单
-          </view>
-          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='deleteTap' wx:if="{{item.status == 1}}" class='delete btn'>
-            删除订单
-          </view>
-          <view data-id='{{item._id}}' data-idx='{{index}}' data-exactDate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 4}}" class='delete btn'>
-            完成订单
-          </view>
-        </view>
-      </view>
-      <view>
-        <view class='address-view'>
-          <text class='label'>起点</text>
-          <text class='cont text'>{{item.startLocation.name}}</text>
-        </view>
-        <view class='address-view'>
-          <text class='label'>终点</text>
-          <text class='cont text'>{{item.endLocation.name}}</text>
-        </view>
-      </view>
-    </view>
-  </scroll-view>
-  <view wx:else class='sub-view'>
-    <view class='img-view'>
-      <image src='../../images/icon/null_view.jpg'></image>
-    </view>
-  </view>
-</view> -->
+<ShareDialog exactTime="{{exactTime}}" dateIndex="{{dateIndex}}" showDialog="{{showShareDialog}}" bindhideDialog="hideDialog" bindhandleSave="handleSave" />

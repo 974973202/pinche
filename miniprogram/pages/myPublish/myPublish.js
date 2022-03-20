@@ -14,37 +14,50 @@ Page({
     list: [],
     navData: ["我是车主", "我是乘客"],
     currentNavTab: 0,
-    dbName: "CarPublish", //0:待发布, 1:发布成功 2:删除 3:订单完成
     // 'PassengerPublish' //0:匹配中, 1:已取消 2:删除 3:订单完成 4:匹配成功
+
+    shows: false, //控制下拉列表的显示隐藏，false隐藏、true显示
+
+    selectDatas: ["全部订单", "待发布", "已发布", "已完成"], //下拉列表的数据
+    selectIndex: 0,
+
+    showShareDialog: false,
+    dateIndex: "",
+    exactTime: "",
+    idTime: "", // 需要修改时间的id
   },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad (options) {
-    wx.showLoading({
-      title: "加载中...",
-    });
-    // 我是乘客创建订单返回执行
-    const eventChannel = this.getOpenerEventChannel();
-    eventChannel.on("acceptCarPublishData", ({data}) => {
-      this.setData({
-        currentNavTab: data.currentNavTab,
-        dbName: data.dbName,
-      })
-    });
+  onLoad(options) {},
 
+  onShow() {
+    this.setData(
+      {
+        openid: app.globalData.openid,
+      },
+      () => {
+        this.addData(this.data.openid);
+      }
+    );
+  },
 
+  // 点击下拉显示框
+  selectTaps() {
     this.setData({
-      openid: app.globalData.openid,
-    }, () => {
-      this.addData(this.data.openid);
+      shows: !this.data.shows,
     });
   },
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-    // this.addData(this.data.openid);
+  // 点击下拉列表
+  optionTaps(e) {
+    let selectIndex = e.currentTarget.dataset.index; //获取点击的下拉列表的下标
+    console.log(selectIndex);
+    this.setData({
+      selectIndex: selectIndex,
+      shows: !this.data.shows,
+    });
+    const { openid } = this.data;
+    this.addData(openid, selectIndex);
   },
 
   onPassengerDetail() {
@@ -57,25 +70,30 @@ Page({
   /**
    * 加载数据列表
    */
-  addData(openid) {
-    const { dbName, currentNavTab } = this.data;
+  addData(openid, status = "null") {
     const _ = db.command;
-    let _this = this;
-    let inSearch = dbName == 'CarPublish' ? _.in([0, 1]) : _.in([0, 1, 4]);
-    db.collection(dbName)
-      .where({
-        _openid: openid,
-        status: inSearch, //0:待发布, 1:发布成功 2:删除 3:订单完成
-      })
+
+    let where = {
+      _openid: openid,
+      status: _.in([0, 1, 2]),
+    };
+    if (status === "null" || status == 0) {
+      this.setData({
+        selectIndex: 0,
+      });
+    } else {
+      where.status = status - 1;
+    }
+    db.collection("CarPublish")
+      .where(where)
       .orderBy("exactDate", "desc")
       .get({
-        success: function (res) {
+        success: (res) => {
           console.log(
-            currentNavTab == 0 ? "车找人列表数据" : "人找车列表数据",
             res.data
           );
           wx.hideLoading();
-          _this.setData({
+          this.setData({
             list: res.data,
             isLodding: false,
           });
@@ -85,36 +103,15 @@ Page({
   },
 
   /**
-   * 导航列表点击
-   */
-  switchNav(event) {
-    const { currentNavTab, openid } = this.data;
-    let cur = event.currentTarget.dataset.current;
-    console.log(cur, "eventevent", currentNavTab);
-    if (currentNavTab == cur) {
-      return false;
-    } else {
-      this.setData({
-        currentNavTab: cur,
-        pageIndex: 1,
-        list: [],
-        dbName: cur == 0 ? "CarPublish" : "PassengerPublish",
-      });
-      // //加载数据
-      this.addData(openid);
-    }
-  },
-
-  /**
    * CarPublish 发布函数
-   * 
+   *
    */
   async publishTap(e) {
-    const { dbName, openid } = this.data;
+    const { openid } = this.data;
 
     // 发布之前检查是否有未完成订单
     // const check = await db
-    //   .collection(dbName)
+    //   .collection('CarPublish')
     //   .where({
     //     _openid: openid,
     //     status: 1, //0:待发布, 1:发布成功 2:删除 3:订单完成
@@ -131,19 +128,18 @@ Page({
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
     let type = e.currentTarget.dataset.type;
-    if ( type === 'publish') {
+    if (type === "publish") {
       let params = this.data.list[idx];
-      if (!this.isValid(params.exactDate, "出行时间已超时")) return false;
-      let title = dbName == "CarPublish" ? "发布出行信息" : "发布预约信息";
+      // if (!this.isValid(params.exactDate, "出行时间已超时")) return false;
       wx.showModal({
-        title: title,
+        title: "发布行程",
         content: "确定发布这条信息？",
         success: async (res) => {
           if (res.confirm) {
             // 操作数据库
             try {
               const r = await db
-                .collection(dbName)
+                .collection("CarPublish")
                 .where({ _id: id })
                 .update({
                   data: {
@@ -165,20 +161,23 @@ Page({
         },
       });
     } else {
-      wx.showToast({
-        title: "功能开发中",
-        icon: "success",
-        duration: 2000,
+      let exactTime = e.currentTarget.dataset.exacttime;
+      let dateIndex = e.currentTarget.dataset.dateindex;
+      this.setData({
+        showShareDialog: true,
+        exactTime,
+        dateIndex,
+        idTime: id,
       });
     }
   },
 
   /**
    * PassengerPublish 取消函数
-   * 
+   *
    */
-   async PassengerPublish(e) {
-    const { dbName, openid } = this.data;
+  async PassengerPublish(e) {
+    const { openid } = this.data;
 
     let id = e.currentTarget.dataset.id;
     wx.showModal({
@@ -188,7 +187,7 @@ Page({
           // 操作数据库
           try {
             const r = await db
-              .collection(dbName)
+              .collection("CarPublish")
               .where({ _id: id })
               .update({
                 data: {
@@ -216,32 +215,38 @@ Page({
    * @param {*} e
    */
   async onSuccessOrder(e) {
-    const exactdate = e.currentTarget.dataset.exactdate;
+    // const exactdate = e.currentTarget.dataset.exactdate;
     const id = e.currentTarget.dataset.id;
-    let idx = e.currentTarget.dataset.idx;
-    const { dbName } = this.data;
-    if (!this.isSuccessValid(exactdate, "未到出行时间")) return false;
+    const {
+      data: { passengerInfo = [] },
+    } = await db.collection("CarPublish").doc(id).get();
+    let iscomt = true;
+    passengerInfo.forEach((ele) => {
+      if (ele.status != 2) {
+        iscomt = false;
+      }
+    });
+    if (!iscomt)
+      return wx.showToast({
+        title: "有乘客未下车",
+        icon: "error",
+      });
+    // if (!this.isSuccessValid(exactdate, "未到出行时间")) return false;
     wx.showModal({
       title: "",
       content: "确认完成该订单？",
       success: (res) => {
         if (res.confirm) {
           //更新状态函数
-          db.collection(dbName)
+          db.collection("CarPublish")
             .doc(id)
             .update({
               data: {
-                status: 3,
+                status: 2,
               },
               success: (res) => {
-                console.log(res);
-                let list = this.data.list;
-                let filterRes = list.filter((ele, index) => {
-                  return index != idx;
-                });
-                this.setData({
-                  list: filterRes,
-                });
+                const { openid } = this.data;
+                this.addData(openid, 0);
                 wx.showToast({
                   title: "完成订单",
                   icon: "success",
@@ -259,14 +264,28 @@ Page({
   /**
    * CarPublish 删除函数
    */
-  deleteTap(e) {
+  async deleteTap(e) {
     let _this = this;
-    const { dbName } = this.data;
     let idx = e.currentTarget.dataset.idx;
     let id = e.currentTarget.dataset.id;
+    let {
+      data: { passengerInfo = [] },
+    } = await db.collection("CarPublish").doc(id).get();
+    if (passengerInfo.length > 0) {
+      let isbool = true;
+      passengerInfo.forEach(({ status }) => {
+        if (status != 2) {
+          isbool = false;
+        }
+      });
+      if (isbool) {
+        return wx.showToast({
+          title: "已有乘客",
+          icon: "error",
+        });
+      }
+    }
 
-    console.log("idx:" + idx);
-    console.log("id:" + id);
     wx.showModal({
       title: "",
       content: "确定删除这条信息？",
@@ -274,11 +293,11 @@ Page({
         if (res.confirm) {
           console.log("ok");
           //更新状态函数
-          db.collection(dbName)
+          db.collection("CarPublish")
             .doc(id)
             .update({
               data: {
-                status: 2,
+                status: 3,
               },
               success: function (res) {
                 console.log(res);
@@ -307,7 +326,11 @@ Page({
    * 校验发布时是否有效
    */
   isValid(timeStr, title) {
-    console.log(new Date(timeStr).getTime(), new Date().getTime(), new Date(timeStr).getTime() >= new Date().getTime())
+    console.log(
+      new Date(timeStr).getTime(),
+      new Date().getTime(),
+      new Date(timeStr).getTime() >= new Date().getTime()
+    );
     if (new Date(timeStr).getTime() >= new Date().getTime()) {
       return true;
     } else {
@@ -324,7 +347,11 @@ Page({
    * 校验完成订单时是否有效
    */
   isSuccessValid(timeStr, title) {
-    console.log(new Date(timeStr).getTime(), new Date().getTime(), new Date(timeStr).getTime() >= new Date().getTime())
+    console.log(
+      new Date(timeStr).getTime(),
+      new Date().getTime(),
+      new Date(timeStr).getTime() >= new Date().getTime()
+    );
     if (new Date(timeStr).getTime() <= new Date().getTime()) {
       return true;
     } else {
@@ -390,5 +417,23 @@ Page({
         showCancel: false,
       });
     }
+  },
+
+  hideDialog() {
+    this.setData({ showShareDialog: false });
+  },
+  handleSave(e) {
+    const { idTime, openid } = this.data;
+    db.collection("CarPublish")
+      .where({ _id: idTime })
+      .update({
+        data: {
+          ...e.detail,
+        },
+      })
+      .then((res) => {
+        this.addData(openid);
+        this.hideDialog();
+      });
   },
 });

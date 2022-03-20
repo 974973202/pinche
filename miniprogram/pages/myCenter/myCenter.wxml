@@ -59,7 +59,7 @@
     </view>
     <navigator class='list' url='/pages/subscribeHistory/subscribeHistory'>
       <view class='item'>
-        <text class='lable-text'>代驾记录</text>
+        <text class='lable-text'>预约记录</text>
       </view>
     </navigator>
     <view wx:if="{{User.phone}}" class='list' data-name="name" bindtap="onEditModal">

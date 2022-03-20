@@ -39,7 +39,7 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "text": "首页",
+        "text": "顺风车",
         "pagePath": "pages/index/index",
         "iconPath": "images/tab/tab01.png",
         "selectedIconPath": "images/tab/tab0101.png"

@@ -25,6 +25,7 @@ Page({
         wayInfo: data[0].wayInfo,
         User,
       });
+      app.globalData.info = User[0]
     }
     this.getDistrict();
   },

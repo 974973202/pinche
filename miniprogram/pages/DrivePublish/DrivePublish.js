@@ -359,10 +359,7 @@ Page({
                 icon: "success",
                 success: (res) => {
                   //返回页面
-                  // wx.navigateBack();
-                  wx.navigateTo({
-                    url: "/pages/myPublish/myPublish",
-                  });
+                  wx.navigateBack();
                 },
               });
             },
