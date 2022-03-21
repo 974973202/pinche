@@ -17,6 +17,7 @@ Page({
   getSubHistory(_openid) {
     db.collection("subscribeHistory")
       .where({ _openid })
+      .orderBy('exactDate', 'desc')
       .get()
       .then((res) => {
         console.log(res.data);
@@ -33,9 +34,10 @@ Page({
     let myid = e.currentTarget.dataset.myid;
     let phone = e.currentTarget.dataset.phone;
     let type = e.currentTarget.dataset.type;
-    let { data: { passengerInfo, peopleNumber } } = await db.collection('CarPublish').doc(id).get();
+    // passengerInfo 乘客信息
+    let { data: { passengerInfo = [], peopleNumber } } = await db.collection('CarPublish').doc(id).get();
     
-    // 取消订单
+    // 取消订单 删除订单
     if(type === 'cancel') {
       let info = []
       let num = 0
@@ -74,6 +76,13 @@ Page({
 
       // 我已上车，我已到达
     } else {
+      if(type == 'down') {
+        const len = passengerInfo.filter(ele => ele.status > 0)
+        if(len.length != passengerInfo.length) {
+          return wx.showToast({ title: "有乘客未上车", icon: "error" });
+        }
+      }
+
       passengerInfo.forEach(ele => {
         if(ele.phone == phone) {
           ele.status = type == 'up' ? 1 : 2; // 1我已上车 2我已下车

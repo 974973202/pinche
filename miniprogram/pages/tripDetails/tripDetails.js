@@ -305,16 +305,16 @@ Page({
         placeholderText: "请输入姓名预约",
         editable: true,
         success: (res) => {
-          if (res.confirm) {
+          if (res.content) {
             db.collection("User")
               .where({ _openid: app.globalData.openid })
               .update({
-                data: { name: res.confirm },
+                data: { name: res.content },
               })
               .then(() => {
                 passengerInfo = {
                   ...passengerInfo,
-                  name: res.confirm,
+                  name: res.content,
                   number: mynum
                 };
                 this.handleTrip(passengerInfo, num, mynum)
@@ -322,6 +322,11 @@ Page({
               });
           } else if (res.cancel) {
             console.log("用户点击取消");
+          } else {
+            wx.showModal({
+              content: "请输入姓名",
+              showCancel: false,
+            });
           }
         },
       });
