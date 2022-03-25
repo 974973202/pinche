@@ -13,13 +13,18 @@ Page({
     //banner
     imgUrls: ["../../images/icon/lunbo01.jpg", "../../images/icon/lunbo02.jpg"],
   },
-  async onLoad() {
+  async onLoad(options) {
+    if(options.id) {
+      wx.navigateTo({
+        url: `/pages/tripDetails/tripDetails?id=${options.id}`,
+      })
+    }
     const { data } = await db.collection("wayInfo").get();
     const { data: User = [] } = await db
       .collection("User")
       .where({ _openid: app.globalData.openid })
       .get();
-    console.log(data, "datadata", User);
+    console.log(User, "User-options", options);
     if (data.length > 0) {
       this.setData({
         wayInfo: data[0].wayInfo,

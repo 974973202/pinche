@@ -70,25 +70,22 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad(options) {
     //获取用户当前位置
-    let _this = this;
-    wx.showLoading({
-      title: "加载中...",
-    });
     wx.getLocation({
       type: "gcj02",
-      success: function (res) {
+      success: (res) => {
         if (res && res.longitude) {
-          _this.setData({
+          this.setData({
             latitude: res.latitude,
             longitude: res.longitude,
           });
         }
       },
     });
+
     //截取参数
-    _this.setData(
+    this.setData(
       {
         id: options.id,
         phone: app.globalData.info.phone, // 获取当前用户电话
@@ -183,7 +180,6 @@ Page({
         borderRadius: 2,
         display: "ALWAYS",
       };
-      console.log("iiiiiiiiii", i);
       switch (i) {
         //起点
         case 0:
@@ -493,6 +489,36 @@ Page({
       url: "/pages/index/index",
     });
   },
+
+  async getPhoneNumber(e) {
+    let cloudID = e.detail.cloudID; //开放数据ID
+    if (!cloudID) {
+      console.log("用户未授权");
+      return;
+    }
+
+    wx.cloud
+      .callFunction({
+        name: "getPhone",
+        data: {
+          cloudID: e.detail.cloudID,
+        },
+      })
+      .then((res) => {
+        const phone = res.result.list[0].data.phoneNumber;
+        db.collection("User").add({
+          data: {
+            name: "",
+            status: 0,
+            phone: phone,
+            createTime: db.serverDate(), // 服务端的时间
+          },
+        });
+        app.globalData.info = { phone: phone, }
+        this.onShowModal()
+      });
+  },
+
   onWatchDemo() {
     // if (!this.data.endPoint) {
     //   wx.showToast({
@@ -556,7 +582,7 @@ Page({
         "—>" +
         this.data.endLocation.name,
       // desc: '途径:' + desc,
-      path: "/pages/tripDetails/tripDetails?id=" + _this.data.id,
+      path: "/pages/index/index?id=" + _this.data.id,
       success: function (res) {
         // 需要在页面onLoad()事件中实现接口
         wx.showShareMenu({
