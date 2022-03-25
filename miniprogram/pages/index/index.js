@@ -106,6 +106,13 @@ Page({
       endRegion: e.detail.value,
     });
   },
+  handleChange() {
+    const { startRegion, endRegion } = this.data;
+    this.setData({
+      startRegion: endRegion,
+      endRegion: startRegion,
+    });
+  },
 
   async getPhoneNumber(e) {
     let cloudID = e.detail.cloudID; //开放数据ID

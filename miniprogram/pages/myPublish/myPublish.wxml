@@ -28,37 +28,37 @@
         </view>
         <view class='item'>
           <view class='text-view'>
-            <text class='label'>方向</text>
+            <text class='label'>方向:</text>
             <text class='text'>{{item.startRegion[2]}}—>{{item.endRegion[2]}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>出行时间</text>
+            <text class='label'>出行时间:</text>
             <text class='text'>{{item.dateIndex}} {{item.exactTime}}</text>
           </view>
         </view>
         <view class='item'>
           <view class='text-view'>
-            <text class='label'>起点</text>
+            <text class='label'>起点:</text>
             <text class='text'>{{item.startLocation.name}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>终点</text>
+            <text class='label'>终点:</text>
             <text class='text'>{{item.endLocation.name}}</text>
           </view>
         </view>
         <view class='item'>
           <view class='text-view'>
-            <text class='label'>座位</text>
+            <text class='label'>座位:</text>
             <text class='text'>{{item.peopleNumber}} 个</text>
           </view>
           <view class='text-view'>
-            <text class='label'>路况</text>
+            <text class='label'>路况:</text>
             <text class='text'>{{item.isSpeed}}</text>
           </view>
         </view>
         <view class='item'>
           <view class='text-view'>
-            <text class='label'>预算</text>
+            <text class='label'>预算:</text>
             <view class='cont'>
               <text class='text'>{{item.budget}}元/人</text>
             </view>
@@ -68,18 +68,16 @@
       <view class='info'>
         <view class='item' wx:for="{{item.passengerInfo}}" wx:key="index">
           <view class='text-view'>
-            <text class='label'>乘客姓名：</text>
+            <text class='label'>乘客姓名:</text>
             <text class='text'>{{item.name}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>电话：</text>
-            <text class='text'>{{item.phone}}</text>
+            <text class='label'>电话:</text>
+            <text class='text' data-phone='{{item.phone}}' bindtap="onCall" style="color: #0ff">{{item.phone}}</text>
           </view>
           <view class='text-view'>
-            <text class='label'>状态：</text>
-            <text class='text'>
-              {{item.status == 0 ? '未上车' : item.status == 1 ? '已上车' : '已下车' }}
-            </text>
+            <text class='label'>状态:</text>
+            <text class='text'>{{item.status == 0 ? '未上车' : item.status == 1 ? '已上车' : '已下车' }}</text>
           </view>
         </view>
       </view>

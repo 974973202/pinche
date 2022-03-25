@@ -10,7 +10,7 @@
 .sub{
   display: flex;
   flex-direction: column;
-  margin: 0 30rpx;
+  margin: 0 20rpx;
   background-color: #ffffff;
   border-radius: 20rpx;
   margin-bottom: 30rpx;
@@ -60,7 +60,7 @@
 .sub .label{
   font-size: 28rpx;
   color: #535353;
-  width: 130rpx;
+  width: 150rpx;
 }
 .sub .cont{
   flex: 1;
@@ -73,7 +73,7 @@
   flex: 1;
 }
 .sub .address-view .label{
-   width: 80rpx;
+   width: 90rpx;
 }
 .sub .address-view .text{
   display: flex;

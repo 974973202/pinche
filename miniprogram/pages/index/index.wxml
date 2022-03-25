@@ -10,17 +10,6 @@
 <!-- 搜索框 -->
 <view class='search'>
   <view class='searchCon'>
-    <!-- <view class='search-type'>
-      <view class='search-type-l'>查找类型：</view>
-      <view class='search-type-c'>
-        <radio-group class="radio-group" bindchange="bindTypeChange">
-          <label class="radio" wx:for="{{searchType}}" wx:key="value">
-            <radio color='#0091ff' value="{{item.value}}" checked="{{item.checked}}" />
-            {{item.name}}
-          </label>
-        </radio-group>
-      </view>
-    </view> -->
     <view class='search-city'>
       <view class='search-city-begin'>
         <!-- 出发城市 -->
@@ -31,6 +20,7 @@
           </picker>
         </view>
       </view>
+      <!-- <image bindtap="handleChange" src="../../images/icon/change.jpeg" class="changeimg" /> -->
       <view class='search-city-end'>
         <!-- 到达城市 -->
         <view>到达城市：</view>
@@ -42,6 +32,8 @@
       </view>
       <!-- <text class='tips'>*目前拼车范围仅支持北京、廊坊地区*</text> -->
     </view>
+      <image bindtap="handleChange" src="../../images/icon/change.jpeg" class="changeimg" />
+
   </view>
   <!-- 按钮 -->
   <view wx:if="{{User[0].phone}}" class='searchBtn' bindtap='onSubmitTap'>

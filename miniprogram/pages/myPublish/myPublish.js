@@ -436,4 +436,10 @@ Page({
         this.hideDialog();
       });
   },
+  onCall(e) {
+    let phone = e.currentTarget.dataset.phone;
+    wx.makePhoneCall({
+      phoneNumber: phone,
+    });
+  },
 });
