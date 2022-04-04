@@ -215,7 +215,6 @@ Page({
    * @param {*} e
    */
   async onSuccessOrder(e) {
-    // const exactdate = e.currentTarget.dataset.exactdate;
     const id = e.currentTarget.dataset.id;
     const {
       data: { passengerInfo = [] },
@@ -244,13 +243,62 @@ Page({
               data: {
                 status: 2,
               },
-              success: (res) => {
+              success: async (res) => {
                 const { openid } = this.data;
                 this.addData(openid, 0);
                 wx.showToast({
                   title: "完成订单",
                   icon: "success",
                 });
+
+                // 统计车主完成订单数 按车主完成订单统计
+                // 姓名 手机 区域 方向 出行时间 人数
+                const dateIndex = e.currentTarget.dataset.dateindex;
+                const name = e.currentTarget.dataset.name;
+                const phone = e.currentTarget.dataset.phone;
+                const startRegion = e.currentTarget.dataset.startregion;
+                const endregion = e.currentTarget.dataset.endregion;
+                const startlocation = e.currentTarget.dataset.startlocation;
+                const endlocation = e.currentTarget.dataset.endlocation;
+                const passengerinfo = e.currentTarget.dataset.passengerinfo || [];
+                let count = 0;
+                passengerinfo.forEach(ele => {
+                  if(ele.number) {
+                    count = count + Number(ele.number);
+                  }
+                })
+                db.collection("carOrder")
+                  .add({
+                    data: {
+                      name,
+                      phone,
+                      startRegion,
+                      endregion,
+                      location: `${startlocation} -> ${endlocation}`,
+                      dateIndex,
+                      count,
+                    }
+                  })
+
+                // 统计车主完成订单数 按车主完成订单区域统计 carOrderRegion
+                wx.cloud.callFunction({
+                  name: 'getOpenid',
+                  data: {
+                    dbName: 'carOrderRegion',
+                    startRegion,
+                    [startRegion]: {
+                      name,
+                      phone,
+                      startRegion,
+                      endregion,
+                      location: `${startlocation} -> ${endlocation}`,
+                      dateIndex,
+                      count,
+                    }
+                  }
+                }).then(res => console.log(res))
+
+
               },
               fail: console.error,
             });

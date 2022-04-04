@@ -11,6 +11,7 @@ Page({
     zmXszImage: "",
     fmXszImage: "",
     photo: '',
+    realRegion: [],
   },
 
   /**
@@ -27,6 +28,7 @@ Page({
     this.setData({
       name: User[0]?.name,
       phone: User[0]?.phone,
+      realRegion: app.globalData.startRegion || [],
     });
   },
 
@@ -71,8 +73,17 @@ Page({
     });
   },
 
+  /**
+   * 注册城市
+   */
+   startRegionChange: function (e) {
+    this.setData({
+      realRegion: e.detail.value,
+    });
+  },
+
   onSubmit(e) {
-    const { zmJszImage, fmJszImage, zmXszImage, fmXszImage, phone, name } = this.data;
+    const { zmJszImage, fmJszImage, zmXszImage, fmXszImage, phone, name, realRegion } = this.data;
     const reg = new RegExp(/^1[3,4,5,6,7,8,9][0-9]{9}$/);
     if(!phone || !(reg.test(phone))) {
       wx.showToast({ title: "输入正确手机号", icon: "error" });
@@ -80,6 +91,10 @@ Page({
     }
     if(!name) {
       wx.showToast({ title: "请输入姓名", icon: "error" });
+      return;
+    }
+    if(realRegion.length < 1) {
+      wx.showToast({ title: "请选择区域", icon: "error" });
       return;
     }
     if (!zmJszImage || !fmJszImage) {
@@ -108,7 +123,7 @@ Page({
     // 1、图片 -> 云存储 fileID 云文件ID
     let promiseArr = [];
     for (let key of Object.keys(this.data)) {
-      if (!["__webviewId__", 'name', 'phone'].includes(key)) {
+      if (!["__webviewId__", 'name', 'phone', 'realRegion'].includes(key)) {
         let p = new Promise((resolve, reject) => {
           let item = this.data[key];
           // 文件扩展名

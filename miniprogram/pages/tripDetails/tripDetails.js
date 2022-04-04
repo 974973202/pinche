@@ -91,7 +91,7 @@ Page({
         phone: app.globalData.info.phone, // 获取当前用户电话
       },
       async () => {
-        await _this.addData(options.id);
+        await this.addData(options.id);
         wx.hideLoading();
         console.log(options, "tripDetails", app.globalData.info.phone);
       }
@@ -506,15 +506,24 @@ Page({
       })
       .then((res) => {
         const phone = res.result.list[0].data.phoneNumber;
-        db.collection("User").add({
-          data: {
-            name: "",
-            status: 0,
-            phone: phone,
-            createTime: db.serverDate(), // 服务端的时间
-          },
-        });
-        app.globalData.info = { phone: phone, }
+        db.collection("User")
+          .where({ phone: phone })
+          .get()
+          .then((isUser) => {
+            if(isUser.data.length > 0) {
+              wx.showToast({ title: "手机被注册", icon: "error" });
+              return;
+            }
+            db.collection("User").add({
+              data: {
+                name: "",
+                status: 0,
+                phone: phone,
+                createTime: db.serverDate(), // 服务端的时间
+              },
+            });
+            app.globalData.info = { phone: phone, }
+          })
         this.onShowModal()
       });
   },
@@ -566,7 +575,8 @@ Page({
    * 用户点击分享
    */
   onShareAppMessage(ops) {
-    let _this = this;
+    const { startLocation, endLocation, id } = this.data;
+    let title = `车找人:${startLocation.name}—>${endLocation.name}`;
     // let desc = '';
     // _this.data.tripsArray.map(n => {
     //   desc += '-'+n.name;
@@ -576,13 +586,9 @@ Page({
       console.log(ops.target);
     }
     return {
-      title:
-        "车找人:" +
-        _this.data.startLocation.name +
-        "—>" +
-        this.data.endLocation.name,
+      title: title,
       // desc: '途径:' + desc,
-      path: "/pages/index/index?id=" + _this.data.id,
+      path: "/pages/index/index?id=" + id,
       success: function (res) {
         // 需要在页面onLoad()事件中实现接口
         wx.showShareMenu({

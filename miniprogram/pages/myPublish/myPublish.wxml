@@ -95,7 +95,22 @@
           发布
         </view>
         <!-- <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button> -->
-        <button data-id='{{item._id}}' data-idx='{{index}}' data-exactdate="{{item.exactDate}}" bindtap='onSuccessOrder' wx:if="{{item.status == 1}}" class='button'>
+        <button 
+          data-id='{{item._id}}' 
+          data-dateindex='{{item.dateIndex}}' 
+          data-name="{{item.carData[0].name}}"
+          data-phone="{{item.carData[0].phone}}"
+          data-idx='{{index}}' 
+          data-exactdate="{{item.exactDate}}" 
+          bindtap='onSuccessOrder' 
+          wx:if="{{item.status == 1}}" 
+          class='button'
+          data-startregion="{{item.startRegion}}"
+          data-endregion="{{item.endRegion}}"
+          data-startlocation="{{item.startLocation.name}}"
+          data-endlocation="{{item.endLocation.name}}"
+          data-passengerinfo="{{item.passengerInfo}}"
+        >
           完成订单
         </button>
         <!-- <button bindtap='onPassengerDetail' wx:if="{{item.status == 1}}" class='button'>

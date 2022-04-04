@@ -19,15 +19,13 @@ Page({
         url: `/pages/tripDetails/tripDetails?id=${options.id}`,
       })
     }
-    const { data } = await db.collection("wayInfo").get();
     const { data: User = [] } = await db
       .collection("User")
       .where({ _openid: app.globalData.openid })
       .get();
     console.log(User, "User-options", options);
-    if (data.length > 0) {
+    if (User.length > 0) {
       this.setData({
-        wayInfo: data[0].wayInfo,
         User,
       });
       app.globalData.info = User[0]
@@ -52,15 +50,62 @@ Page({
               },
             } = res;
             const { province, city, district } = address_component;
+            this.getWayInfo([province, city, district])
             this.setData({ startRegion: [province, city, district], endRegion: [province, city, district] });
+            app.globalData.startRegion = [province, city, district]
           },
         });
       },
       fail: () => {
         this.setData({ startRegion: ["福建省", "龙岩市", "上杭县"], endRegion: ["福建省", "龙岩市", "上杭县"] });
+        this.getWayInfo(["福建省", "龙岩市", "上杭县"])
         console.log("fail");
       },
     });
+  },
+
+  async getWayInfo(key) {
+    const { data = [] } = await db.collection("wayInfo").get();
+    let wayInfo = [];
+    // province
+    data.forEach(ele => {
+      if(ele[key.toString()]) {
+        wayInfo = ele[key.toString()]
+        console.log(wayInfo, 'getWayInfo')
+      }
+    })
+    // city
+    if(wayInfo.length == 0) {
+      const city = key.slice(0, key.length - 1);
+      data.forEach(ele => {
+        if(ele[city.toString()]) {
+          wayInfo = ele[city.toString()]
+          console.log(wayInfo, 'getWayInfo')
+        }
+      })
+    }
+    // antd
+    if(wayInfo.length == 0) {
+      const antd = key.slice(0, key.length - 1);
+      data.forEach(ele => {
+        if(ele[antd.toString()]) {
+          wayInfo = ele[antd.toString()]
+          console.log(wayInfo, 'getWayInfo')
+        }
+      })
+    }
+    // root
+    if(wayInfo.length == 0) {
+      data.forEach(ele => {
+        if(ele['root']) {
+          wayInfo = ele['root']
+          console.log(wayInfo, 'getWayInfo')
+        }
+      })
+    }
+    this.setData({
+      wayInfo
+    })
   },
 
   /**

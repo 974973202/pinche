@@ -57,6 +57,7 @@ page {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
+  border: 2rpx solid black;
   /* position: absolute;
   top: 46rpx; */
   margin-left: 30rpx;

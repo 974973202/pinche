@@ -113,20 +113,30 @@ Page({
               wx.showToast({ title: "输入正确手机号", icon: "error" });
             } else {
               db.collection("User")
-                .where({ _openid: app.globalData.openid })
-                .update({
-                  data: { phone: res.content },
+                .where({ phone: res.content })
+                .get()
+                .then((isUser) => {
+                  console.log(isUser, 'isUserisUserisUser')
+                  if(isUser.data.length > 0) {
+                    wx.showToast({ title: "手机被注册", icon: "error" });
+                    return;
+                  }
+                  db.collection("User")
+                    .where({ _openid: app.globalData.openid })
+                    .update({
+                      data: { phone: res.content },
+                    })
+                    .then(() => {
+                      const { User } = this.data;
+                      this.setData({
+                        User: {
+                          ...User,
+                          phone: res.content,
+                        },
+                      });
+                      wx.showToast({ title: "修改成功", icon: "success" });
+                    });
                 })
-                .then(() => {
-                  const { User } = this.data;
-                  this.setData({
-                    User: {
-                      ...User,
-                      phone: res.content,
-                    },
-                  });
-                  wx.showToast({ title: "修改成功", icon: "success" });
-                });
             }
           } else {
             db.collection("User")

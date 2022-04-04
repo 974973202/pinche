@@ -32,7 +32,7 @@
       </view>
       <!-- <text class='tips'>*目前拼车范围仅支持北京、廊坊地区*</text> -->
     </view>
-      <image bindtap="handleChange" src="../../images/icon/change.jpeg" class="changeimg" />
+    <image bindtap="handleChange" src="../../images/icon/change.png" class="changeimg" />
 
   </view>
   <!-- 按钮 -->
