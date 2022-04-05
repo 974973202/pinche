@@ -14,7 +14,6 @@ Page({
     statusBarHeight: 0, //状态栏高度
     titleBarHeight: 0, //标题栏高度
     navBarHeight: 0, //导航栏高度
-    navData: ["车找人", "人找车"],
 
     currentNavTab: 0, //当前状态
 
@@ -23,10 +22,6 @@ Page({
     pageIndex: 1, //第一页
     hasMore: true, //是否还有下一页
     list: [],
-
-    //发布信息按钮动画
-    status: "",
-    showModalStatus: true,
   },
   /**
    *
@@ -52,58 +47,56 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide() {
-    this.setData({
-      status: "",
-    });
+    
   },
-  async addPublic() {
-    let getUserProfile = wx.getStoragceSync("getUserProfile");
-    if (!getUserProfile) {
-      getUserProfile = await wx.getUserProfile({
-        desc: "用于完善个人信息",
-      });
-      getUserProfile = getUserProfile.userInfo;
-      wx.setStorageSync("getUserProfile", getUserProfile);
-    }
-    // 乘客发布，判断是否实名认证
-    // myCenter页面，我的发布已经做了实名校验
-    if (app.globalData.info.status === 1) {
-      // 判断乘客是否有订单 正在进行或未完成
-      // 0:匹配中, 1:已取消 2:删除 3:订单完成 4:匹配成功
-      const { data } = await db
-      .collection('PassengerPublish')
-      .where({
-        _openid: app.globalData.openid,
-        status: _.in([0,4]), 
-      })
-      .field({
-        status: true,
-      })
-      .get();
-      if(data.length> 0) {
-        if(data[0].status === 0) {
-          wx.showModal({
-            content: "已有订单正在匹配中",
-            showCancel: false,
-          });
-        }
-        if(data[0].status === 4) {
-          wx.showModal({
-            content: "有订单尚未完成",
-            showCancel: false,
-          });
-        }
-        return ;
-       }
-      console.log(data)
-      wx.navigateTo({ url: "/pages/NewCarSearch/NewCarSearch" });
-    } else {
-      wx.showModal({
-        content: "必须先通过实名认证",
-        showCancel: false,
-      });
-    }
-  },
+  // async addPublic() {
+  //   let getUserProfile = wx.getStoragceSync("getUserProfile");
+  //   if (!getUserProfile) {
+  //     getUserProfile = await wx.getUserProfile({
+  //       desc: "用于完善个人信息",
+  //     });
+  //     getUserProfile = getUserProfile.userInfo;
+  //     wx.setStorageSync("getUserProfile", getUserProfile);
+  //   }
+  //   // 乘客发布，判断是否实名认证
+  //   // myCenter页面，我的发布已经做了实名校验
+  //   if (app.globalData.info.status === 1) {
+  //     // 判断乘客是否有订单 正在进行或未完成
+  //     // 0:匹配中, 1:已取消 2:删除 3:订单完成 4:匹配成功
+  //     const { data } = await db
+  //     .collection('PassengerPublish')
+  //     .where({
+  //       _openid: app.globalData.openid,
+  //       status: _.in([0,4]), 
+  //     })
+  //     .field({
+  //       status: true,
+  //     })
+  //     .get();
+  //     if(data.length> 0) {
+  //       if(data[0].status === 0) {
+  //         wx.showModal({
+  //           content: "已有订单正在匹配中",
+  //           showCancel: false,
+  //         });
+  //       }
+  //       if(data[0].status === 4) {
+  //         wx.showModal({
+  //           content: "有订单尚未完成",
+  //           showCancel: false,
+  //         });
+  //       }
+  //       return ;
+  //      }
+  //     console.log(data)
+  //     wx.navigateTo({ url: "/pages/NewCarSearch/NewCarSearch" });
+  //   } else {
+  //     wx.showModal({
+  //       content: "必须先通过实名认证",
+  //       showCancel: false,
+  //     });
+  //   }
+  // },
   /**
    * 获取设备信息
    */
@@ -243,15 +236,6 @@ Page({
   },
 
   /**
-   * 点击搜索
-   */
-  bindSearchTap: function () {
-    wx.navigateTo({
-      url: "../../pages/SearchPage/SearchPage",
-    });
-  },
-  
-  /**
    * 查看行程详情
    */
   lookTripDetails(e) {
@@ -270,27 +254,6 @@ Page({
     }
   },
 
-  /**
-   * 发布信息按钮动画
-   */
-  trigger() {
-    let active = this.data.status;
-    if (active == "on") {
-      this.setData({
-        status: "",
-      });
-    } else {
-      this.setData({
-        status: "on",
-      });
-    }
-  },
-  // 隐藏遮罩层
-  hideModal() {
-    this.setData({
-      status: "",
-    });
-  },
   /**
    * 获取60分钟前时间戳
    */

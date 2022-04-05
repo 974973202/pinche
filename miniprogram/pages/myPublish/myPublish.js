@@ -282,7 +282,7 @@ Page({
 
                 // 统计车主完成订单数 按车主完成订单区域统计 carOrderRegion
                 wx.cloud.callFunction({
-                  name: 'getOpenid',
+                  name: 'carOrderRegion',
                   data: {
                     dbName: 'carOrderRegion',
                     startRegion,

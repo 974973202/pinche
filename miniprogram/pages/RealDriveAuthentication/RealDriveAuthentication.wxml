@@ -15,7 +15,7 @@
   <view class="photo">请上传个人照片</view>
   <view class="f-photo">
     <view wx:if="{{!photo}}" bind:tap="onChooseMedia" data-name='photo' class="upload-s"></view>
-    <image wx:else src="{{photo}}" />
+    <image wx:else src="{{photo}}" class="upload-s"/>
   </view>
 
   <view class="jsz">请上传驾驶证</view>

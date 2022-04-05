@@ -45,7 +45,7 @@
         <text wx:if="{{carStatus == 0}}" style="color: blue" class='lable-text'>认证中...</text>
         <text wx:if="{{carStatus == 1}}" style="color: green" class='lable-text'>已认证</text>
         <text wx:if="{{carStatus == 2}}" style="color: red" class='lable-text'>认证失败</text>
-        <text wx:if="{{carStatus == 3}}" style="color: red" class='lable-text'>账号异常</text>
+        <text wx:if="{{carStatus == 3}}" style="color: red" class='lable-text'>账号异常·及时联系管理员</text>
       </view>
     </view>
     <view wx:else class='list'>

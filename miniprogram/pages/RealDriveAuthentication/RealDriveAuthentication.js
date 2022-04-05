@@ -171,6 +171,7 @@ Page({
             ...rest,
             // name: userData[0].name,
             // phone: userData[0].phone,
+            realRegion: realRegion.toString(),
             driveStatus: 0, // 状态： 0 审核中 1 审核通过 2 审核不通过
             createTime: db.serverDate(), // 服务端的时间
           },
