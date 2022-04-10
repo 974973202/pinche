@@ -89,9 +89,7 @@ Page({
       .orderBy("exactDate", "desc")
       .get({
         success: (res) => {
-          console.log(
-            res.data
-          );
+          console.log(res.data);
           wx.hideLoading();
           this.setData({
             list: res.data,
@@ -211,6 +209,17 @@ Page({
   },
 
   /**
+   *
+   * @param {订单详情} e
+   * @returns
+   */
+  onOrderDetail(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/tripDetails/tripDetails?id=${id}`,
+    });
+  },
+  /**
    * 完成订单
    * @param {*} e
    */
@@ -260,45 +269,48 @@ Page({
                 const endregion = e.currentTarget.dataset.endregion;
                 const startlocation = e.currentTarget.dataset.startlocation;
                 const endlocation = e.currentTarget.dataset.endlocation;
-                const passengerinfo = e.currentTarget.dataset.passengerinfo || [];
+                const passengerinfo =
+                  e.currentTarget.dataset.passengerinfo || [];
                 let count = 0;
-                passengerinfo.forEach(ele => {
-                  if(ele.number) {
+                passengerinfo.forEach((ele) => {
+                  if (ele.number) {
                     count = count + Number(ele.number);
                   }
-                })
-                db.collection("carOrder")
-                  .add({
-                    data: {
-                      name,
-                      phone,
-                      startRegion,
-                      endregion,
-                      location: `${startlocation} -> ${endlocation}`,
-                      dateIndex,
-                      count,
-                    }
-                  })
+                });
+                db.collection("carOrder").add({
+                  data: {
+                    name,
+                    phone,
+                    startRegion,
+                    endregion,
+                    location: `${startlocation} -> ${endlocation}`,
+                    dateIndex,
+                    count,
+                  },
+                });
 
                 // 统计车主完成订单数 按车主完成订单区域统计 carOrderRegion
-                wx.cloud.callFunction({
-                  name: 'carOrderRegion',
-                  data: {
-                    dbName: 'carOrderRegion',
-                    startRegion,
-                    [startRegion]: {
-                      name,
-                      phone,
+                wx.cloud
+                  .callFunction({
+                    name: "carOrderRegion",
+                    data: {
+                      dbName: "carOrderRegion",
                       startRegion,
-                      endregion,
-                      location: `${startlocation} -> ${endlocation}`,
-                      dateIndex,
-                      count,
-                    }
-                  }
-                }).then(res => console.log(res))
-
-
+                      [startRegion]: {
+                        name,
+                        phone,
+                        startRegion,
+                        endregion,
+                        location: `${startlocation} -> ${endlocation}`,
+                        dateIndex,
+                        count,
+                        id: Number(
+                          Math.random().toString().substr(3, 5) + Date.now()
+                        ).toString(36),
+                      },
+                    },
+                  })
+                  .then((res) => console.log(res));
               },
               fail: console.error,
             });
@@ -489,5 +501,34 @@ Page({
     wx.makePhoneCall({
       phoneNumber: phone,
     });
+  },
+
+  /**
+   * 用户点击分享
+   */
+  onShareAppMessage(ops) {
+    if (ops.from === "button") {
+      const id = ops.target?.dataset?.id;
+      const startlocation = ops.target?.dataset?.startlocation;
+      const endlocation = ops.target?.dataset?.endlocation;
+      let title = `行程:${startlocation}—>${endlocation}`;
+      console.log(ops.target);
+      return {
+        title: title,
+        path: "/pages/index/index?id=" + id,
+        success: function (res) {
+          // 需要在页面onLoad()事件中实现接口
+          wx.showShareMenu({
+            // 要求小程序返回分享目标信息
+            withShareTicket: true,
+          });
+          console.log("转发成功:" + JSON.stringify(res));
+        },
+        fail: function (res) {
+          // 转发失败
+          console.log("转发失败:" + JSON.stringify(res));
+        },
+      };
+    }
   },
 });

@@ -68,9 +68,10 @@ Page({
     const { data = [] } = await db.collection("wayInfo").get();
     let wayInfo = [];
     // province
+    const province = key.slice(0, key.length - 2);
     data.forEach(ele => {
-      if(ele[key.toString()]) {
-        wayInfo = ele[key.toString()]
+      if(ele[province.toString()]) {
+        wayInfo = ele[province.toString()]
         console.log(wayInfo, 'getWayInfo')
       }
     })
@@ -86,10 +87,9 @@ Page({
     }
     // antd
     if(wayInfo.length == 0) {
-      const antd = key.slice(0, key.length - 1);
       data.forEach(ele => {
-        if(ele[antd.toString()]) {
-          wayInfo = ele[antd.toString()]
+        if(ele[key.toString()]) {
+          wayInfo = ele[key.toString()]
           console.log(wayInfo, 'getWayInfo')
         }
       })

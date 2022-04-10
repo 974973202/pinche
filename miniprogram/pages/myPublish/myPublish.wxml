@@ -94,7 +94,15 @@
         <view wx:if="{{item.status == 0}}" class='button' data-type="publish" data-idx='{{index}}' data-id='{{item._id}}' bindtap='publishTap'>
           发布
         </view>
-        <!-- <button disabled="{{true}}" wx:if="{{item.status == 1}}" class='button'>已发布</button> -->
+        <button data-id='{{item._id}}' bindtap='onOrderDetail' wx:if="{{item.status == 1}}" class='button'>订单详情</button>
+        <button 
+          open-type="share" wx:if="{{item.status == 1}}" 
+          data-startlocation="{{item.startLocation.name}}"
+          data-endlocation="{{item.endLocation.name}}"
+          data-id='{{item._id}}'
+          class='button'>
+          分享行程
+        </button>
         <button 
           data-id='{{item._id}}' 
           data-dateindex='{{item.dateIndex}}' 
@@ -113,9 +121,6 @@
         >
           完成订单
         </button>
-        <!-- <button bindtap='onPassengerDetail' wx:if="{{item.status == 1}}" class='button'>
-          预约详情
-        </button> -->
       </view>
     </view>
   </view>
